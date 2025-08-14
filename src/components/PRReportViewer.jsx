@@ -50,7 +50,7 @@ const PRReportViewer = ({
   onShare,
   isShowButton = false,
 }) => {
-  console.log(report);
+  console.log("report");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [imageErrors, setImageErrors] = useState(new Set());
