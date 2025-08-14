@@ -37,7 +37,7 @@ export default function PRReportsUpload() {
     try {
       const test = await prReportsService.uploadCSV(selectedFile, reportTitle);
       toast.success("CSV uploaded successfully!");
-      router.push(`/view-pr/${test.grid_id}`);
+      router.push(`/view-pr/${test.data.grid_id}`);
     } catch (error) {
       console.error("Upload error:", error);
       const errorMessage =
