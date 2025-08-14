@@ -17,7 +17,7 @@ const LayoutWrapper = ({ children }) => {
   const { user, loading } = useAuth();
   const [isReady, setIsReady] = useState(false);
 
-  const isPRPage = pathname.includes("/report");
+  const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (
     <>

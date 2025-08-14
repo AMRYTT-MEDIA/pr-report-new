@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import {
   Search,
@@ -22,7 +22,8 @@ import { Badge } from "@/components/ui/badge";
 import ShareDialog from "../../components/ShareDialog";
 import SimpleRouteGuard from "@/components/SimpleRouteGuard";
 
-export default function PRReportsList() {
+// Component that uses useSearchParams - wrapped in Suspense
+function PRReportsListContent() {
   const { user, loading: authLoading } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -239,55 +240,6 @@ export default function PRReportsList() {
             </div>
           </div>
 
-          {/* Search and Filters */}
-          {/* <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-            <div className="flex flex-col sm:flex-row gap-4">
-              <div className="flex-1">
-                <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
-                  <Input
-                    placeholder="Search reports..."
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    className="pl-10 pr-4 py-2"
-                  />
-                </div>
-              </div>
-              {/* <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2">
-                  <label className="text-sm text-gray-600">Show:</label>
-                  <select
-                    value={pageSize}
-                    onChange={(e) =>
-                      handlePageSizeChange(parseInt(e.target.value))
-                    }
-                    className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
-                  >
-                    <option value={10}>10</option>
-                    <option value={25}>25</option>
-                    <option value={50}>50</option>
-                  </select>
-                </div>
-                <Button
-                  onClick={() => fetchReports()}
-                  variant="outline"
-                  size="sm"
-                  className="flex items-center gap-2"
-                >
-                  <Search className="w-4 h-4" />
-                  Refresh
-                </Button>
-              </div> */}
-          {/* </div>
-          </div>  */}
-
-          {/* Error State */}
-          {/* {error && (
-            <div className="bg-red-50 border border-red-200 rounded-md p-4 mb-6">
-              <p className="text-red-800">{error}</p>
-            </div>
-          )} */}
-
           {/* Reports Table */}
           {reports.length > 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -427,5 +379,26 @@ export default function PRReportsList() {
         </div>
       </div>
     </SimpleRouteGuard>
+  );
+}
+
+// Loading fallback component
+function PRReportsListLoading() {
+  return (
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="text-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+        <p className="text-gray-600">Loading reports...</p>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense boundary
+export default function PRReportsList() {
+  return (
+    <Suspense fallback={<PRReportsListLoading />}>
+      <PRReportsListContent />
+    </Suspense>
   );
 }

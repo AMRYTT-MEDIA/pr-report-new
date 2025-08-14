@@ -15,7 +15,10 @@ export default function PRReportsUpload() {
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
-    if (file && file.type === "text/csv") {
+    if (
+      file &&
+      (file.type === "text/csv" || file.type === "application/vnd.ms-excel")
+    ) {
       setSelectedFile(file);
       // Auto-generate title from filename if not provided
       if (!reportTitle) {

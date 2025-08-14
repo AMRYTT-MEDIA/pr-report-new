@@ -227,7 +227,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
             </Button>
             <Button
               onClick={handleShare}
-              className="flex-1 bg-purple-600 hover:bg-purple-700"
+              className="flex-1 bg-orange-600 hover:bg-orange-700"
             >
               <Check className="h-4 w-4 mr-2" />
               Done
