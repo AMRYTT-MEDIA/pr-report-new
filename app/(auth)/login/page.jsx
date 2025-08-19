@@ -28,8 +28,7 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const result = await login(email, password);
-
+     login(email, password);
       // if (result.success) {
       //   // toast.success("Login successful!");
       //   router.push("/pr-reports");

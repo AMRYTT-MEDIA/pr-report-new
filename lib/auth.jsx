@@ -56,6 +56,7 @@ export const AuthProvider = ({ children }) => {
           const res = await getuserdatabyfirebaseid(currentUser.uid);
           if (res) {
             setUser(res.data);
+            router.push("/pr-reports");
           } else {
             setUser(null);
           }
