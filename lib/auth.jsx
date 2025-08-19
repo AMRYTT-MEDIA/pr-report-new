@@ -21,6 +21,7 @@ import { auth, db } from "./firebase";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { useRouter, usePathname } from "next/navigation";
 import { toast } from "sonner";
+import { isPublicRoute, isProtectedRoute } from "@/lib/routeConfig";
 
 const AuthContext = createContext({});
 
@@ -119,8 +120,8 @@ export const AuthProvider = ({ children }) => {
 
       if (currentUser) {
         // User is authenticated with Firebase
-        if (pathname === "/login" || pathname === "/") {
-          // User is on login/home page but authenticated
+        if (isPublicRoute(pathname)) {
+          // User is on public page but authenticated
           // Set basic user info and redirect to dashboard
           setUser({ uid: currentUser.uid, email: currentUser.email });
           const token = await currentUser.getIdToken();
@@ -149,16 +150,15 @@ export const AuthProvider = ({ children }) => {
         setToken(null);
 
         // Only redirect to login if on protected route
-        if (
-          pathname !== "/login" &&
-          pathname !== "/" &&
-          !isRedirecting.current
-        ) {
+        if (isProtectedRoute(pathname) && !isRedirecting.current) {
+          setLoading(false); // Set loading to false immediately
           isRedirecting.current = true;
           router.push("/login");
           setTimeout(() => {
             isRedirecting.current = false;
           }, 1000);
+          return; // Exit early to prevent setLoading(false) at the end
+        } else {
         }
       }
 
@@ -171,6 +171,17 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     if (isInitialized.current) return;
 
+    // Immediate check for protected routes without authentication
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    if (isProtectedRoute(pathname) && !currentUser) {
+      setLoading(false);
+      router.push("/login");
+      return;
+    }
+
+    // If not on protected route or user exists, proceed with normal auth flow
     const unsubscribe = onAuthStateChanged(auth, handleAuthStateChange);
     isInitialized.current = true;
 
@@ -179,14 +190,29 @@ export const AuthProvider = ({ children }) => {
       if (loading) {
         console.log("Loading timeout reached, setting loading to false");
         setLoading(false);
+
+        // If still loading after timeout and on protected route without user, redirect to login
+        const auth = getAuth();
+        const currentUser = auth.currentUser;
+        if (
+          isProtectedRoute(pathname) &&
+          !currentUser &&
+          !isRedirecting.current
+        ) {
+          isRedirecting.current = true;
+          router.push("/login");
+          setTimeout(() => {
+            isRedirecting.current = false;
+          }, 1000);
+        }
       }
-    }, 10000); // 10 seconds timeout
+    }, 2000); // Reduced to 2 seconds for even faster redirect
 
     return () => {
       unsubscribe();
       clearTimeout(loadingTimeout);
     };
-  }, [handleAuthStateChange, loading]);
+  }, [handleAuthStateChange, loading, pathname, router]);
 
   // Handle pathname changes
   useEffect(() => {
@@ -195,8 +221,8 @@ export const AuthProvider = ({ children }) => {
     const auth = getAuth();
     const currentUser = auth.currentUser;
 
-    if (currentUser && (pathname === "/login" || pathname === "/")) {
-      // User is authenticated but on login/home page, redirect to dashboard
+    if (currentUser && isPublicRoute(pathname)) {
+      // User is authenticated but on public page, redirect to dashboard
       if (!isRedirecting.current) {
         isRedirecting.current = true;
         router.replace("/pr-reports");
@@ -204,8 +230,9 @@ export const AuthProvider = ({ children }) => {
           isRedirecting.current = false;
         }, 1000);
       }
-    } else if (!currentUser && pathname !== "/login" && pathname !== "/") {
+    } else if (!currentUser && isProtectedRoute(pathname)) {
       // User is not authenticated but on protected route, redirect to login
+      setLoading(false); // Set loading to false immediately
       if (!isRedirecting.current) {
         isRedirecting.current = true;
         router.push("/login");
@@ -213,25 +240,119 @@ export const AuthProvider = ({ children }) => {
           isRedirecting.current = false;
         }, 1000);
       }
-    } else if (currentUser && pathname !== "/login" && pathname !== "/") {
+    } else if (currentUser && isProtectedRoute(pathname)) {
       // User is authenticated and on protected route, ensure user state is set
       if (!user) {
         // User state is not set, validate with backend
         validateUserWithBackend(currentUser);
       }
+    } else {
     }
   }, [pathname, router, user, validateUserWithBackend]);
 
+  // Additional effect to handle direct URL access to protected routes
+  useEffect(() => {
+    if (!isInitialized.current) return;
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    // If we're on a protected route and there's no user, redirect immediately
+    if (isProtectedRoute(pathname) && !currentUser) {
+      // Set loading to false to prevent stuck loading state
+      setLoading(false);
+
+      if (!isRedirecting.current) {
+        isRedirecting.current = true;
+        router.push("/login");
+        setTimeout(() => {
+          isRedirecting.current = false;
+        }, 1000);
+      }
+    }
+  }, [pathname, router]);
+
+  // Additional effect to force loading state resolution for protected routes
+  useEffect(() => {
+    if (!isInitialized.current) return;
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    // Force loading state resolution for protected routes without users
+    if (isProtectedRoute(pathname) && !currentUser && loading) {
+      setLoading(false);
+
+      // Immediate redirect
+      if (!isRedirecting.current) {
+        isRedirecting.current = true;
+        router.push("/login");
+        setTimeout(() => {
+          isRedirecting.current = false;
+        }, 1000);
+      }
+    }
+  }, [pathname, loading, router]);
+
+  // Final safety check to ensure loading state is resolved
+  useEffect(() => {
+    if (!isInitialized.current) return;
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    // Safety check: if on protected route without user and still loading, force redirect
+    if (isProtectedRoute(pathname) && !currentUser && loading) {
+      setLoading(false);
+
+      if (!isRedirecting.current) {
+        isRedirecting.current = true;
+        router.push("/login");
+        setTimeout(() => {
+          isRedirecting.current = false;
+        }, 1000);
+      }
+    }
+  }, [pathname, loading, router]);
+
+  // Cleanup effect to reset loading state on unmount
+  useEffect(() => {
+    return () => {
+      setLoading(false);
+    };
+  }, []);
+
+  // Aggressive immediate check for protected routes - runs on every render
+  useEffect(() => {
+    if (!isInitialized.current) return;
+
+    const auth = getAuth();
+    const currentUser = auth.currentUser;
+
+    // Immediate aggressive check for protected routes without users
+    if (isProtectedRoute(pathname) && !currentUser) {
+      setLoading(false);
+
+      if (!isRedirecting.current) {
+        isRedirecting.current = true;
+        router.push("/login");
+        setTimeout(() => {
+          isRedirecting.current = false;
+        }, 1000);
+      }
+    }
+  });
+
   // Reset error flag when pathname changes
   useEffect(() => {
-    if (pathname !== "/login" && pathname !== "/") {
+    if (isProtectedRoute(pathname)) {
       setIsErrorShown(false);
     }
   }, [pathname]);
 
   // Refresh token periodically (every 50 minutes)
   useEffect(() => {
-    if (!user || pathname === "/login" || pathname === "/") return;
+    if (!user || isPublicRoute(pathname)) return;
 
     const refreshTokenInterval = setInterval(async () => {
       try {
@@ -246,21 +367,15 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      console.log("Login attempt started");
       // Reset error flag when starting new login attempt
       setIsErrorShown(false);
 
       const result = await signInWithEmailAndPassword(auth, email, password);
-      console.log("Firebase login successful:", result.user.uid);
 
       // After successful login, ALWAYS validate with backend API
       if (result.user) {
-        console.log("Starting backend validation");
         const validation = await validateUserWithBackend(result.user);
         if (validation.success) {
-          console.log(
-            "Backend validation successful, redirecting to pr-reports"
-          );
           // Set user state before redirect to prevent loading state
           setUser(validation.userData);
           setLoading(false);
@@ -273,7 +388,6 @@ export const AuthProvider = ({ children }) => {
       }
       return { success: true, user: result.user };
     } catch (error) {
-      console.error("Login error:", error);
       let errorMessage = "Login failed";
 
       if (error.code === "auth/user-not-found") {
@@ -343,7 +457,7 @@ export const AuthProvider = ({ children }) => {
 
   // Function to force re-check authentication state
   const forceAuthCheck = useCallback(async () => {
-    if (pathname === "/login" || pathname === "/") return;
+    if (isPublicRoute(pathname)) return;
 
     const auth = getAuth();
     const currentUser = auth.currentUser;
