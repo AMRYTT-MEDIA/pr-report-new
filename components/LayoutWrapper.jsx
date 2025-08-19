@@ -7,7 +7,7 @@ import {
   getRouteType,
   getLoginRedirectUrl,
   getDashboardRedirectUrl,
-} from "../lib/routeConfig";
+} from "@/lib/routeConfig";
 import PRReportsNavigation from "./PRReportsNavigation";
 import PRBreadcrumb from "./PRBreadcrumb";
 

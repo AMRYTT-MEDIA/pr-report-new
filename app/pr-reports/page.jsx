@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Upload, FileText, ArrowRight } from "lucide-react";
-import { prReportsService } from "../../services/prReports";
+import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import SimpleRouteGuard from "@/components/SimpleRouteGuard";
 
@@ -11,7 +11,57 @@ export default function PRReportsUpload() {
   const [selectedFile, setSelectedFile] = useState(null);
   const [reportTitle, setReportTitle] = useState("");
   const [isUploading, setIsUploading] = useState(false);
+  const [isDragOver, setIsDragOver] = useState(false);
   const router = useRouter();
+
+  const handleDragOver = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragEnter = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback((e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    // Only set to false if we're leaving the drop zone entirely
+    if (!e.currentTarget.contains(e.relatedTarget)) {
+      setIsDragOver(false);
+    }
+  }, []);
+
+  const handleDrop = useCallback(
+    (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsDragOver(false);
+
+      const files = e.dataTransfer.files;
+      if (files && files.length > 0) {
+        const file = files[0];
+        if (
+          file.type === "text/csv" ||
+          file.type === "application/vnd.ms-excel" ||
+          file.name.endsWith(".csv")
+        ) {
+          setSelectedFile(file);
+          // Auto-generate title from filename if not provided
+          if (!reportTitle) {
+            setReportTitle(file.name.replace(".csv", ""));
+          }
+        } else {
+          toast.error("Please select a valid CSV file");
+          setSelectedFile(null);
+        }
+      }
+    },
+    [reportTitle]
+  );
 
   const handleFileSelect = (event) => {
     const file = event.target.files[0];
@@ -34,6 +84,7 @@ export default function PRReportsUpload() {
     if (!selectedFile) return;
 
     setIsUploading(true);
+
     try {
       const test = await prReportsService.uploadCSV(selectedFile, reportTitle);
       toast.success("CSV uploaded successfully!");
@@ -96,7 +147,17 @@ export default function PRReportsUpload() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Select CSV File
                 </label>
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md hover:border-gray-400 transition-colors">
+                <div
+                  className={`mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-md transition-colors ${
+                    isDragOver
+                      ? "border-blue-500 bg-blue-50"
+                      : "border-gray-300 hover:border-gray-400"
+                  }`}
+                  onDragOver={handleDragOver}
+                  onDragEnter={handleDragEnter}
+                  onDragLeave={handleDragLeave}
+                  onDrop={handleDrop}
+                >
                   <div className="space-y-1 text-center">
                     <FileText className="mx-auto h-12 w-12 text-gray-400" />
                     <div className="flex text-sm text-gray-600">

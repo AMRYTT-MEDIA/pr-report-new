@@ -34,8 +34,8 @@ import {
   Lock,
 } from "lucide-react";
 import { toast } from "sonner";
-import { getLogoForUrl, getOutletName } from "../../../utils/logoMapping";
-import { publicPrReportsService } from "../../../services/publicPrReports";
+import { getLogoForUrl, getOutletName } from "@/utils/logoMapping";
+import { publicPrReportsService } from "@/services/publicPrReports";
 import PRReportViewer from "@/components/PRReportViewer";
 import { AlertCircle } from "lucide-react";
 import Image from "next/image";

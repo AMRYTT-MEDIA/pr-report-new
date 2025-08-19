@@ -9,7 +9,7 @@ import {
   TrendingUp,
   BarChart3,
 } from "lucide-react";
-import { prReportsService } from "../../../services/prReports";
+import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import SimpleRouteGuard from "@/components/SimpleRouteGuard";
 import { useAuth } from "@/lib/auth";

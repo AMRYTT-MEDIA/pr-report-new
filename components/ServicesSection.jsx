@@ -82,18 +82,18 @@ const ServicesSection = () => {
 
   return (
     <section id="services" className="py-20 bg-white">
-      <div className="container mx-auto px-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:px-20 max-w-7xl 2xl:max-w-8xl 3xl:max-w-9xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-foreground mb-6">
+          <h2 className="text-4xl lg:text-5xl xl:text-6xl 2xl:text-7xl font-bold text-foreground mb-6">
             Our <span className="text-primary">Press Release Services</span>
           </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-muted-foreground max-w-4xl mx-auto">
             Comprehensive PR solutions to amplify your brand's voice and reach
             your target audience through strategic media coverage
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <div className="grid lg:grid-cols-3 gap-6 lg:gap-8 xl:gap-10 2xl:gap-12">
           {services.map((service, index) => (
             <Card
               key={index}
@@ -101,36 +101,24 @@ const ServicesSection = () => {
             >
               {service.badge && (
                 <Badge
-                  className={`absolute -top-3 left-6 ${
+                  className={`absolute -top-3 left-4 px-3 py-1 text-xs font-semibold ${
                     service.badge === "Most Popular"
-                      ? "bg-pr-green"
+                      ? "bg-pr-green text-white"
                       : service.badge === "Enterprise"
-                      ? "bg-primary"
-                      : "bg-accent"
-                  } text-white`}
+                      ? "bg-primary text-white"
+                      : "bg-accent text-white"
+                  }`}
                 >
                   {service.badge}
                 </Badge>
               )}
 
-              <CardHeader className="pb-6 text-center">
-                <div className="flex flex-col items-center gap-4 mb-4">
-                  {service.icon}
-                  <div>
-                    <CardTitle className="text-2xl mb-2">
-                      {service.title}
-                    </CardTitle>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-lg text-muted-foreground line-through">
-                        {service.originalPrice}
-                      </span>
-                      <span className="text-3xl font-bold text-pr-green">
-                        {service.price}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <CardDescription className="text-base text-muted-foreground">
+              <CardHeader className="text-center pb-4">
+                <div className="flex justify-center mb-4">{service.icon}</div>
+                <CardTitle className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-foreground">
+                  {service.title}
+                </CardTitle>
+                <CardDescription className="text-base lg:text-lg xl:text-xl 2xl:text-2xl text-muted-foreground">
                   {service.description}
                 </CardDescription>
               </CardHeader>
@@ -138,37 +126,44 @@ const ServicesSection = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   {service.features.map((feature, featureIndex) => (
-                    <div key={featureIndex} className="flex items-start gap-3">
-                      <div className="w-2 h-2 bg-pr-green rounded-full mt-2 flex-shrink-0"></div>
-                      <span className="text-sm text-muted-foreground">
+                    <div
+                      key={featureIndex}
+                      className="flex items-start space-x-3"
+                    >
+                      <div className="flex-shrink-0 w-2 h-2 bg-pr-green rounded-full mt-2"></div>
+                      <span className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-foreground">
                         {feature}
                       </span>
                     </div>
                   ))}
                 </div>
 
-                <Button className="w-full" variant="pr-green" size="lg">
-                  {service.cta}
-                </Button>
+                <div className="pt-6 border-t border-border">
+                  <div className="text-center mb-6">
+                    <div className="flex items-center justify-center space-x-3 mb-2">
+                      <span className="text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-bold text-primary">
+                        {service.price}
+                      </span>
+                      {service.originalPrice && (
+                        <span className="text-lg lg:text-xl xl:text-2xl 2xl:text-3xl text-muted-foreground line-through">
+                          {service.originalPrice}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <Button
+                    className="w-full text-base lg:text-lg xl:text-xl 2xl:text-2xl py-3 lg:py-4 xl:py-5 2xl:py-6"
+                    variant={
+                      service.badge === "Most Popular" ? "default" : "outline"
+                    }
+                  >
+                    {service.cta}
+                  </Button>
+                </div>
               </CardContent>
             </Card>
           ))}
-        </div>
-
-        <div className="text-center mt-16">
-          <div className="bg-gradient-to-r from-primary/10 to-pr-green/10 rounded-2xl p-8">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Need a Custom Solution?
-            </h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
-              We offer tailored PR packages for enterprise clients and special
-              requirements. Contact us to discuss your specific needs and get a
-              custom quote.
-            </p>
-            <Button variant="outline" size="lg">
-              Contact Sales Team
-            </Button>
-          </div>
         </div>
       </div>
     </section>

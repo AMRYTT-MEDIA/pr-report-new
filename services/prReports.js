@@ -1,10 +1,4 @@
-import {
-  apiDelete,
-  apiGet,
-  apiPost,
-  apiPostFormData,
-  apiPut,
-} from "../lib/api";
+import { apiDelete, apiGet, apiPost, apiPostFormData, apiPut } from "@/lib/api";
 
 // PR Reports API service
 export const prReportsService = {

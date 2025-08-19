@@ -1,10 +1,12 @@
-"use client";
-
-import { Toaster as Sonner } from "sonner";
+import { useTheme } from "next-themes";
+import { Toaster as Sonner, toast } from "sonner";
 
 const Toaster = ({ ...props }) => {
+  // const { theme = "system" } = useTheme();
+
   return (
     <Sonner
+      theme={"light"}
       className="toaster group"
       toastOptions={{
         classNames: {
@@ -22,4 +24,4 @@ const Toaster = ({ ...props }) => {
   );
 };
 
-export { Toaster };
+export { Toaster, toast };

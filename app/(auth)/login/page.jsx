@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import SimpleRouteGuard from "@/components/SimpleRouteGuard";
+import Image from "next/image";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -47,8 +48,17 @@ export default function LoginPage() {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <div className="w-16 h-16 bg-gradient-primary rounded-lg flex items-center justify-center mx-auto mb-4">
+          {/* <div className="w-16 h-16 bg-gradient-primary rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-2xl">G</span>
+          </div> */}
+          <div className="flex justify-center items-center h-16">
+            <Image
+              src="/guestpost-link.webp"
+              alt="PR Reports"
+              width={223}
+              height={45}
+              priority={true}
+            />
           </div>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>

@@ -11,7 +11,7 @@ import {
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./firebase";
-import { getuserdatabyfirebaseid } from "../../services/user";
+import { getuserdatabyfirebaseid } from "@/services/user";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
@@ -54,9 +54,14 @@ export const AuthProvider = ({ children }) => {
           const token = await currentUser.getIdToken(true);
           setToken(token);
           const res = await getuserdatabyfirebaseid(currentUser.uid);
-          setUser(res.data);
+          if (res) {
+            setUser(res.data);
+          } else {
+            setUser(null);
+          }
         } catch (error) {
           console.error("Error getting user data:", error);
+          toast.error(error.message || "Login failed");
           setUser(null);
           setToken(null);
           router.push("/login");

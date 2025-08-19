@@ -13,13 +13,13 @@ import {
   Trash2,
   FileText,
 } from "lucide-react";
-import { prReportsService } from "../../services/prReports";
+import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import ShareDialog from "../../components/ShareDialog";
+import ShareDialog from "@/components/ShareDialog";
 import SimpleRouteGuard from "@/components/SimpleRouteGuard";
 
 // Component that uses useSearchParams - wrapped in Suspense
@@ -66,9 +66,15 @@ function PRReportsListContent() {
         sort: `${sortField}:${sortOrder}`,
       };
 
-      const response = await prReportsService.getReports(params);
-      setReports(response.data || response || []);
-      setTotalCount(response.totalCount || response.length || 0);
+      if (user) {
+        const response = await prReportsService.getReports(params);
+        if (response) {
+          setReports(response.data || response || []);
+          setTotalCount(response.totalCount || response.length || 0);
+        }
+      } else {
+        console.log("error");
+      }
 
       // Update URL
       const newSearchParams = new URLSearchParams();

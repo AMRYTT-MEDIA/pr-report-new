@@ -10,7 +10,7 @@
     "trigger-build": "curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_2nbdM2HzUpejSxttHjrN2nyrzgkO/T7pWSGKwc5"
   },
   "dependencies": {
-    "@tanstack/react-query": "^5.59.16",
+    
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -19,6 +19,7 @@
     "lucide-react": "^0.462.0",
     "next": "14.2.5",
     "next-themes": "^0.4.6",
+    "postcss": "8.4.31",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sonner": "^1.5.0",
@@ -26,13 +27,11 @@
     "tailwindcss-animate": "^1.0.7"
   },
   "devDependencies": {
-    "@types/node": "^22.5.5",
-    "@types/react": "^18.3.3",
-    "@types/react-dom": "^18.3.0",
-    "autoprefixer": "^10.4.20",
+    "@types/react": "19.1.10",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.11"
+    "tailwindcss": "^3.4.11",
+    "autoprefixer": "^10.4.20"
   }
 }

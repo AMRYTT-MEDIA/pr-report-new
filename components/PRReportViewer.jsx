@@ -39,11 +39,12 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card.jsx";
 import { jsPDF } from "jspdf";
-import { logoMaps } from "@/utils/logoMapping";
+import { logoMap } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
-import { prReportsService } from "services/prReports";
-import ShareDialogView from "../../components/ShareDialogView";
+import { prReportsService } from "@/services/prReports";
+import ShareDialogView from "@/components/ShareDialogView";
+
 const PRReportViewer = ({
   report,
   loading = false,
@@ -54,6 +55,7 @@ const PRReportViewer = ({
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [imageErrors, setImageErrors] = useState(new Set());
+  const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
 
   // Debounce search term to prevent excessive filtering
@@ -67,16 +69,37 @@ const PRReportViewer = ({
 
   const handleImageError = (outletName) => {
     setImageErrors((prev) => new Set(prev).add(outletName));
+    setImageLoading((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(outletName);
+      return newSet;
+    });
+  };
+
+  const handleImageLoad = (outletName) => {
+    setImageLoading((prev) => {
+      const newSet = new Set(prev);
+      newSet.delete(outletName);
+      return newSet;
+    });
+  };
+
+  const handleImageStartLoad = (outletName) => {
+    setImageLoading((prev) => new Set(prev).add(outletName));
   };
 
   const isImageError = (outletName) => {
     return imageErrors.has(outletName);
   };
 
+  const isImageLoading = (outletName) => {
+    return imageLoading.has(outletName);
+  };
+
   // Optimized logo lookup to prevent lag
   const getLogoUrl = (outletName) => {
     // Check if we have a logo for this outlet
-    const logoPath = logoMaps[outletName];
+    const logoPath = logoMap[outletName];
     if (logoPath) {
       return logoPath;
     }
@@ -553,49 +576,83 @@ const PRReportViewer = ({
                 {filteredOutlets.map((outlet, index) => (
                   <TableRow key={index} className="bg-white ">
                     <TableCell className="flex items-center gap-3 h-[72px]">
-                      {getLogoUrl(outlet.website_name) &&
-                      !isImageError(outlet.website_name) ? (
-                        <div className="relative h-[38px]">
-                          <Image
-                            src={getLogoUrl(outlet.website_name)}
-                            alt={outlet.website_name}
-                            className="max-w-[137px] max-h-[38px] rounded object-contain"
-                            onError={() =>
-                              handleImageError(outlet.website_name)
-                            }
-                            loading="lazy"
-                            height={38}
-                            width={137}
-                          />
-                        </div>
-                      ) : (
-                        <div
-                          className={`w-[137px] h-[38px] flex items-center justify-center ${
-                            index % 4 === 0
-                              ? " from-blue-50 to-indigo-100 "
-                              : index % 4 === 1
-                              ? " from-green-50 to-emerald-100 "
-                              : index % 4 === 2
-                              ? " from-purple-50 to-violet-100 "
-                              : " from-orange-50 to-amber-100 "
-                          }`}
-                        >
-                          <span
-                            className={`text-lg font-bold tracking-wide ${
-                              index % 4 === 0
-                                ? "text-blue-700"
-                                : index % 4 === 1
-                                ? "text-green-700"
-                                : index % 4 === 2
-                                ? "text-purple-700"
-                                : "text-orange-700"
-                            }`}
-                          >
-                            {outlet.website_name.charAt(0).toUpperCase()}
-                          </span>
-                        </div>
-                      )}
-                      {/* <span className="font-medium">{outlet.website_name}</span> */}
+                      {/* Logo Display Logic */}
+                      {(() => {
+                        const logoUrl = getLogoUrl(outlet.website_name);
+                        const hasLogo =
+                          logoUrl && !isImageError(outlet.website_name);
+                        const isLoading = isImageLoading(outlet.website_name);
+
+                        if (isLoading) {
+                          // Show skeleton while loading
+                          return (
+                            <div className="w-[137px] h-[38px] flex items-center justify-center">
+                              <Skeleton className="w-full h-full" />
+                            </div>
+                          );
+                        }
+
+                        if (hasLogo) {
+                          // Show logo image
+                          return (
+                            <div className="w-[137px] h-[38px] flex items-center justify-center">
+                              <Image
+                                src={logoUrl}
+                                alt={outlet.website_name}
+                                className="max-w-[137px] max-h-[38px] object-contain"
+                                onLoadStart={() =>
+                                  handleImageStartLoad(outlet.website_name)
+                                }
+                                onLoad={() =>
+                                  handleImageLoad(outlet.website_name)
+                                }
+                                onError={() =>
+                                  handleImageError(outlet.website_name)
+                                }
+                                loading="lazy"
+                                height={38}
+                                width={137}
+                              />
+                            </div>
+                          );
+                        }
+
+                        // Show circular first character fallback
+                        const firstChar = outlet.website_name
+                          .charAt(0)
+                          .toUpperCase();
+                        const colorClasses = [
+                          "text-blue-700 border-blue-300 bg-blue-50",
+                          "text-green-700 border-green-300 bg-green-50",
+                          "text-purple-700 border-purple-300 bg-purple-50",
+                          "text-orange-700 border-orange-300 bg-orange-50",
+                          "text-red-700 border-red-300 bg-red-50",
+                          "text-indigo-700 border-indigo-300 bg-indigo-50",
+                        ];
+                        const colorClass =
+                          colorClasses[index % colorClasses.length];
+
+                        return (
+                          <div className="w-[137px] h-[38px] flex items-center justify-center">
+                            <div
+                              className={`w-[38px] h-[38px] rounded-full flex items-center justify-center border-2 text-lg font-bold tracking-wide ${colorClass}`}
+                              style={{
+                                borderRadius: "50%",
+                                aspectRatio: "1 / 1",
+                                width: "38px",
+                                height: "38px",
+                                textAlign: "center",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                border: "1px solid currentColor",
+                              }}
+                            >
+                              {firstChar}
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="text-muted-foreground">
                       {outlet.website_name}

@@ -13,14 +13,14 @@ This document outlines the optimized Firebase authentication implementation for 
 - **Response interceptor** handles 401 errors with automatic token refresh and retry
 - **Automatic retry** of failed requests with new tokens
 
-### 2. Authentication Context (`src/lib/auth.jsx`)
+### 2. Authentication Context (`lib/auth.jsx`)
 
 - **Firebase auth state management** with automatic token refresh
 - **Periodic token refresh** every 50 minutes
 - **User data synchronization** with Firestore
 - **Proper cleanup** on logout
 
-### 3. Protected Route Component (`src/components/ProtectedRoute.jsx`)
+### 3. Protected Route Component (`components/ProtectedRoute.jsx`)
 
 - **Consistent authentication checks** across the application
 - **Automatic redirects** to login for unauthenticated users

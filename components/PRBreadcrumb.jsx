@@ -32,7 +32,7 @@ export default function PRBreadcrumb() {
   if (breadcrumbItems.length === 0) return null;
 
   return (
-    <nav className="  px-6 py-3">
+    <nav className="py-3">
       <div className="container mx-auto">
         <ol className="flex items-center space-x-2 text-sm text-gray-600">
           <li>

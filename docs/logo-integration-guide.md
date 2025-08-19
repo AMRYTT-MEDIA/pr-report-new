@@ -7,6 +7,7 @@ This guide shows how to systematically add more media outlet logos to the PR rep
 The following logos have been successfully downloaded and integrated:
 
 ### Major Business & Finance
+
 - ✅ Business Insider (`business-insider.png`)
 - ✅ Bloomberg (`bloomberg.jpg`)
 - ✅ Wall Street Journal (`wsj.jpg`)
@@ -14,16 +15,19 @@ The following logos have been successfully downloaded and integrated:
 - ✅ Yahoo Finance (`yahoo.png`)
 
 ### News Agencies
+
 - ✅ Associated Press (`ap-news.png`)
 - ✅ Reuters (`reuters.png`)
 - ✅ Dow Jones (`dow-jones.png`)
 
 ### Canadian Media
+
 - ✅ The Globe and Mail (`globe-and-mail.png`)
 - ✅ CEO.ca (`ceo-ca.png`)
 - ✅ Stockhouse (`stockhouse.jpg`)
 
 ### Digital & Specialty
+
 - ✅ Digital Journal (`digital-journal.jpg`)
 - ✅ Prospector News (`prospector-news.png`)
 - ✅ StreetInsider (`street-insider.png`)
@@ -33,20 +37,23 @@ The following logos have been successfully downloaded and integrated:
 ## How to Add More Logos
 
 ### Method 1: Individual Download (Recommended for Key Outlets)
+
 ```typescript
 // Download individual logos for high-priority outlets
-lov-download-to-repo source_url="https://www.newsfilecorp.com/images/clipreport/[logo-file]" target_path="src/assets/logos/[logo-name]"
+lov-download-to-repo source_url="https://www.newsfilecorp.com/images/clipreport/[logo-file]" target_path="public/logos/[logo-name]"
 ```
 
 ### Method 2: Batch Processing (For Multiple Logos)
+
 ```typescript
-// Update the MEDIA_LOGO_MAP in src/utils/logoMapping.ts
+// Update the MEDIA_LOGO_MAP in utils/logoMapping.js
 // Add new entries with either local imports or external URLs
 ```
 
 ## Priority Logo Categories
 
 ### Tier 1: Major International Media (High Priority)
+
 - CNN
 - BBC
 - Fox News
@@ -57,11 +64,13 @@ lov-download-to-repo source_url="https://www.newsfilecorp.com/images/clipreport/
 - Wired
 
 ### Tier 2: Regional & Industry Specific (Medium Priority)
+
 - PostMedia Network (Multiple Canadian outlets)
 - Local TV stations (KTTC, KVOA, KWWL, etc.)
 - Industry publications
 
 ### Tier 3: Specialized & Agricultural (Lower Priority)
+
 - Agricultural cooperatives
 - Small regional outlets
 - Specialized trade publications
@@ -77,6 +86,7 @@ lov-download-to-repo source_url="https://www.newsfilecorp.com/images/clipreport/
 ## External URL Fallback System
 
 For logos not downloaded locally, the system uses external URLs from newsfilecorp.com:
+
 - Automatically falls back to external URLs
 - Provides placeholder with first letter if logo unavailable
 - Graceful degradation ensures no broken images
@@ -91,6 +101,7 @@ For logos not downloaded locally, the system uses external URLs from newsfilecor
 ## WordPress Integration
 
 For WordPress integration, logos should be uploaded to:
+
 ```
 /wp-content/themes/your-theme/assets/logos/media-outlets/
 ```
