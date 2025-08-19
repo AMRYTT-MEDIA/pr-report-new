@@ -27,7 +27,9 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       const url = `${window.location.origin}/report/${
         report.grid_id || report._id
       }`;
-      setShareUrl(url);
+      if (report.grid_id) {
+        setShareUrl(url);
+      }
     }
   }, [report]);
 
@@ -94,7 +96,9 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
 
   const copyLink = async () => {
     try {
-      await navigator.clipboard.writeText(shareUrl);
+      if (report.grid_id) {
+        await navigator.clipboard.writeText(shareUrl);
+      }
       toast.success("Link copied to clipboard!");
     } catch (error) {
       toast.error("Failed to copy link");
