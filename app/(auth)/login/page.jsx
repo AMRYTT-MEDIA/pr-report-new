@@ -30,12 +30,12 @@ export default function LoginPage() {
     try {
       const result = await login(email, password);
 
-      if (result.success) {
-        // toast.success("Login successful!");
-        router.push("/pr-reports");
-      } else {
-        toast.error(result.error || "Login failed");
-      }
+      // if (result.success) {
+      //   // toast.success("Login successful!");
+      //   router.push("/pr-reports");
+      // } else {
+      //   toast.error(result.error || "Login failed");
+      // }
     } catch (error) {
       toast.error("An unexpected error occurred");
     } finally {
