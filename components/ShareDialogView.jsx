@@ -11,7 +11,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { X, Share2, Link, Copy, Check, Lock, Users } from "lucide-react";
+import { Share2, Link, Copy, Check, Lock, Users } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -116,14 +116,6 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
             <DialogTitle className="text-lg font-semibold">
               Share your PR Report
             </DialogTitle>
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={onClose}
-              className="ml-auto h-8 w-8 p-0"
-            >
-              <X className="h-4 w-4" />
-            </Button>
           </div>
         </DialogHeader>
 
