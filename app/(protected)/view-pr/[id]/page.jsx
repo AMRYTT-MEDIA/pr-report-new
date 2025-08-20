@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
-import SimpleRouteGuard from "@/components/SimpleRouteGuard";
+
 import { useAuth } from "@/lib/auth";
 import PRReportViewer from "@/components/PRReportViewer";
 
@@ -37,7 +37,7 @@ export default function ViewPR() {
 
     try {
       if (user) {
-        // Fetch the report data once
+        // Fetch the report data once (global token management handles auth)
         const response = await prReportsService.getReportGroup(reportId);
 
         if (response) {
@@ -72,6 +72,7 @@ export default function ViewPR() {
   // Export CSV
   const handleExportCSV = async () => {
     try {
+      // Export CSV (global token management handles auth)
       const response = await prReportsService.exportCSV(reportId);
 
       // Create and download the CSV file
@@ -137,7 +138,7 @@ export default function ViewPR() {
   }
 
   return (
-    <SimpleRouteGuard requireAuth={true}>
+    <div>
       {/* <div className="min-h-screen bg-gray-50 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           {report && (
@@ -344,6 +345,6 @@ export default function ViewPR() {
           {report && <PRReportViewer report={report} isShowButton={true} />}
         </div>
       </div>
-    </SimpleRouteGuard>
+    </div>
   );
 }

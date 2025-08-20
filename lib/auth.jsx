@@ -14,6 +14,8 @@ import { auth, db } from "./firebase";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { restartTokenRefresh, stopTokenRefresh } from "./api";
+import tokenManager from "./tokenManager";
 
 const AuthContext = createContext({});
 
@@ -26,18 +28,13 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [token, setToken] = useState(null);
   const router = useRouter();
+
   // Function to refresh token
   const refreshToken = async () => {
     try {
-      const auth = getAuth();
-      const currentUser = auth.currentUser;
-
-      if (currentUser) {
-        const freshToken = await currentUser.getIdToken(true);
-        setToken(freshToken);
-        return freshToken;
-      }
-      return null;
+      const freshToken = await tokenManager.getValidToken(true);
+      setToken(freshToken);
+      return freshToken;
     } catch (error) {
       console.error("Error refreshing token:", error);
       return null;
@@ -50,26 +47,69 @@ export const AuthProvider = ({ children }) => {
 
       if (currentUser) {
         try {
-          // Get and set the Firebase ID token with force refresh
-          const token = await currentUser.getIdToken(true);
+          // Pre-flight check: ensure we have a valid token before making any API calls
+          const token = await tokenManager.ensureValidTokenBeforeApiCall();
           setToken(token);
+
+          // Restart token refresh for the new user
+          restartTokenRefresh();
+
+          // Now call the backend API with the guaranteed fresh token
           const res = await getuserdatabyfirebaseid(currentUser.uid);
           if (res) {
             setUser(res.data);
-            router.push("/pr-reports");
+            // Let the guard system handle routing instead of automatic redirect
           } else {
             setUser(null);
+            // User doesn't exist in backend, sign them out
+            await signOut(auth);
+            toast.error("User not found in system");
           }
         } catch (error) {
           console.error("Error getting user data:", error);
-          toast.error(error.message || "Login failed");
-          setUser(null);
-          setToken(null);
-          router.push("/login");
+
+          // If it's a token/authorization error, try to refresh and retry once
+          if (
+            error.response?.status === 401 ||
+            error.message?.includes("token")
+          ) {
+            try {
+              console.log("Token expired, refreshing and retrying...");
+              const freshToken = await tokenManager.forceRefresh();
+              setToken(freshToken);
+
+              // Retry the API call with fresh token
+              const retryRes = await getuserdatabyfirebaseid(currentUser.uid);
+              if (retryRes) {
+                setUser(retryRes.data);
+              } else {
+                setUser(null);
+                await signOut(auth);
+                toast.error("User not found in system");
+              }
+            } catch (retryError) {
+              console.error("Retry failed:", retryError);
+              toast.error("Login failed - please try again");
+              setUser(null);
+              setToken(null);
+            }
+          } else if (error.response?.status === 404) {
+            toast.error("User not found");
+            setUser(null);
+            setToken(null);
+          } else {
+            toast.error(error.message || "Login failed");
+            setUser(null);
+            setToken(null);
+          }
         }
       } else {
         setUser(null);
         setToken(null);
+        // Stop token refresh when user logs out
+        stopTokenRefresh();
+        // Clear token from manager
+        tokenManager.clearToken();
       }
 
       setLoading(false);
@@ -78,20 +118,20 @@ export const AuthProvider = ({ children }) => {
     return () => unsubscribe();
   }, []);
 
-  // Refresh token periodically (every 50 minutes)
-  useEffect(() => {
-    if (!user) return;
+  // Remove the old token refresh logic - now handled by api.js
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const refreshTokenInterval = setInterval(async () => {
-      try {
-        await refreshToken();
-      } catch (error) {
-        console.error("Error refreshing token:", error);
-      }
-    }, 50 * 60 * 1000); // 50 minutes
+  //   const refreshTokenInterval = setInterval(async () => {
+  //     try {
+  //       await refreshToken();
+  //     } catch (error) {
+  //       console.error("Error refreshing token:", error);
+  //     }
+  //   }, 50 * 60 * 1000); // 50 minutes
 
-    return () => clearInterval(refreshTokenInterval);
-  }, [user]);
+  //   return () => clearInterval(refreshTokenInterval);
+  // }, [user]);
 
   const login = async (email, password) => {
     try {
@@ -108,7 +148,7 @@ export const AuthProvider = ({ children }) => {
       await signOut(auth);
       setUser(null);
       setToken(null);
-      router.push("/login");
+      // Let the guard system handle routing
       return { success: true };
     } catch (error) {
       return { success: false, error: error.message };
@@ -158,7 +198,7 @@ export const AuthProvider = ({ children }) => {
     createUser,
     updateUserRole,
     loading,
-    refreshToken, // Add the refreshToken function
+    refreshToken,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

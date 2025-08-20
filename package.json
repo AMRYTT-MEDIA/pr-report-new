@@ -10,7 +10,7 @@
     "trigger-build": "curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_2nbdM2HzUpejSxttHjrN2nyrzgkO/T7pWSGKwc5"
   },
   "dependencies": {
-    
+    "@radix-ui/react-tooltip": "^1.2.8",
     "axios": "^1.11.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
@@ -28,10 +28,10 @@
   },
   "devDependencies": {
     "@types/react": "19.1.10",
+    "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
     "postcss": "^8.4.47",
-    "tailwindcss": "^3.4.11",
-    "autoprefixer": "^10.4.20"
+    "tailwindcss": "^3.4.11"
   }
 }

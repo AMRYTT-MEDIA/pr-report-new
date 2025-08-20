@@ -1,4 +1,26 @@
 // Logo mapping for different media outlets
+//
+// IMPORTANT: Some logos referenced in this mapping may not exist in the public/website-logos folder
+// This can cause 400 Bad Request errors when trying to load images.
+//
+// To fix missing logo errors:
+// 1. Check if the logo file exists in public/website-logos/
+// 2. If missing, either add the logo file or remove the mapping
+// 3. Ensure all paths start with "/website-logos/" and have valid image extensions
+//
+// Common missing logos that cause 400 errors:
+// - sweetwater-reporter.png
+// - the-antlers-american.png
+// - the-evening-leader.png
+// - the-pilot-news.png
+// - valley-city-times-record.png
+// - wapakoneta-daily-news.png
+// - the-chronicle-journal.png
+// - starkville-daily-news.png
+//
+// NOTE: Missing logos are handled silently with fallback circular initials
+// No console errors will be shown for missing logo files
+//
 export const logoMap = {
   "Business Insider": "/website-logos/business-insider.png",
   "The Globe and Mail": "/website-logos/globeandmail.png",

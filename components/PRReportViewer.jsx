@@ -44,6 +44,7 @@ import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
+import ShareDialog from "./ShareDialog";
 
 const PRReportViewer = ({
   report,
@@ -51,7 +52,6 @@ const PRReportViewer = ({
   onShare,
   isShowButton = false,
 }) => {
-  console.log("report..");
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [imageErrors, setImageErrors] = useState(new Set());
@@ -68,6 +68,7 @@ const PRReportViewer = ({
   }, [searchTerm]);
 
   const handleImageError = (outletName) => {
+    // Silently handle image errors without console output
     setImageErrors((prev) => new Set(prev).add(outletName));
     setImageLoading((prev) => {
       const newSet = new Set(prev);
@@ -101,10 +102,27 @@ const PRReportViewer = ({
     // Check if we have a logo for this outlet
     const logoPath = logoMap[outletName];
     if (logoPath) {
-      return logoPath;
+      // Only return the path if it's a valid format and likely exists
+      if (logoPath.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
+        return logoPath;
+      }
+      // Silently skip invalid logo formats
     }
-    // Return null for unknown outlets to trigger fallback
+    // Return null for unknown outlets to trigger fallback (no console output)
     return null;
+  };
+
+  // Validate if a logo URL is likely to exist
+  const isValidLogoUrl = (url) => {
+    if (!url) return false;
+
+    // Check if it's a valid image format
+    if (!url.match(/\.(png|jpg|jpeg|gif|svg)$/i)) return false;
+
+    // Check if it's a relative path (starts with /)
+    if (!url.startsWith("/")) return false;
+
+    return true;
   };
 
   // Handle share report
@@ -579,8 +597,10 @@ const PRReportViewer = ({
                       {/* Logo Display Logic */}
                       {(() => {
                         const logoUrl = getLogoUrl(outlet.website_name);
-                        const hasLogo =
-                          logoUrl && !isImageError(outlet.website_name);
+                        const hasValidLogo =
+                          logoUrl &&
+                          isValidLogoUrl(logoUrl) &&
+                          !isImageError(outlet.website_name);
                         const isLoading = isImageLoading(outlet.website_name);
 
                         if (isLoading) {
@@ -592,8 +612,8 @@ const PRReportViewer = ({
                           );
                         }
 
-                        if (hasLogo) {
-                          // Show logo image
+                        if (hasValidLogo) {
+                          // Show logo image with error handling
                           return (
                             <div className="w-[137px] h-[38px] flex items-center justify-center">
                               <Image
@@ -612,12 +632,16 @@ const PRReportViewer = ({
                                 loading="lazy"
                                 height={38}
                                 width={137}
+                                // Add error handling for missing images
+                                onErrorCapture={() =>
+                                  handleImageError(outlet.website_name)
+                                }
                               />
                             </div>
                           );
                         }
 
-                        // Show circular first character fallback
+                        // Show circular first character fallback (always available)
                         const firstChar = outlet.website_name
                           .charAt(0)
                           .toUpperCase();
