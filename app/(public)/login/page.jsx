@@ -19,31 +19,48 @@ function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [isIntentionalLogin, setIsIntentionalLogin] = useState(false);
   const { login, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user) {
+    if (user && isIntentionalLogin) {
+      // Only show success toast and redirect if this was an intentional login
+      toast.success("Login successful!");
+      const next = searchParams.get("next") || "/pr-reports";
+      router.replace(next);
+    } else if (user && !isIntentionalLogin) {
+      // User is already logged in from page refresh, just redirect without toast
       const next = searchParams.get("next") || "/pr-reports";
       router.replace(next);
     }
-  }, [user, router, searchParams]);
+  }, [user, router, searchParams, isIntentionalLogin]);
+
+  // Reset intentional login flag when user changes or component unmounts
+  useEffect(() => {
+    if (!user) {
+      setIsIntentionalLogin(false);
+    }
+  }, [user]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setIsIntentionalLogin(true); // Mark this as an intentional login attempt
 
     try {
       const result = await login(email, password);
       if (result.success) {
-        // toast.success("Login successful!");
-        // The guard system will handle the redirect
+        // The useEffect will handle the success toast and redirect
+        // Don't show toast here to avoid duplicate messages
       } else {
+        setIsIntentionalLogin(false); // Reset flag on failure
         toast.error(result.error || "Login failed");
       }
     } catch (error) {
+      setIsIntentionalLogin(false); // Reset flag on error
       toast.error("An unexpected error occurred");
     } finally {
       setLoading(false);

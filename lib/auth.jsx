@@ -58,7 +58,7 @@ export const AuthProvider = ({ children }) => {
           const res = await getuserdatabyfirebaseid(currentUser.uid);
           if (res) {
             setUser(res.data);
-            // Let the guard system handle routing instead of automatic redirect
+            // Login success toast is now handled by the login form component
           } else {
             setUser(null);
             // User doesn't exist in backend, sign them out
@@ -82,10 +82,11 @@ export const AuthProvider = ({ children }) => {
               const retryRes = await getuserdatabyfirebaseid(currentUser.uid);
               if (retryRes) {
                 setUser(retryRes.data);
+                // Login success toast is now handled by the login form component
               } else {
                 setUser(null);
                 await signOut(auth);
-                toast.error("User not found in system");
+                // User not found toast is handled above
               }
             } catch (retryError) {
               console.error("Retry failed:", retryError);

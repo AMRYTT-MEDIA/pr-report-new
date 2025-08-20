@@ -12,6 +12,9 @@ import {
   Share2,
   Trash2,
   FileText,
+  Lock,
+  EyeOff,
+  Globe,
 } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
@@ -35,6 +38,9 @@ export default function PRReportsList() {
   const [totalCount, setTotalCount] = useState(0);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [reportToDelete, setReportToDelete] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -98,9 +104,7 @@ export default function PRReportsList() {
       if (sort !== "createdAt:desc")
         newSearchParams.set("sort", `${sortField}:${sortOrder}`);
 
-      const newUrl = `/pr-reports-list${
-        newSearchParams.toString() ? "?" + newSearchParams.toString() : ""
-      }`;
+      const newUrl = `/pr-reports-list`;
       router.replace(newUrl, { scroll: false });
     } catch (error) {
       setError("Failed to load reports. Please try again.");
@@ -163,19 +167,38 @@ export default function PRReportsList() {
     setShareDialogOpen(true);
   };
 
-  // Handle delete report
-  const handleDeleteReport = async (report) => {
-    if (window.confirm("Are you sure you want to delete this report?")) {
-      try {
-        const reportId = report.grid_id || report._id;
-        await prReportsService.deleteReport(reportId);
+  // Open delete confirmation dialog
+  const openDeleteDialog = (report) => {
+    setReportToDelete(report);
+    setDeleteDialogOpen(true);
+  };
 
-        toast.success("Report deleted successfully!");
-        await fetchReports();
-      } catch (error) {
-        toast.error("Failed to delete report");
-      }
+  // Handle delete report
+  const handleDeleteReport = async () => {
+    if (!reportToDelete) return;
+
+    setDeleteLoading(true);
+    try {
+      const reportId = reportToDelete.grid_id || reportToDelete._id;
+      await prReportsService.deleteReport(reportId);
+
+      toast.success("Report deleted successfully!");
+      await fetchReports();
+
+      // Close dialog and reset
+      setDeleteDialogOpen(false);
+      setReportToDelete(null);
+    } catch (error) {
+      toast.error("Failed to delete report");
+    } finally {
+      setDeleteLoading(false);
     }
+  };
+
+  // Close delete dialog
+  const closeDeleteDialog = () => {
+    setDeleteDialogOpen(false);
+    setReportToDelete(null);
   };
 
   // Format date
@@ -313,7 +336,7 @@ export default function PRReportsList() {
                       <td className="px-6 py-4">
                         <div className="flex items-center gap-3">
                           <div className="flex-shrink-0">
-                            <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                               <FileText className="w-5 h-5 text-blue-600" />
                             </div>
                           </div>
@@ -342,9 +365,46 @@ export default function PRReportsList() {
                                 {report?.report_title || "Untitled Report"}
                               </p>
                             )}
-                            <p className="text-sm text-gray-500">
-                              60 KB of 50 MB
-                            </p>
+                            <div className="flex items-center mt-1 text-sm text-gray-500">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${
+                                        report.is_private
+                                          ? "bg-red-100 text-red-800 border border-red-200"
+                                          : "bg-green-100 text-green-800 border border-green-200"
+                                      }`}
+                                    >
+                                      {report.is_private ? (
+                                        <Lock className="w-3 h-3 mr-1.5" />
+                                      ) : (
+                                        <Globe className="w-3 h-3 mr-1.5" />
+                                      )}
+                                      {report.is_private ? "Private" : "Public"}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    side="top"
+                                    align="start"
+                                  >
+                                    <div className="text-center">
+                                      <p className="font-medium mb-1">
+                                        {report.is_private
+                                          ? "🔒 Private Report"
+                                          : "🌐 Public Report"}
+                                      </p>
+                                      <p className="text-sm text-gray-300">
+                                        {report.is_private
+                                          ? "Only you and people you specifically share with can view this report."
+                                          : "Anyone with the link can view this report."}
+                                      </p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
                           </div>
                         </div>
                       </td>
@@ -369,11 +429,20 @@ export default function PRReportsList() {
                             Share
                           </button>
                           <button
-                            onClick={() => handleDeleteReport(report)}
-                            className="text-red-600 hover:text-red-900 flex items-center gap-1"
+                            onClick={() => openDeleteDialog(report)}
+                            disabled={deleteLoading}
+                            className={`flex items-center gap-1 ${
+                              deleteLoading
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-red-600 hover:text-red-900"
+                            }`}
                           >
-                            <Trash2 className="w-4 h-4" />
-                            Delete
+                            {deleteLoading ? (
+                              <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                            {deleteLoading ? "Deleting..." : "Delete"}
                           </button>
                         </div>
                       </td>
@@ -446,6 +515,59 @@ export default function PRReportsList() {
           report={selectedReport}
           onShare={handleShareReport}
         />
+
+        {/* Delete Confirmation Dialog */}
+        {deleteDialogOpen && reportToDelete && (
+          <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Report
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-sm text-gray-700 mb-2">
+                  Are you sure you want to delete this report?
+                </p>
+                <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {reportToDelete.report_title || "Untitled Report"}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteDialog}
+                  disabled={deleteLoading}
+                  className={`px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 ${
+                    deleteLoading
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Cancel
+                </button>
+                <Button
+                  onClick={handleDeleteReport}
+                  disabled={deleteLoading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  {deleteLoading ? "Deleting..." : "Delete Report"}
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
