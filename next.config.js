@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: "export", // static HTML export - commented out for now
+  output: "standalone",
+  // static HTML export - commented out for now
   // trailingSlash: true, // better for Apache hosting - commented out for now
 
   // Webpack configuration for better file watching
@@ -24,7 +25,7 @@ const nextConfig = {
   },
 
   images: {
-    domains: ["via.placeholder.com", "localhost"],
+    unoptimized: true,
   },
 
   env: {
