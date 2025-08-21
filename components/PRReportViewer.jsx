@@ -450,18 +450,23 @@ const PRReportViewer = ({
       </Card> */}
 
       {/* Summary Stats */}
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-[16px] font-medium text-blue-500">
+            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
               Total Publications
             </CardTitle>
-            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-              <TotalPublicationIcon color="#6366F1" width={20} height={20} />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <TotalPublicationIcon
+                color="#6366F1"
+                width={16}
+                height={16}
+                className="sm:w-5 sm:h-5"
+              />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">
               {report.total_outlets || 0}
             </div>
             <p className="text-xs text-muted-foreground">Media outlets</p>
@@ -470,15 +475,20 @@ const PRReportViewer = ({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-[16px] font-medium text-blue-500">
+            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
               Total Reach
             </CardTitle>
-            <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-              <StatusIcon color="#6366F1" width={20} height={20} />
+            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+              <StatusIcon
+                color="#6366F1"
+                width={16}
+                height={16}
+                className="sm:w-5 sm:h-5"
+              />
             </div>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
+          <CardContent className="pt-0">
+            <div className="text-xl sm:text-2xl font-bold">
               {formatNumber(report.total_reach)}
             </div>
             <p className="text-xs text-muted-foreground">Potential audience</p>
@@ -487,14 +497,19 @@ const PRReportViewer = ({
 
         <Card>
           <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-[16px] font-medium text-blue-500">
+            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
               Report Status
             </CardTitle>
             <div className="relative">
               <HoverCard>
                 <HoverCardTrigger asChild>
-                  <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-100 active:bg-blue-200 transition-colors">
-                    <TotalReachIcon color="#6366F1" width={20} height={20} />
+                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-100 active:bg-blue-200 transition-colors">
+                    <TotalReachIcon
+                      color="#6366F1"
+                      width={16}
+                      height={16}
+                      className="sm:w-5 sm:h-5"
+                    />
                   </div>
                 </HoverCardTrigger>
                 <HoverCardContent className="w-48 p-0" align="center">
@@ -520,7 +535,7 @@ const PRReportViewer = ({
               </HoverCard>
             </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Badge
               variant={report.status === "completed" ? "green" : "secondary"}
             >
