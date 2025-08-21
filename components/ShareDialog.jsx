@@ -130,8 +130,8 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
     <Dialog open={isOpen} onOpenChange={onClose} onClose={onClose}>
       <DialogContent
         className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] max-h-[90vh] h-auto overflow-hidden flex flex-col"
-        onPointerDownOutside={(e) => e.preventDefault()}
-        onInteractOutside={(e) => e.preventDefault()}
+        // onPointerDownOutside={(e) => e.preventDefault()}
+        // onInteractOutside={(e) => e.preventDefault()}
         showCloseButton={false}
         style={{
           position: "fixed",
