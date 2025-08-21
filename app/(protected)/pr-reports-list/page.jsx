@@ -80,10 +80,9 @@ export default function PRReportsList() {
 
     try {
       const params = {
-        q: searchQuery,
         page: currentPage,
-        limit: pageSize,
-        sort: `${sortField}:${sortOrder}`,
+        pageSize: pageSize,
+        // sort: `${sortField}:${sortOrder}`,
       };
 
       if (user) {
@@ -480,7 +479,9 @@ export default function PRReportsList() {
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4 mt-6">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-700">
-                Showing {pageSize} of {totalCount} results
+                Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)}
+                -{Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+                results
               </div>
               <div className="flex items-center space-x-2">
                 <button
