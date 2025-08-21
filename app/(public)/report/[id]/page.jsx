@@ -254,7 +254,9 @@ export default function ReportPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       required
                       disabled={verifying}
-                      className={verifying ? "opacity-50" : ""}
+                      className={`${
+                        verifying ? "opacity-50" : ""
+                      } focus:border-gray-300`}
                     />
                   </div>
                   <Button

@@ -557,165 +557,174 @@ const PRReportViewer = ({
             <CardTitle>
               PR Report : Media Outlets ({filteredOutlets.length})
             </CardTitle>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
               {isShowButton && (
-                <div className="flex items-center gap-3">
-                  <div className="flex items-center gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleDownload("csv")}
-                      className="flex items-center gap-2"
-                    >
-                      <Download className="h-4 w-4" />
-                      Download CSV
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setShowShareDialog(true)}
-                      className="flex items-center gap-2"
-                    >
-                      <Share2 className="h-4 w-4" />
-                      Share Report
-                    </Button>
-                  </div>
+                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleDownload("csv")}
+                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                  >
+                    <Download className="h-4 w-4" />
+                    Download CSV
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowShareDialog(true)}
+                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    Share Report
+                  </Button>
                 </div>
               )}
-              <div className="flex items-center gap-2 ml-4">
-                <Search className="h-4 w-4 text-muted-foreground" />
-                <Input
-                  placeholder="Search outlets..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="max-w-sm"
-                />
+              <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
+                <div className="relative flex-1 sm:flex-none">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    placeholder="Search outlets..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="pl-10 w-full sm:w-64 lg:w-80 focus:border-gray-300"
+                  />
+                </div>
               </div>
             </div>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="rounded-md border">
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Outlet</TableHead>
-                  <TableHead>Website</TableHead>
-                  <TableHead>Published URL</TableHead>
-                  <TableHead className="text-right">Potential Reach</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredOutlets.map((outlet, index) => (
-                  <TableRow key={index} className="bg-white ">
-                    <TableCell className="flex items-center gap-3 h-[72px]">
-                      {/* Logo Display Logic */}
-                      {(() => {
-                        const logoUrl = getLogoUrl(outlet.website_name);
-                        const hasValidLogo =
-                          logoUrl &&
-                          isValidLogoUrl(logoUrl) &&
-                          !isImageError(outlet.website_name);
-                        const isLoading = isImageLoading(outlet.website_name);
-
-                        if (isLoading) {
-                          // Show skeleton while loading
-                          return (
-                            <div className="w-[137px] h-[38px] flex items-center justify-center">
-                              <Skeleton className="w-full h-full" />
-                            </div>
-                          );
-                        }
-
-                        if (hasValidLogo) {
-                          // Show logo image with error handling
-                          return (
-                            <div className="w-[137px] h-[38px] flex items-center justify-center">
-                              <Image
-                                src={logoUrl}
-                                alt={outlet.website_name}
-                                className="max-w-[137px] max-h-[38px] object-contain"
-                                onLoadStart={() =>
-                                  handleImageStartLoad(outlet.website_name)
-                                }
-                                onLoad={() =>
-                                  handleImageLoad(outlet.website_name)
-                                }
-                                onError={() =>
-                                  handleImageError(outlet.website_name)
-                                }
-                                loading="lazy"
-                                height={38}
-                                width={137}
-                                // Add error handling for missing images
-                                onErrorCapture={() =>
-                                  handleImageError(outlet.website_name)
-                                }
-                              />
-                            </div>
-                          );
-                        }
-
-                        // Show circular first character fallback (always available)
-                        const firstChar = outlet.website_name
-                          .charAt(0)
-                          .toUpperCase();
-                        const colorClasses = [
-                          "text-blue-700 border-blue-300 bg-blue-50",
-                          "text-green-700 border-green-300 bg-green-50",
-                          "text-purple-700 border-purple-300 bg-purple-50",
-                          "text-orange-700 border-orange-300 bg-orange-50",
-                          "text-red-700 border-red-300 bg-red-50",
-                          "text-indigo-700 border-indigo-300 bg-indigo-50",
-                        ];
-                        const colorClass =
-                          colorClasses[index % colorClasses.length];
-
-                        return (
-                          <div className="w-[137px] h-[38px] flex items-center justify-center">
-                            <div
-                              className={`w-[38px] h-[38px] rounded-full flex items-center justify-center border-2 text-lg font-bold tracking-wide ${colorClass}`}
-                              style={{
-                                borderRadius: "50%",
-                                aspectRatio: "1 / 1",
-                                width: "38px",
-                                height: "38px",
-                                textAlign: "center",
-                                display: "flex",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                border: "1px solid currentColor",
-                              }}
-                            >
-                              {firstChar}
-                            </div>
-                          </div>
-                        );
-                      })()}
-                    </TableCell>
-                    <TableCell className="text-muted-foreground">
-                      {outlet.website_name}
-                    </TableCell>
-                    <TableCell>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-auto p-0 text-primary hover:underline"
-                        onClick={() =>
-                          window.open(outlet.published_url, "_blank")
-                        }
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        View Article
-                      </Button>
-                    </TableCell>
-                    <TableCell className="text-right font-medium">
-                      {formatNumber(outlet.potential_reach)}
-                    </TableCell>
+          <div className="rounded-md border overflow-hidden">
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead className="min-w-[150px]">Outlet</TableHead>
+                    <TableHead className="min-w-[200px]">Website</TableHead>
+                    <TableHead className="min-w-[250px]">
+                      Published URL
+                    </TableHead>
+                    <TableHead className="text-right min-w-[120px]">
+                      Potential Reach
+                    </TableHead>
                   </TableRow>
-                ))}
-              </TableBody>
-            </Table>
+                </TableHeader>
+                <TableBody>
+                  {filteredOutlets.map((outlet, index) => (
+                    <TableRow key={index} className="bg-white">
+                      <TableCell className="flex items-center gap-3 h-[72px] min-w-[150px]">
+                        {/* Logo Display Logic */}
+                        {(() => {
+                          const logoUrl = getLogoUrl(outlet.website_name);
+                          const hasValidLogo =
+                            logoUrl &&
+                            isValidLogoUrl(logoUrl) &&
+                            !isImageError(outlet.website_name);
+                          const isLoading = isImageLoading(outlet.website_name);
+
+                          if (isLoading) {
+                            // Show skeleton while loading
+                            return (
+                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                <Skeleton className="w-full h-full" />
+                              </div>
+                            );
+                          }
+
+                          if (hasValidLogo) {
+                            // Show logo image with error handling
+                            return (
+                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                <Image
+                                  src={logoUrl}
+                                  alt={outlet.website_name}
+                                  className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain"
+                                  onLoadStart={() =>
+                                    handleImageStartLoad(outlet.website_name)
+                                  }
+                                  onLoad={() =>
+                                    handleImageLoad(outlet.website_name)
+                                  }
+                                  onError={() =>
+                                    handleImageError(outlet.website_name)
+                                  }
+                                  loading="lazy"
+                                  height={38}
+                                  width={137}
+                                  // Add error handling for missing images
+                                  onErrorCapture={() =>
+                                    handleImageError(outlet.website_name)
+                                  }
+                                />
+                              </div>
+                            );
+                          }
+
+                          // Show circular first character fallback (always available)
+                          const firstChar = outlet.website_name
+                            .charAt(0)
+                            .toUpperCase();
+                          const colorClasses = [
+                            "text-blue-700 border-blue-300 bg-blue-50",
+                            "text-green-700 border-green-300 bg-green-50",
+                            "text-purple-700 border-purple-300 bg-purple-50",
+                            "text-orange-700 border-orange-300 bg-orange-50",
+                            "text-red-700 border-red-300 bg-red-50",
+                            "text-indigo-700 border-indigo-300 bg-indigo-50",
+                          ];
+                          const colorClass =
+                            colorClasses[index % colorClasses.length];
+
+                          return (
+                            <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                              <div
+                                className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
+                                style={{
+                                  borderRadius: "50%",
+                                  aspectRatio: "1 / 1",
+                                  textAlign: "center",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  border: "1px solid currentColor",
+                                }}
+                              >
+                                {firstChar}
+                              </div>
+                            </div>
+                          );
+                        })()}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground min-w-[200px]">
+                        <div
+                          className="max-w-[180px] truncate"
+                          title={outlet.website_name}
+                        >
+                          {outlet.website_name}
+                        </div>
+                      </TableCell>
+                      <TableCell className="min-w-[250px]">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="h-auto p-0 text-primary hover:underline text-left"
+                          onClick={() =>
+                            window.open(outlet.published_url, "_blank")
+                          }
+                        >
+                          <ExternalLink className="h-3 w-3 mr-1 flex-shrink-0" />
+                          <span className="truncate">View Article</span>
+                        </Button>
+                      </TableCell>
+                      <TableCell className="text-right font-medium min-w-[120px]">
+                        {formatNumber(outlet.potential_reach)}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
           </div>
 
           {filteredOutlets.length === 0 && searchTerm && (
