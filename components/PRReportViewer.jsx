@@ -39,12 +39,11 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card.jsx";
 import { jsPDF } from "jspdf";
-import { logoMap, logoMapping } from "@/utils/logoMapping";
+import { logoMap, logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
-import ShareDialog from "./ShareDialog";
 
 const PRReportViewer = ({
   report,
@@ -188,7 +187,10 @@ const PRReportViewer = ({
     doc.setFontSize(14);
     doc.text("Media Outlets:", 20, 90);
 
-    if (report.outlets && report.outlets.length > 0) {
+    // Use formatData for consistent ordering in PDF (same order as displayed in UI)
+    const outletsToUse = formatData || report.outlets || [];
+
+    if (outletsToUse.length > 0) {
       // Table headers
       const headers = ["Outlet", "Website", "Published URL", "Potential Reach"];
       const columnWidths = [40, 40, 60, 35];
@@ -214,7 +216,7 @@ const PRReportViewer = ({
       doc.setFont("helvetica", "normal");
       doc.setFontSize(8);
 
-      report.outlets.forEach((outlet, index) => {
+      outletsToUse.forEach((outlet, index) => {
         // Check if we need a new page
         if (startY > 250) {
           doc.addPage();
@@ -279,13 +281,14 @@ const PRReportViewer = ({
 
   const generateCSVContent = (report) => {
     const headers = ["Outlet", "Website", "Published URL", "Potential Reach"];
-    const rows =
-      report.outlets?.map((outlet) => [
-        outlet.website_name,
-        outlet.website_name,
-        outlet.published_url,
-        outlet.potential_reach || 0,
-      ]) || [];
+    // Use formatData for consistent ordering in CSV (same order as displayed in UI)
+    const outletsToUse = formatData || report.outlets || [];
+    const rows = outletsToUse.map((outlet) => [
+      outlet.website_name,
+      outlet.website_name,
+      outlet.published_url,
+      outlet.potential_reach || 0,
+    ]);
 
     const csvContent = [
       headers.join(","),
@@ -315,17 +318,59 @@ const PRReportViewer = ({
     URL.revokeObjectURL(url);
   };
 
-  // Simple filtered outlets without useMemo to prevent performance issues
-  const filteredOutlets =
-    report?.outlets?.filter(
-      (outlet) =>
-        outlet.website_name
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase()) ||
-        outlet.published_url
-          .toLowerCase()
-          .includes(debouncedSearchTerm.toLowerCase())
-    ) || [];
+  // Format and order outlets according to orderMapping
+  // This ensures that outlets are displayed in the predefined order from orderMapping
+  // Expected order: Business Insider, YahooFinance, The Globe and Mail, Benzinga, Marketwatch, etc.
+  // Outlets not in orderMapping will appear at the end of the list
+  const formatData = useMemo(() => {
+    if (!report?.outlets) return [];
+
+    // Create a map from website_name to its order index, if present in orderMapping
+    const orderIndex = Object.entries(orderMapping).reduce(
+      (acc, [key, value], idx) => {
+        acc[value] = idx;
+        return acc;
+      },
+      {}
+    );
+
+    // Map and format the outlets
+    const formatted = report.outlets.map((outlet) => ({
+      ...outlet,
+      original_website_name: outlet.website_name, // Preserve original for logo mapping
+      website_name:
+        orderMapping[outlet.website_name] || outlet.website_name || "Unknown",
+    }));
+
+    // Sort by orderMapping order if present, otherwise keep at the end
+    const sorted = formatted.sort((a, b) => {
+      const aIdx = orderIndex[a.website_name];
+      const bIdx = orderIndex[b.website_name];
+      if (aIdx === undefined && bIdx === undefined) return 0;
+      if (aIdx === undefined) return 1;
+      if (bIdx === undefined) return -1;
+      return aIdx - bIdx;
+    });
+
+    return sorted;
+  }, [report]);
+
+  // Filter the formatted and ordered outlets based on search term
+  // Search works against both formatted names and original names for better user experience
+  const filteredOutlets = useMemo(() => {
+    if (!formatData || formatData.length === 0) return [];
+
+    return formatData.filter((outlet) => {
+      const searchLower = debouncedSearchTerm.toLowerCase();
+      return (
+        outlet.website_name.toLowerCase().includes(searchLower) ||
+        outlet.published_url.toLowerCase().includes(searchLower) ||
+        // Also search against the original website_name if it exists
+        (outlet.original_website_name &&
+          outlet.original_website_name.toLowerCase().includes(searchLower))
+      );
+    });
+  }, [formatData, debouncedSearchTerm]);
 
   const formatNumber = (num) => {
     // Handle undefined, null, or invalid numbers
@@ -616,12 +661,19 @@ const PRReportViewer = ({
                       <TableCell className="flex items-center gap-3 h-[72px] min-w-[150px]">
                         {/* Logo Display Logic */}
                         {(() => {
-                          const logoUrl = getLogoUrl(outlet.website_name);
+                          const logoUrl = getLogoUrl(
+                            outlet.original_website_name || outlet.website_name
+                          );
                           const hasValidLogo =
                             logoUrl &&
                             isValidLogoUrl(logoUrl) &&
-                            !isImageError(outlet.website_name);
-                          const isLoading = isImageLoading(outlet.website_name);
+                            !isImageError(
+                              outlet.original_website_name ||
+                                outlet.website_name
+                            );
+                          const isLoading = isImageLoading(
+                            outlet.original_website_name || outlet.website_name
+                          );
 
                           if (isLoading) {
                             // Show skeleton while loading
@@ -639,22 +691,35 @@ const PRReportViewer = ({
                                 <Image
                                   src={logoUrl}
                                   alt={outlet.website_name}
+                                  title={outlet.website_name}
                                   className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain"
                                   onLoadStart={() =>
-                                    handleImageStartLoad(outlet.website_name)
+                                    handleImageStartLoad(
+                                      outlet.original_website_name ||
+                                        outlet.website_name
+                                    )
                                   }
                                   onLoad={() =>
-                                    handleImageLoad(outlet.website_name)
+                                    handleImageLoad(
+                                      outlet.original_website_name ||
+                                        outlet.website_name
+                                    )
                                   }
                                   onError={() =>
-                                    handleImageError(outlet.website_name)
+                                    handleImageError(
+                                      outlet.original_website_name ||
+                                        outlet.website_name
+                                    )
                                   }
                                   loading="lazy"
                                   height={38}
                                   width={137}
                                   // Add error handling for missing images
                                   onErrorCapture={() =>
-                                    handleImageError(outlet.website_name)
+                                    handleImageError(
+                                      outlet.original_website_name ||
+                                        outlet.website_name
+                                    )
                                   }
                                 />
                               </div>

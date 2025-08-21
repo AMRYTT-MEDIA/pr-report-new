@@ -74,7 +74,6 @@ export const AuthProvider = ({ children }) => {
             error.message?.includes("token")
           ) {
             try {
-              console.log("Token expired, refreshing and retrying...");
               const freshToken = await tokenManager.forceRefresh();
               setToken(freshToken);
 

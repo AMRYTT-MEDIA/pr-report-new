@@ -88,7 +88,6 @@ export default function ReportPage() {
         userEmail
       );
 
-      console.log(response);
       if (response.success) {
         // Transform the API response to match the component's expected structure
         const transformedData = {
