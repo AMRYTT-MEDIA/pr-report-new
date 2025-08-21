@@ -39,7 +39,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card.jsx";
 import { jsPDF } from "jspdf";
-import { logoMap } from "@/utils/logoMapping";
+import { logoMap, logoMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
@@ -100,7 +100,7 @@ const PRReportViewer = ({
   // Optimized logo lookup to prevent lag
   const getLogoUrl = (outletName) => {
     // Check if we have a logo for this outlet
-    const logoPath = logoMap[outletName];
+    const logoPath = logoMapping[outletName];
     if (logoPath) {
       // Only return the path if it's a valid format and likely exists
       if (logoPath.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
