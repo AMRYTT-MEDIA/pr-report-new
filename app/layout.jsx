@@ -2,7 +2,7 @@ import "./globals.css";
 import { Inter } from "next/font/google";
 import { Toaster } from "@/components/ui/sonner";
 import { AuthProvider } from "@/lib/auth";
-import LayoutWrapper from "../components/LayoutWrapper";
+import tokenManager from "@/lib/tokenManager";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -12,11 +12,16 @@ export const metadata = {
 };
 
 export default function RootLayout({ children }) {
+  // Initialize global token management
+  if (typeof window !== "undefined") {
+    tokenManager.initializeTokenManager().catch(console.error);
+  }
+
   return (
     <html lang="en">
       <body className={inter.className}>
         <AuthProvider>
-          <LayoutWrapper>{children}</LayoutWrapper>
+          {children}
           <Toaster />
         </AuthProvider>
       </body>

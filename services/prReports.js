@@ -1,10 +1,4 @@
-import {
-  apiDelete,
-  apiGet,
-  apiPost,
-  apiPostFormData,
-  apiPut,
-} from "../lib/api";
+import { apiDelete, apiGet, apiPost, apiPostFormData, apiPut } from "@/lib/api";
 
 // PR Reports API service
 export const prReportsService = {
@@ -20,12 +14,11 @@ export const prReportsService = {
 
   // Get PR reports list with pagination, search, and sorting
   getReports: async (params = {}) => {
-    const { q = "", page = 1, limit = 10, sort = "createdAt:desc" } = params;
+    const { page = 1, pageSize = 10 } = params;
     return await apiGet("/pr-distributions/getPRReportGroups", {
-      q,
       page,
-      limit,
-      sort,
+      pageSize,
+      // sort,
     });
   },
 
