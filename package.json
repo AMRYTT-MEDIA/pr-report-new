@@ -6,6 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
+    "build:staging": "cross-env ENV=staging next build",
     "lint": "next lint",
     "deploy": "node deploy.js --env=live",
     "deploy:staging": "node deploy.js --env=staging",

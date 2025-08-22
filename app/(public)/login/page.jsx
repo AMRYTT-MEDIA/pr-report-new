@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import Image from "next/image";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 function LoginForm() {
   const [email, setEmail] = useState("");
@@ -132,7 +133,13 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div>Loading...</div>}>
+    <Suspense
+      fallback={
+        <div>
+          <LoadingSpinner />
+        </div>
+      }
+    >
       <LoginForm />
     </Suspense>
   );

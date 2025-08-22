@@ -25,7 +25,7 @@ const CONFIG = {
     BUILD_CMD: "npm run build",
   },
   staging: {
-    REMOTE_DIR: "/home/gplprpt/records-tool-staging",
+    REMOTE_DIR: "/home/gplprpt/guestpostlinks-pr-report-staging",
     TAR_NAME: "deploy-staging.tar.gz",
     PM2_CONFIG: "ecosystem.staging.config.js",
     ENV_FILE: ".env.staging",
