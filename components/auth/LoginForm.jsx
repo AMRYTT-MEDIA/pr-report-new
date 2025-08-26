@@ -14,9 +14,16 @@ import {
 } from "@/components/ui/card";
 import { toast } from "sonner";
 import Image from "next/image";
-import LoadingSpinner from "@/components/LoadingSpinner";
+import Loading from "@/components/ui/loading";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
+import {
+  EmailIcon,
+  LockIcon,
+  EyeCloseIcon,
+  EyeOpenIcon,
+  ArrowRightIcon,
+} from "@/components/icon";
 
 const LoginForm = () => {
   const [email, setEmail] = useState("");
@@ -24,6 +31,7 @@ const LoginForm = () => {
   const [loading, setLoading] = useState(false);
   const [isIntentionalLogin, setIsIntentionalLogin] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { login, user } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -52,23 +60,26 @@ const LoginForm = () => {
   const handleSubmit = async (e) => {
     if (!isVerified) return;
     e.preventDefault();
+
+    // Prevent multiple submissions
+    if (loading) return;
+
     setLoading(true);
     setIsIntentionalLogin(true); // Mark this as an intentional login attempt
 
     try {
       const result = await login(email, password);
       if (result.success) {
-        // The useEffect will handle the success toast and redirect
-        // Don't show toast here to avoid duplicate messages
+        // Keep loading true until navigation happens
       } else {
         setIsIntentionalLogin(false); // Reset flag on failure
+        setLoading(false); // Re-enable button on failure
         toast.error(result.error || "Login failed");
       }
     } catch (error) {
       setIsIntentionalLogin(false); // Reset flag on error
+      setLoading(false); // Re-enable button on error
       toast.error("An unexpected error occurred");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -98,29 +109,52 @@ const LoginForm = () => {
               <label htmlFor="email" className="text-sm font-medium">
                 Email
               </label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <EmailIcon height={14} width={17} />
+                </div>
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="example@gmail.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pl-10"
+                />
+              </div>
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
                 Password
               </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={loading}
-              />
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                  <LockIcon height={20} width={20} color="#667085" />
+                </div>
+                <Input
+                  id="password"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={loading}
+                  className="pl-10 pr-10"
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                  onClick={() => setShowPassword(!showPassword)}
+                >
+                  {showPassword ? (
+                    <EyeCloseIcon className="h-5 w-5 text-gray-500" />
+                  ) : (
+                    <EyeOpenIcon className="h-5 w-5 text-gray-500" />
+                  )}
+                </button>
+              </div>
               <div className="flex justify-end">
                 <Link
                   href="/forget-password"
@@ -147,17 +181,26 @@ const LoginForm = () => {
             </div>
             <Button
               type="submit"
-              className="w-full border-radius-lg"
+              className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={loading || !isVerified}
             >
-              {loading ? "Signing in..." : "Sign In"}
+              {loading ? (
+                <div className="flex items-center justify-center gap-2">
+                  <Loading
+                    size="sm"
+                    color="white"
+                    showText={true}
+                    text="Signing in..."
+                  />
+                </div>
+              ) : (
+                <>
+                  Sign In
+                  <ArrowRightIcon className="h-5 w-5 text-white" />
+                </>
+              )}
             </Button>
           </form>
-
-          {/* <div className="mt-6 text-center text-sm text-muted-foreground">
-              <p>Only authorized users can access this system.</p>
-              <p>Contact your administrator for access.</p>
-            </div> */}
         </CardContent>
       </Card>
     </div>

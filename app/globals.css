@@ -476,6 +476,7 @@
   
   .text-brand-scale { color: var(--color-primary) !important; }
   .text-brand-scale-60 { color: var(--color-primary-60) !important; }
+  .text-brand-scale-70 { color: var(--color-primary-70) !important; }
 
   /* Semantic color utilities - Core shades only */
   .bg-success-scale { background-color: var(--color-success) !important; }

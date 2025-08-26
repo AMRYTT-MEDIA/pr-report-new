@@ -2,6 +2,7 @@
 import React, { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./auth";
+import Loading from "@/components/ui/loading";
 
 export function Guard({ mode, children }) {
   const { user, loading } = useAuth();
@@ -33,7 +34,7 @@ export function Guard({ mode, children }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-spin rounded-full border-b-2 border-purple-600 h-12 w-12"></div>
+        <Loading size="lg" color="purple" />
       </div>
     );
   }
