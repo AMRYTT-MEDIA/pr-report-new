@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   Card,
   CardContent,
@@ -58,7 +58,7 @@ const PRReportViewer = ({
   const [showShareDialog, setShowShareDialog] = useState(false);
 
   // Debounce search term to prevent excessive filtering
-  React.useEffect(() => {
+  useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearchTerm(searchTerm);
     }, 300);
@@ -102,7 +102,7 @@ const PRReportViewer = ({
     const logoPath = logoMapping[outletName];
     if (logoPath) {
       // Only return the path if it's a valid format and likely exists
-      if (logoPath.match(/\.(png|jpg|jpeg|gif|svg)$/i)) {
+      if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
         return logoPath;
       }
       // Silently skip invalid logo formats
@@ -116,7 +116,7 @@ const PRReportViewer = ({
     if (!url) return false;
 
     // Check if it's a valid image format
-    if (!url.match(/\.(png|jpg|jpeg|gif|svg)$/i)) return false;
+    if (!url.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) return false;
 
     // Check if it's a relative path (starts with /)
     if (!url.startsWith("/")) return false;
