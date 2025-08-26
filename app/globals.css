@@ -1,8 +1,14 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -27,6 +33,7 @@
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --shadow-elegant: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    --shadow-login-card: 0 0 0 8px rgba(255, 255, 255, 0.25), 0 990px 277px 0 rgba(0, 0, 0, 0.00), 0 634px 253px 0 rgba(0, 0, 0, 0.01), 0 356px 214px 0 rgba(0, 0, 0, 0.05), 0 158px 158px 0 rgba(0, 0, 0, 0.09), 0 40px 87px 0 rgba(0, 0, 0, 0.10);
     --pr-green: 142.1 76.2% 36.3%;
     --pr-green-foreground: 355.7 100% 97.3%;
     --sidebar-background: 0 0% 100%;
@@ -37,6 +44,184 @@
     --sidebar-accent-foreground: 222.2 84% 4.9%;
     --sidebar-border: 214.3 31.8% 91.4%;
     --sidebar-ring: 221.2 83.2% 53.3%;
+
+    /* Tailwind 4 Color System */
+    /* Gray scale */
+    --color-gray-0: #ffffff;
+    --color-gray-5: #f8fafc;
+    --color-gray-10: #f1f5f9;
+    --color-gray-20: #e2e8f0;
+    --color-gray-30: #cbd5e1;
+    --color-gray-40: #cbd5e1;
+    --color-gray-50: #64748b;
+    --color-gray-60: #475569;
+    --color-gray-70: #334155;
+    --color-gray-80: #1e293b;
+    --color-gray-90: #0f172a;
+    --color-gray-100: #000000;
+    --color-gray-secondary: #667085;
+
+    /* Core semantic colours */
+    --color-transparent: transparent;
+    --color-white: #ffffff;
+    --color-white-16: rgba(255, 255, 255, 0.16);
+    --color-white-32: rgba(255, 255, 255, 0.32);
+    --color-white-48: rgba(255, 255, 255, 0.48);
+    --color-white-64: rgba(255, 255, 255, 0.64);
+    --color-white-80: rgba(255, 255, 255, 0.8);
+    --color-black: #000000;
+    --color-black-16: rgba(0, 0, 0, 0.16);
+    --color-black-32: rgba(0, 0, 0, 0.32);
+    --color-black-48: rgba(0, 0, 0, 0.48);
+    --color-black-64: rgba(0, 0, 0, 0.64);
+    --color-black-80: rgba(0, 0, 0, 0.8);
+
+    /* Primary brand */
+    --color-primary: #6366f1;
+    --color-primary-5: #eef2ff;
+    --color-primary-10: #e0e7ff;
+    --color-primary-20: #c7d2fe;
+    --color-primary-30: #a5b4fc;
+    --color-primary-40: #818cf8;
+    --color-primary-50: #6366f1;
+    --color-primary-60: #4f46e5;
+    --color-primary-70: #4338ca;
+    --color-primary-80: #3730a3;
+    --color-primary-90: #312e81;
+
+    /* Secondary ramps */
+    --color-blue: #3b82f6;
+    --color-blue-5: #eff6ff;
+    --color-blue-10: #dbeafe;
+    --color-blue-20: #bfdbfe;
+    --color-blue-30: #93c5fd;
+    --color-blue-40: #60a5fa;
+    --color-blue-50: #3b82f6;
+    --color-blue-60: #2563eb;
+    --color-blue-70: #1d4ed8;
+    --color-blue-80: #1e40af;
+    --color-blue-90: #1e3a8a;
+
+    --color-cyan: #06b6d4;
+    --color-cyan-5: #ecfeff;
+    --color-cyan-10: #cffafe;
+    --color-cyan-20: #a5f3fc;
+    --color-cyan-30: #67e8f9;
+    --color-cyan-40: #22d3ee;
+    --color-cyan-50: #06b6d4;
+    --color-cyan-60: #0891b2;
+    --color-cyan-70: #0e7490;
+    --color-cyan-80: #155e75;
+    --color-cyan-90: #164e63;
+
+    --color-teal: #14b8a6;
+    --color-teal-5: #f0fdfa;
+    --color-teal-10: #ccfbf1;
+    --color-teal-20: #99f6e4;
+    --color-teal-30: #5eead4;
+    --color-teal-40: #2dd4bf;
+    --color-teal-50: #14b8a6;
+    --color-teal-60: #0d9488;
+    --color-teal-70: #0f766e;
+    --color-teal-80: #115e59;
+    --color-teal-90: #134e4a;
+
+    --color-lime: #84cc16;
+    --color-lime-5: #f7fee7;
+    --color-lime-10: #ecfccb;
+    --color-lime-20: #d9f99d;
+    --color-lime-30: #bef264;
+    --color-lime-40: #a3e635;
+    --color-lime-50: #84cc16;
+    --color-lime-60: #65a30d;
+    --color-lime-70: #4d7c0f;
+    --color-lime-80: #3f6212;
+    --color-lime-90: #365314;
+
+    --color-purple: #a855f7;
+    --color-purple-5: #0f1a1c;
+    --color-purple-10: #0f1a1c;
+    --color-purple-20: #0f1a1c;
+    --color-purple-30: #0f1a1c;
+    --color-purple-40: #0f1a1c;
+    --color-purple-50: #a855f7;
+    --color-purple-60: #9333ea;
+    --color-purple-70: #e2e8f0;
+    --color-purple-80: #6b21a8;
+    --color-purple-90: #581c87;
+
+    --color-pink: #ec4899;
+    --color-pink-5: #fdf2f8;
+    --color-pink-10: #fdf2f8;
+    --color-pink-20: #fbcfe8;
+    --color-pink-30: #f9a8d4;
+    --color-pink-40: #f472b6;
+    --color-pink-50: #ec4899;
+    --color-pink-60: #db2777;
+    --color-pink-70: #be185d;
+    --color-pink-80: #9d174d;
+    --color-pink-90: #831843;
+
+    --color-orange: #f97316;
+    --color-orange-5: #fff7ed;
+    --color-orange-10: #ffedd5;
+    --color-orange-20: #fed7aa;
+    --color-orange-30: #fdba74;
+    --color-orange-40: #fb923c;
+    --color-orange-50: #f97316;
+    --color-orange-60: #ea580c;
+    --color-orange-70: #c2410c;
+    --color-orange-80: #9a3412;
+    --color-orange-90: #7c2d12;
+
+    /* Semantic feedback */
+    --color-danger: #f43f5e;
+    --color-danger-5: #fff1f2;
+    --color-danger-10: #ffe4e6;
+    --color-danger-20: #fecdd3;
+    --color-danger-30: #fda4af;
+    --color-danger-40: #fb7185;
+    --color-danger-50: #f43f5e;
+    --color-danger-60: #e11d48;
+    --color-danger-70: #be123c;
+    --color-danger-80: #9f1239;
+    --color-danger-90: #881337;
+
+    --color-warning: #f59e0b;
+    --color-warning-5: #fffbeb;
+    --color-warning-10: #fef3c7;
+    --color-warning-20: #fde68a;
+    --color-warning-30: #fcd34d;
+    --color-warning-40: #fbbf24;
+    --color-warning-50: #f59e0b;
+    --color-warning-60: #d97706;
+    --color-warning-70: #b45309;
+    --color-warning-80: #92400e;
+    --color-warning-90: #78350f;
+
+    --color-success: #22c55e;
+    --color-success-5: #f0fdf4;
+    --color-success-10: #dcfce7;
+    --color-success-20: #bbf7d0;
+    --color-success-30: #86efac;
+    --color-success-40: #4ade80;
+    --color-success-50: #22c55e;
+    --color-success-60: #16a34a;
+    --color-success-70: #166534;
+    --color-success-80: #14532d;
+    --color-success-90: #14532d;
+
+    /* Typography scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.75rem;
+    --font-size-4xl: 2rem;
+    --font-size-5xl: 2.5rem;
+    --font-size-6xl: 3.75rem;
   }
 
   .dark {
@@ -220,6 +405,33 @@
   box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
+/* Custom font utilities */
+.font-inter {
+  font-family: 'Inter', system-ui, sans-serif;
+}
+
+/* Reset margins for card components */
+.card-title p,
+.card-description p {
+  margin: 0 !important;
+}
+
+/* Global paragraph margin reset for specific components */
+.card-title,
+.card-description {
+  margin: 0 !important;
+}
+
+.card-title p,
+.card-description p {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.shadow-login-card {
+  box-shadow: var(--shadow-login-card);
+}
+
 /* Custom color for PR green */
 .text-pr-green {
   color: #10b981;
@@ -231,4 +443,62 @@
 
 .border-pr-green {
   border-color: #10b981;
+}
+
+/* Tailwind 4 Color System Utilities - Essential Only */
+@layer utilities {
+  /* Gray scale utilities - Core shades only */
+  .bg-gray-scale-0 { background-color: var(--color-gray-0) !important; }
+  .bg-gray-scale-10 { background-color: var(--color-gray-10) !important; }
+  .bg-gray-scale-20 { background-color: var(--color-gray-20) !important; }
+  .bg-gray-scale-50 { background-color: var(--color-gray-50) !important; }
+  .bg-gray-scale-80 { background-color: var(--color-gray-80) !important; }
+  .bg-gray-scale-90 { background-color: var(--color-gray-90) !important; }
+  .bg-gray-scale-100 { background-color: var(--color-gray-100) !important; }
+  
+  .text-gray-scale-0 { color: var(--color-gray-0) !important; }
+  .text-gray-scale-10 { color: var(--color-gray-10) !important; }
+  .text-gray-scale-20 { color: var(--color-gray-20) !important; }
+  .text-gray-scale-50 { color: var(--color-gray-50) !important; }
+  .text-gray-scale-80 { color: var(--color-gray-80) !important; }
+  .text-gray-scale-90 { color: var(--color-gray-90) !important; }
+  .text-gray-scale-100 { color: var(--color-gray-100) !important; }
+  
+  .border-gray-scale-20 { border-color: var(--color-gray-20) !important; }
+  .border-gray-scale-50 { border-color: var(--color-gray-50) !important; }
+  .border-gray-scale-80 { border-color: var(--color-gray-80) !important; }
+
+  /* Brand color utilities - Core shades only */
+  .bg-brand-scale { background-color: var(--color-primary) !important; }
+  .bg-brand-scale-10 { background-color: var(--color-primary-10) !important; }
+  .bg-brand-scale-20 { background-color: var(--color-primary-20) !important; }
+  .bg-brand-scale-60 { background-color: var(--color-primary-60) !important; }
+  
+  .text-brand-scale { color: var(--color-primary) !important; }
+  .text-brand-scale-60 { color: var(--color-primary-60) !important; }
+
+  /* Semantic color utilities - Core shades only */
+  .bg-success-scale { background-color: var(--color-success) !important; }
+  .bg-success-scale-10 { background-color: var(--color-success-10) !important; }
+  .bg-success-scale-20 { background-color: var(--color-success-20) !important; }
+  .bg-success-scale-90 { background-color: var(--color-success-90) !important; }
+  
+  .text-success-scale { color: var(--color-success) !important; }
+  .text-success-scale-90 { color: var(--color-success-90) !important; }
+
+  .bg-warning-scale { background-color: var(--color-warning) !important; }
+  .bg-warning-scale-10 { background-color: var(--color-warning-10) !important; }
+  .bg-warning-scale-20 { background-color: var(--color-warning-20) !important; }
+  .bg-warning-scale-90 { background-color: var(--color-warning-90) !important; }
+  
+  .text-warning-scale { color: var(--color-warning) !important; }
+  .text-warning-scale-90 { color: var(--color-warning-90) !important; }
+
+  .bg-danger-scale { background-color: var(--color-danger) !important; }
+  .bg-danger-scale-10 { background-color: var(--color-danger-10) !important; }
+  .bg-danger-scale-20 { background-color: var(--color-danger-20) !important; }
+  .bg-danger-scale-90 { background-color: var(--color-danger-90) !important; }
+  
+  .text-danger-scale { color: var(--color-danger) !important; }
+  .text-danger-scale-90 { color: var(--color-danger-90) !important; }
 }
