@@ -778,7 +778,7 @@ const PRReportViewer = ({
                       </TableCell>
 
                       <TableCell className="text-right font-medium min-w-[120px]">
-                        {formatNumber(outlet.potential_reach)}
+                        {formatNumber(outlet?.semrush_traffic)}
                       </TableCell>
                     </TableRow>
                   ))}

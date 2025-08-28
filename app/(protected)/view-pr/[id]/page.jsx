@@ -54,6 +54,7 @@ export default function ViewPR() {
               website_name: item.recipient || "Unknown Outlet",
               published_url: item.url || "",
               potential_reach: item.potential_reach || 0,
+              semrush_traffic: item.semrush_traffic || 0,
             })),
             sharedEmails: response.sharedEmails || [],
           };
