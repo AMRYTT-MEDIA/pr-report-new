@@ -50,6 +50,7 @@ export default function ViewPR() {
             status: "completed",
             date_created: response.createdAt || new Date().toISOString(),
             visibility: "public",
+            total_semrush_traffic: response?.total_semrush_traffic || 0,
             outlets: (response.distribution_data || []).map((item) => ({
               website_name: item.recipient || "Unknown Outlet",
               published_url: item.url || "",
