@@ -44,6 +44,7 @@ import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
+import URLTableCell from "@/components/URLTableCell";
 
 const PRReportViewer = ({
   report,
@@ -646,10 +647,7 @@ const PRReportViewer = ({
                 <TableHeader>
                   <TableRow>
                     <TableHead className="min-w-[150px]">Outlet</TableHead>
-                    <TableHead className="min-w-[200px]">Website</TableHead>
-                    <TableHead className="min-w-[250px]">
-                      Published URL
-                    </TableHead>
+                    <TableHead className="min-w-[400px]">Website</TableHead>
                     <TableHead className="text-right min-w-[120px]">
                       Potential Reach
                     </TableHead>
@@ -761,27 +759,24 @@ const PRReportViewer = ({
                           );
                         })()}
                       </TableCell>
-                      <TableCell className="text-muted-foreground min-w-[200px]">
-                        <div
-                          className="max-w-[180px] truncate"
-                          title={outlet.website_name}
-                        >
-                          {outlet.website_name}
+                      <TableCell className="text-muted-foreground min-w-[400px]">
+                        <div>
+                          <div
+                            className="truncate max-w-[380px]"
+                            title={outlet.website_name}
+                          >
+                            {outlet.website_name}
+                          </div>
+                          <URLTableCell
+                            url={outlet.published_url}
+                            textMaxWidth="max-w-[650px]"
+                            textColor="text-blue-600"
+                            iconSize="h-4 w-4"
+                            iconColor="text-blue-600"
+                          />
                         </div>
                       </TableCell>
-                      <TableCell className="min-w-[250px]">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          className="h-auto p-0 text-primary hover:underline text-left"
-                          onClick={() =>
-                            window.open(outlet.published_url, "_blank")
-                          }
-                        >
-                          <ExternalLink className="h-3 w-3 mr-1 flex-shrink-0" />
-                          <span className="truncate">View Article</span>
-                        </Button>
-                      </TableCell>
+
                       <TableCell className="text-right font-medium min-w-[120px]">
                         {formatNumber(outlet.potential_reach)}
                       </TableCell>
