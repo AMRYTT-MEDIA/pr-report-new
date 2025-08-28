@@ -270,14 +270,13 @@ const PRReportViewer = ({
   };
 
   const generateCSVContent = (report) => {
-    const headers = ["Outlet", "Website", "Published URL", "Potential Reach"];
+    const headers = ["Website", "Published URL", "Potential Reach"];
     // Use formatData for consistent ordering in CSV (same order as displayed in UI)
     const outletsToUse = formatData || report.outlets || [];
     const rows = outletsToUse.map((outlet) => [
       outlet.website_name,
-      outlet.website_name,
       outlet.published_url,
-      outlet.potential_reach || 0,
+      outlet.semrush_traffic || 0,
     ]);
 
     const csvContent = [
