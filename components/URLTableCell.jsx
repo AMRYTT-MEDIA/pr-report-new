@@ -19,12 +19,17 @@ const URLTableCell = ({
   };
 
   return (
-    <div className={cn("flex items-center gap-1", className)}>
-      <div className={cn("truncate", textMaxWidth, textColor)}>{url}</div>
+    <div className={cn("flex items-start gap-1", className)}>
+      <div
+        onClick={handleClick}
+        className={cn("break-all cursor-pointer", textMaxWidth, textColor)}
+      >
+        {url}
+      </div>
       {showIcon && (
         <button
           onClick={handleClick}
-          className="flex-shrink-0 hover:bg-gray-100 rounded transition-colors"
+          className="flex-shrink-0 hover:bg-gray-100 rounded transition-colors mt-1"
           title="Open link in new tab"
         >
           <ExternalLink className={cn(iconColor, iconSize)} />
