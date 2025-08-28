@@ -10,6 +10,13 @@
   }
   
   :root {
+    /* Sidebar specific variables */
+    --border-radius-radius-full: 9999px;
+    --Gray-20: #E2E8F0;
+    --Gray-10: #F1F5F9;
+    --Gray-60: #475569;
+    --sidebar-background: #F8FAFC;
+    
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -36,7 +43,6 @@
     --shadow-login-card: 0 0 0 8px rgba(255, 255, 255, 0.25), 0 990px 277px 0 rgba(0, 0, 0, 0.00), 0 634px 253px 0 rgba(0, 0, 0, 0.01), 0 356px 214px 0 rgba(0, 0, 0, 0.05), 0 158px 158px 0 rgba(0, 0, 0, 0.09), 0 40px 87px 0 rgba(0, 0, 0, 0.10);
     --pr-green: 142.1 76.2% 36.3%;
     --pr-green-foreground: 355.7 100% 97.3%;
-    --sidebar-background: 0 0% 100%;
     --sidebar-foreground: 222.2 84% 4.9%;
     --sidebar-primary: 221.2 83.2% 53.3%;
     --sidebar-primary-foreground: 210 40% 98%;

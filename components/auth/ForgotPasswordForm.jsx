@@ -61,7 +61,6 @@ const ForgotPasswordForm = () => {
       // Email already checked, proceed directly to sending reset
       setLoading(true);
       try {
-        console.log("Email already verified, sending reset email:", email);
         await sendPasswordResetEmail(auth, email);
         toast.success("Password reset link has been sent to your email!");
         // Add a small delay to ensure toast is visible before state change
@@ -69,7 +68,6 @@ const ForgotPasswordForm = () => {
           setEmailSent(true);
         }, 500);
       } catch (error) {
-        console.error("Password reset error:", error);
         let errorMessage = "Failed to send password reset email";
 
         switch (error.code) {
@@ -102,7 +100,6 @@ const ForgotPasswordForm = () => {
 
       if (result.success) {
         // Email sent successfully, user exists
-        console.log("Reset email sent successfully to:", email);
         setCheckedEmails((prev) => new Set([...prev, email]));
         toast.success("Password reset link has been sent to your email!");
         setTimeout(() => {
@@ -110,7 +107,6 @@ const ForgotPasswordForm = () => {
         }, 500);
       } else if (!result.userExists) {
         // User doesn't exist
-        console.log("User not found in Firebase:", email);
         toast.error(
           "No account found with this email address. Please check your email or create a new account."
         );
@@ -120,7 +116,6 @@ const ForgotPasswordForm = () => {
         return;
       } else {
         // Other error occurred, but user might exist
-        console.log("Error occurred but user might exist:", result.error);
         toast.error(
           "Failed to send password reset email. Please try again later."
         );

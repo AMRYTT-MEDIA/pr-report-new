@@ -117,7 +117,7 @@ export default function ViewPR() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="flex items-center justify-center py-20">
         <div className="animate-spin rounded-full border-b-2 border-purple-600 h-12 w-12"></div>
       </div>
     );
@@ -125,14 +125,12 @@ export default function ViewPR() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto ">
-          <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-            <h2 className="text-lg font-medium text-red-800 mb-2">
-              Error Loading Report
-            </h2>
-            <p className="text-red-700">{error}</p>
-          </div>
+      <div>
+        <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
+          <h2 className="text-lg font-medium text-red-800 mb-2">
+            Error Loading Report
+          </h2>
+          <p className="text-red-700">{error}</p>
         </div>
       </div>
     );
@@ -140,22 +138,16 @@ export default function ViewPR() {
 
   return (
     <div>
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold tracking-tight">
-              View PR Report
-            </h1>
-            <p className="text-muted-foreground">
-              This is a shared press release distribution report
-            </p>
-          </div>
-
-          {/* Email Dialog for Private Reports */}
-
-          {report && <PRReportViewer report={report} isShowButton={true} />}
-        </div>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold tracking-tight">View PR Report</h1>
+        <p className="text-muted-foreground">
+          This is a shared press release distribution report
+        </p>
       </div>
+
+      {/* Email Dialog for Private Reports */}
+
+      {report && <PRReportViewer report={report} isShowButton={true} />}
     </div>
   );
 }
