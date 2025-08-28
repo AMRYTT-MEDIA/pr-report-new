@@ -9,6 +9,10 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata = {
   title: "GuestPostLinks PR Boost",
   description: "Professional PR distribution and reporting platform",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({ children }) {

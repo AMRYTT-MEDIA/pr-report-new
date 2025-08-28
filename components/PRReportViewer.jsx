@@ -38,13 +38,22 @@ import {
   HoverCardContent,
   HoverCardTrigger,
 } from "@/components/ui/hover-card.jsx";
-import { jsPDF } from "jspdf";
+import { pdf } from "@react-pdf/renderer";
 import { logoMap, logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
 import URLTableCell from "@/components/URLTableCell";
+import PRReportPDF from "./PRReportPDF";
+
+// PDF Loading Component
+const PDFLoadingComponent = () => (
+  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
+    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+    Pdf
+  </div>
+);
 
 const PRReportViewer = ({
   report,
@@ -57,6 +66,7 @@ const PRReportViewer = ({
   const [imageErrors, setImageErrors] = useState(new Set());
   const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
 
   // Debounce search term to prevent excessive filtering
   useEffect(() => {
@@ -141,154 +151,132 @@ const PRReportViewer = ({
     }
   };
 
-  const handleDownload = (format) => {
+  const handleDownload = async (format) => {
     if (format === "pdf") {
-      // Generate PDF content using jsPDF
-      const pdfBlob = generatePDFContent(report);
-      downloadFile(
-        pdfBlob,
-        `PR_Report_${report.id || "report"}.pdf`,
-        "application/pdf"
-      );
-      toast.success("PDF download started");
+      try {
+        setIsGeneratingPDF(true);
+
+        // Convert logo images to base64 for PDF generation
+        const outletsWithBase64Logos = await Promise.allSettled(
+          (formatData || report.outlets || []).map(async (outlet) => {
+            const outletName =
+              outlet.original_website_name || outlet.website_name;
+            const logoUrl = getLogoUrl(outletName);
+
+            if (logoUrl && isValidLogoUrl(logoUrl)) {
+              try {
+                const base64Logo = await convertImageToBase64(logoUrl);
+                return {
+                  ...outlet,
+                  base64Logo: base64Logo,
+                };
+              } catch (error) {
+                console.error(
+                  `Failed to convert logo for ${outletName}:`,
+                  error
+                );
+                // Return outlet without logo, will use fallback
+                return outlet;
+              }
+            } else {
+            }
+            return outlet;
+          })
+        );
+
+        // Extract successful results and handle failures
+        const processedOutlets = outletsWithBase64Logos.map((result, index) => {
+          if (result.status === "fulfilled") {
+            return result.value;
+          } else {
+            console.error(
+              `Failed to process outlet at index ${index}:`,
+              result.reason
+            );
+            // Return the original outlet data if processing failed
+            return (formatData || report.outlets || [])[index];
+          }
+        });
+
+        // Generate PDF using the new PRReportPDF component with base64 logos
+        const pdfBlob = await pdf(
+          <PRReportPDF report={report} formatData={processedOutlets} />
+        ).toBlob();
+
+        downloadFile(
+          pdfBlob,
+          `PR_Report_${report.id || "report"}.pdf`,
+          "application/pdf"
+        );
+        toast.success("PDF download started");
+      } catch (error) {
+        console.error("PDF generation failed:", error);
+        toast.error("PDF generation failed");
+      } finally {
+        setIsGeneratingPDF(false);
+      }
     } else if (format === "csv") {
       // Generate CSV content
       const csvContent = generateCSVContent(report);
-      downloadFile(
-        csvContent,
-        `PR_Report_${report.id || "report"}.csv`,
-        "text/csv"
-      );
+      downloadFile(csvContent, `PR_Report_${csvContent}.csv`, "text/csv");
       toast.success("CSV download started");
     }
   };
 
-  const generatePDFContent = (report) => {
-    // Create a new PDF document
-    const doc = new jsPDF();
+  // Function to convert image to base64 for PDF
+  const convertImageToBase64 = (imagePath) => {
+    return new Promise((resolve, reject) => {
+      try {
+        // Create a canvas element
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
 
-    // Set font and size
-    doc.setFont("helvetica");
-    doc.setFontSize(20);
+        // Create an image element using the browser's native Image constructor
+        const img = new window.Image();
+        img.crossOrigin = "anonymous";
 
-    // Add title
-    doc.text("PR Report", 20, 30);
+        // Add timeout to prevent hanging
+        const timeoutId = setTimeout(() => {
+          reject(new Error(`Image conversion timeout for: ${imagePath}`));
+        }, 10000); // 10 second timeout
 
-    // Add separator line
-    doc.setLineWidth(0.5);
-    doc.line(20, 35, 190, 35);
+        img.onload = () => {
+          try {
+            clearTimeout(timeoutId);
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
 
-    // Add report details
-    doc.setFontSize(12);
-    doc.text(`Total Publications: ${report.total_outlets || 0}`, 20, 50);
-    doc.text(`Total Reach: ${formatNumber(report.total_reach)}`, 20, 60);
-    doc.text(`Status: ${report.status}`, 20, 70);
+            // Convert to base64
+            const dataURL = canvas.toDataURL("image/png");
+            resolve(dataURL);
+          } catch (error) {
+            clearTimeout(timeoutId);
+            reject(error);
+          }
+        };
 
-    // Add media outlets table section
-    doc.setFontSize(14);
-    doc.text("Media Outlets:", 20, 90);
+        img.onerror = () => {
+          clearTimeout(timeoutId);
+          reject(new Error(`Failed to load image: ${imagePath}`));
+        };
 
-    // Use formatData for consistent ordering in PDF (same order as displayed in UI)
-    const outletsToUse = formatData || report.outlets || [];
-
-    if (outletsToUse.length > 0) {
-      // Table headers
-      const headers = ["Outlet", "Website", "Published URL", "Potential Reach"];
-      const columnWidths = [40, 40, 60, 35];
-      const startX = 20;
-      let startY = 110;
-
-      // Draw table headers
-      doc.setFontSize(10);
-      doc.setFont("helvetica", "bold");
-
-      let currentX = startX;
-      headers.forEach((header, index) => {
-        doc.text(header, currentX, startY);
-        currentX += columnWidths[index];
-      });
-
-      // Draw header separator line
-      startY += 5;
-      doc.line(startX, startY, startX + 175, startY);
-      startY += 10;
-
-      // Draw table rows
-      doc.setFont("helvetica", "normal");
-      doc.setFontSize(8);
-
-      outletsToUse.forEach((outlet, index) => {
-        // Check if we need a new page
-        if (startY > 250) {
-          doc.addPage();
-          startY = 20;
-
-          // Redraw headers on new page
-          doc.setFont("helvetica", "bold");
-          doc.setFontSize(10);
-          currentX = startX;
-          headers.forEach((header, headerIndex) => {
-            doc.text(header, currentX, startY);
-            currentX += columnWidths[headerIndex];
-          });
-          startY += 15;
-          doc.setFont("helvetica", "normal");
-          doc.setFontSize(8);
-        }
-
-        // Draw row data
-        currentX = startX;
-
-        // Outlet name (truncate if too long)
-        let outletName = outlet.website_name;
-        if (outletName.length > 20) {
-          outletName = outletName.substring(0, 17) + "...";
-        }
-        doc.text(outletName, currentX, startY);
-        currentX += columnWidths[0];
-
-        // Website name (truncate if too long)
-        let websiteName = outlet.website_name;
-        if (websiteName.length > 20) {
-          websiteName = websiteName.substring(0, 17) + "...";
-        }
-        doc.text(websiteName, currentX, startY);
-        currentX += columnWidths[1];
-
-        // Published URL (truncate if too long)
-        let url = outlet.published_url;
-        if (url.length > 30) {
-          url = url.substring(0, 27) + "...";
-        }
-        doc.text(url, currentX, startY);
-        currentX += columnWidths[2];
-
-        // Potential Reach
-        doc.text(formatNumber(outlet.potential_reach || 0), currentX, startY);
-
-        // Draw row separator line
-        startY += 5;
-        doc.line(startX, startY, startX + 175, startY);
-        startY += 10;
-      });
-    } else {
-      doc.setFontSize(10);
-      doc.text("No outlets available", 25, 110);
-    }
-
-    // Return the PDF as a blob
-    return doc.output("blob");
+        // Set the source
+        img.src = imagePath;
+      } catch (error) {
+        reject(error);
+      }
+    });
   };
 
   const generateCSVContent = (report) => {
-    const headers = ["Outlet", "Website", "Published URL", "Potential Reach"];
+    const headers = ["Website", "Published URL", "Potential Reach"];
     // Use formatData for consistent ordering in CSV (same order as displayed in UI)
     const outletsToUse = formatData || report.outlets || [];
     const rows = outletsToUse.map((outlet) => [
       outlet.website_name,
-      outlet.website_name,
       outlet.published_url,
-      outlet.potential_reach || 0,
+      outlet.semrush_traffic || 0,
     ]);
 
     const csvContent = [
@@ -535,7 +523,7 @@ const PRReportViewer = ({
           </CardHeader>
           <CardContent className="pt-0">
             <div className="text-xl sm:text-2xl font-bold">
-              {formatNumber(report.total_reach)}
+              {formatNumber(report.total_semrush_traffic)}
             </div>
             <p className="text-xs text-muted-foreground">Potential audience</p>
           </CardContent>
@@ -558,15 +546,24 @@ const PRReportViewer = ({
                     />
                   </div>
                 </HoverCardTrigger>
-                <HoverCardContent className="w-48 p-0" align="center">
+                <HoverCardContent className="w-32 p-0" align="center">
                   <div className="p-3">
                     <div className="space-y-1">
                       <button
                         onClick={() => handleDownload("pdf")}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2 transition-colors"
+                        disabled={isGeneratingPDF}
+                        className={`w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2 transition-colors ${
+                          isGeneratingPDF ? "opacity-50 cursor-not-allowed" : ""
+                        }`}
                       >
-                        <Download className="h-4 w-4" />
-                        PDF
+                        {isGeneratingPDF ? (
+                          <PDFLoadingComponent />
+                        ) : (
+                          <>
+                            <Download className="h-4 w-4" />
+                            PDF
+                          </>
+                        )}
                       </button>
                       <button
                         onClick={() => handleDownload("csv")}

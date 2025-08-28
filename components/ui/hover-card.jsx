@@ -45,8 +45,11 @@ const HoverCardTrigger = React.forwardRef(
       });
     }
 
+    // Filter out non-DOM props to avoid React warnings
+    const { openDelay: _, closeDelay: __, ...domProps } = props;
+
     return (
-      <div ref={ref} onClick={handleClick} {...props}>
+      <div ref={ref} onClick={handleClick} {...domProps}>
         {children}
       </div>
     );
@@ -55,7 +58,15 @@ const HoverCardTrigger = React.forwardRef(
 
 const HoverCardContent = React.forwardRef(
   (
-    { className, align = "center", sideOffset = 4, children, ...props },
+    {
+      className,
+      align = "center",
+      sideOffset = 4,
+      children,
+      openDelay,
+      closeDelay,
+      ...props
+    },
     ref
   ) => {
     const { open, setOpen } = useHoverCard();
