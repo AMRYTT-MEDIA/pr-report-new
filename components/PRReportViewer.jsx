@@ -31,6 +31,7 @@ import {
   BarChart3,
   Share2,
   Copy,
+  Shield,
 } from "lucide-react";
 import { toast } from "sonner";
 import {
@@ -46,6 +47,7 @@ import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
 import URLTableCell from "@/components/URLTableCell";
 import PRReportPDF from "./PRReportPDF";
+import TrustBadgeModal from "@/components/TrustBadgeModal";
 
 // PDF Loading Component
 const PDFLoadingComponent = () => (
@@ -67,6 +69,7 @@ const PRReportViewer = ({
   const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showTrustBadgeModal, setShowTrustBadgeModal] = useState(false);
 
   // Debounce search term to prevent excessive filtering
   useEffect(() => {
@@ -621,6 +624,15 @@ const PRReportViewer = ({
                     <Share2 className="h-4 w-4" />
                     Share Report
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowTrustBadgeModal(true)}
+                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
+                  >
+                    <Shield className="h-4 w-4" />
+                    Generate Trust Badge
+                  </Button>
                 </div>
               )}
               <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
@@ -651,134 +663,149 @@ const PRReportViewer = ({
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredOutlets.map((outlet, index) => (
-                    <TableRow key={index} className="bg-white">
-                      <TableCell className="flex items-center gap-3 h-[72px] min-w-[150px]">
-                        {/* Logo Display Logic */}
-                        {(() => {
-                          const logoUrl = getLogoUrl(
-                            outlet.original_website_name || outlet.website_name
-                          );
-                          const hasValidLogo =
-                            logoUrl &&
-                            isValidLogoUrl(logoUrl) &&
-                            !isImageError(
-                              outlet.original_website_name ||
-                                outlet.website_name
-                            );
-                          const isLoading = isImageLoading(
-                            outlet.original_website_name || outlet.website_name
-                          );
+                  {filteredOutlets.map((outlet, index) => {
+                    // Add unique ID for trust badge selection
+                    const outletWithId = {
+                      ...outlet,
+                      id:
+                        outlet.id ||
+                        `outlet_${index}_${outlet.website_name?.replace(
+                          /\s+/g,
+                          "_"
+                        )}`,
+                    };
 
-                          if (isLoading) {
-                            // Show skeleton while loading
+                    return (
+                      <TableRow key={index} className="bg-white">
+                        <TableCell className="flex items-center gap-3 h-[72px] min-w-[150px]">
+                          {/* Logo Display Logic */}
+                          {(() => {
+                            const logoUrl = getLogoUrl(
+                              outletWithId.original_website_name ||
+                                outletWithId.website_name
+                            );
+                            const hasValidLogo =
+                              logoUrl &&
+                              isValidLogoUrl(logoUrl) &&
+                              !isImageError(
+                                outletWithId.original_website_name ||
+                                  outletWithId.website_name
+                              );
+                            const isLoading = isImageLoading(
+                              outletWithId.original_website_name ||
+                                outletWithId.website_name
+                            );
+
+                            if (isLoading) {
+                              // Show skeleton while loading
+                              return (
+                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                  <Skeleton className="w-full h-full" />
+                                </div>
+                              );
+                            }
+
+                            if (hasValidLogo) {
+                              // Show logo image with error handling
+                              return (
+                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                  <Image
+                                    src={logoUrl}
+                                    alt={outletWithId.website_name}
+                                    title={outletWithId.website_name}
+                                    className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain"
+                                    onLoadStart={() =>
+                                      handleImageStartLoad(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    onLoad={() =>
+                                      handleImageLoad(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    onError={() =>
+                                      handleImageError(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    loading="lazy"
+                                    height={38}
+                                    width={137}
+                                    // Add error handling for missing images
+                                    onErrorCapture={() =>
+                                      handleImageError(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                  />
+                                </div>
+                              );
+                            }
+
+                            // Show circular first character fallback (always available)
+                            const firstChar = outletWithId.website_name
+                              .charAt(0)
+                              .toUpperCase();
+                            const colorClasses = [
+                              "text-blue-700 border-blue-300 bg-blue-50",
+                              "text-green-700 border-green-300 bg-green-50",
+                              "text-purple-700 border-purple-300 bg-purple-50",
+                              "text-orange-700 border-orange-300 bg-orange-50",
+                              "text-red-700 border-red-300 bg-red-50",
+                              "text-indigo-700 border-indigo-300 bg-indigo-50",
+                            ];
+                            const colorClass =
+                              colorClasses[index % colorClasses.length];
+
                             return (
                               <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                <Skeleton className="w-full h-full" />
+                                <div
+                                  className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
+                                  style={{
+                                    borderRadius: "50%",
+                                    aspectRatio: "1 / 1",
+                                    textAlign: "center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    border: "1px solid currentColor",
+                                  }}
+                                >
+                                  {firstChar}
+                                </div>
                               </div>
                             );
-                          }
-
-                          if (hasValidLogo) {
-                            // Show logo image with error handling
-                            return (
-                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                <Image
-                                  src={logoUrl}
-                                  alt={outlet.website_name}
-                                  title={outlet.website_name}
-                                  className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain"
-                                  onLoadStart={() =>
-                                    handleImageStartLoad(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  onLoad={() =>
-                                    handleImageLoad(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  onError={() =>
-                                    handleImageError(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  loading="lazy"
-                                  height={38}
-                                  width={137}
-                                  // Add error handling for missing images
-                                  onErrorCapture={() =>
-                                    handleImageError(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                />
-                              </div>
-                            );
-                          }
-
-                          // Show circular first character fallback (always available)
-                          const firstChar = outlet.website_name
-                            .charAt(0)
-                            .toUpperCase();
-                          const colorClasses = [
-                            "text-blue-700 border-blue-300 bg-blue-50",
-                            "text-green-700 border-green-300 bg-green-50",
-                            "text-purple-700 border-purple-300 bg-purple-50",
-                            "text-orange-700 border-orange-300 bg-orange-50",
-                            "text-red-700 border-red-300 bg-red-50",
-                            "text-indigo-700 border-indigo-300 bg-indigo-50",
-                          ];
-                          const colorClass =
-                            colorClasses[index % colorClasses.length];
-
-                          return (
-                            <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                              <div
-                                className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
-                                style={{
-                                  borderRadius: "50%",
-                                  aspectRatio: "1 / 1",
-                                  textAlign: "center",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "1px solid currentColor",
-                                }}
-                              >
-                                {firstChar}
-                              </div>
+                          })()}
+                        </TableCell>
+                        <TableCell className="text-muted-foreground min-w-[400px]">
+                          <div>
+                            <div
+                              className="truncate max-w-[380px]"
+                              title={outletWithId.website_name}
+                            >
+                              {outletWithId.website_name}
                             </div>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground min-w-[400px]">
-                        <div>
-                          <div
-                            className="truncate max-w-[380px]"
-                            title={outlet.website_name}
-                          >
-                            {outlet.website_name}
+                            <URLTableCell
+                              url={outletWithId.published_url}
+                              textMaxWidth="max-w-[650px]"
+                              textColor="text-blue-600"
+                              iconSize="h-4 w-4"
+                              iconColor="text-blue-600"
+                            />
                           </div>
-                          <URLTableCell
-                            url={outlet.published_url}
-                            textMaxWidth="max-w-[650px]"
-                            textColor="text-blue-600"
-                            iconSize="h-4 w-4"
-                            iconColor="text-blue-600"
-                          />
-                        </div>
-                      </TableCell>
+                        </TableCell>
 
-                      <TableCell className="text-right font-medium min-w-[120px]">
-                        {formatNumber(outlet?.semrush_traffic)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                        <TableCell className="text-right font-medium min-w-[120px]">
+                          {formatNumber(outletWithId?.semrush_traffic)}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             </div>
@@ -805,6 +832,20 @@ const PRReportViewer = ({
           onShare={handleShareReport}
         />
       )}
+
+      {/* Trust Badge Modal */}
+      <TrustBadgeModal
+        isOpen={showTrustBadgeModal}
+        onClose={() => setShowTrustBadgeModal(false)}
+        outlets={filteredOutlets.map((outlet, index) => ({
+          ...outlet,
+          id:
+            outlet.id ||
+            `outlet_${index}_${outlet.website_name?.replace(/\s+/g, "_")}`,
+        }))}
+        reportId={report?.id}
+        grid_id={report?.id}
+      />
     </div>
   );
 };

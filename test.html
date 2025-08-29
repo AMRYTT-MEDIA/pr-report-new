@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trust Badge Test - Both Versions</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f5;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 20px;
+    }
+    .badge {
+      display: inline-block;
+      padding: 12px 20px;
+      border-radius: 6px;
+      background: #10b981;
+      color: #fff;
+      font-weight: bold;
+      font-size: 16px;
+      margin-top: 10px;
+      box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+    }
+    .section {
+      margin-bottom: 40px;
+      padding: 20px;
+      border: 2px dashed #ddd;
+      border-radius: 8px;
+    }
+  </style>
+      </div>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>🔒 Trust Badge Test</h1>
+      <p>This demo shows both a dummy badge and the real script badge</p>
+    </div>
+
+    <!-- Dummy badge test -->
+    <div class="section">
+      <h3>1️⃣ Dummy Badge (always works)</h3>
+      <div id="dummy-badge-container">
+        <script>
+          console.log("✅ Dummy trust badge script is running...");
+          const badge = document.createElement("div");
+          badge.className = "badge";
+          badge.textContent = "✔ Verified & Secure (Dummy)";
+          document.currentScript.parentNode.appendChild(badge);
+        </script>
+      </div>
+      <p><em>Check Console → you should see a dummy script log.</em></p>
+    </div>
+
+    <!-- Real trust badge test -->
+    <div class="section">
+      <h3>2️⃣ Real Trust Badge (from your API)</h3>
+      <div id="real-badge-container">
+        <script src="https://h6bsbdjv-4000.inc1.devtunnels.ms/api/trust-badges/badge/badge_2ddce451-d515-4c95-bc36-c14a49e38ff4.js"></script>
+        <script src="https://h6bsbdjv-4000.inc1.devtunnels.ms/api/trust-badges/badge/badge_427f2f9e-cbb6-41f1-9108-288292e0ada0.js"></script>
+
+      </div>
+      <p><em>If the API is working, a real trust badge will appear here.</em></p>
+    </div>
+  </div>
+</body>
+</html>
