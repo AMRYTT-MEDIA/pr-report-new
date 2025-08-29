@@ -39,7 +39,7 @@ import {
   HoverCardTrigger,
 } from "@/components/ui/hover-card.jsx";
 import { pdf } from "@react-pdf/renderer";
-import { logoMap, logoMapping, orderMapping } from "@/utils/logoMapping";
+import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
