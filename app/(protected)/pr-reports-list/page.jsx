@@ -29,6 +29,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ImportIcon } from "@/components/icon";
+import Pagination from "@/components/Pagination";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -288,284 +290,310 @@ export default function PRReportsList() {
   }
 
   return (
-    <div>
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4 mb-4 sm:mb-0">
-            <h1 className="text-3xl font-bold text-gray-900">All PR Reports</h1>
-            <Badge variant="secondary" className="text-lg px-3 py-1">
-              {totalCount}
-            </Badge>
-          </div>
-          <Button
-            onClick={() => router.push("/pr-reports")}
-            className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 border-orange-500"
+    <div className="bg-gray-50 p-4">
+      <div className="mx-auto">
+        {/* Reports Table */}
+        {reports.length > 0 ? (
+          <div
+            className="bg-white shadow-sm border border-gray-200 overflow-hidden"
+            style={{ borderRadius: "10px" }}
           >
-            <Upload className="w-5 h-5 mr-2" />
-            Import
-          </Button>
-        </div>
-      </div>
-
-      {/* Reports Table */}
-      {reports.length > 0 ? (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50 w-full">
-                <tr className="w-full ">
-                  <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Full Name
-                  </th>
-                  <th className="flex flex-row justify-end pr-20 px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {reports.map((report) => (
-                  <tr
-                    key={report.grid_id || report._id}
-                    className="hover:bg-gray-50"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="flex-shrink-0">
-                          <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                            <FileText className="w-5 h-5 text-blue-600" />
-                          </div>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          {needsTruncation(report.report_title) ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-900 truncate cursor-help">
-                                    {formatTitle(report.report_title)}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                  side="top"
-                                  align="start"
-                                >
-                                  <div className="break-words">
-                                    {report?.report_title}
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          ) : (
-                            <p className="text-sm font-medium text-gray-900">
-                              {report?.report_title || "Untitled Report"}
-                            </p>
-                          )}
-                          <div className="flex items-center mt-1 text-sm text-gray-500">
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <div
-                                    className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${
-                                      report.is_private
-                                        ? "bg-red-100 text-red-800 border border-red-200"
-                                        : "bg-green-100 text-green-800 border border-green-200"
-                                    }`}
-                                  >
-                                    {report.is_private ? (
-                                      <Lock className="w-3 h-3 mr-1.5" />
-                                    ) : (
-                                      <Globe className="w-3 h-3 mr-1.5" />
-                                    )}
-                                    {report.is_private ? "Private" : "Public"}
-                                  </div>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                  side="top"
-                                  align="start"
-                                >
-                                  <div className="text-center">
-                                    <p className="font-medium mb-1">
-                                      {report.is_private
-                                        ? "🔒 Private Report"
-                                        : "🌐 Public Report"}
-                                    </p>
-                                    <p className="text-sm text-gray-300">
-                                      {report.is_private
-                                        ? "Only you and people you specifically share with can view this report."
-                                        : "Anyone with the link can view this report."}
-                                    </p>
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50 w-full">
+                  <tr className="w-full ">
+                    {/* Header */}
+                    <th className="px-6 py-4 w-full">
+                      <div className="flex items-center gap-2">
+                        <h1 className="text-xl font-bold text-gray-900">
+                          All PR Reports
+                        </h1>
+                        <div
+                          className="text-sm px-3 py-0.5 border border-[#4F46E5] rounded-full"
+                          style={{ color: "#4F46E5" }}
+                        >
+                          {totalCount}
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
-                      <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() =>
-                            router.push(
-                              `/view-pr/${report.grid_id || report._id}`
-                            )
-                          }
-                          className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
-                        >
-                          <Eye className="w-4 h-4" />
-                          View
-                        </button>
-                        <button
-                          onClick={() => openShareDialog(report)}
-                          className="text-green-600 hover:text-green-900 flex items-center gap-1"
-                        >
-                          <Share2 className="w-4 h-4" />
-                          Share
-                        </button>
-                        <button
-                          onClick={() => openDeleteDialog(report)}
-                          disabled={deleteLoading}
-                          className={`flex items-center gap-1 ${
-                            deleteLoading
-                              ? "text-gray-400 cursor-not-allowed"
-                              : "text-red-600 hover:text-red-900"
-                          }`}
-                        >
-                          {deleteLoading ? (
-                            <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
-                          ) : (
-                            <Trash2 className="w-4 h-4" />
-                          )}
-                          {deleteLoading ? "Deleting..." : "Delete"}
-                        </button>
-                      </div>
-                    </td>
+                    </th>
+                    <th className="px-6 py-4 w-full flex justify-end">
+                      <Button
+                        onClick={() => router.push("/pr-reports")}
+                        className="text-white px-6 py-3 flex items-center gap-2"
+                        style={{
+                          backgroundColor: "#4F46E5",
+                          borderRadius: "40px",
+                        }}
+                      >
+                        <ImportIcon color="#fff" width={20} height={20} />
+                        Import
+                      </Button>
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      ) : (
-        /* Empty State */
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-          <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-            <Upload className="w-8 h-8 text-gray-400" />
-          </div>
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            No reports yet
-          </h3>
-          <p className="text-gray-600 mb-6">
-            Get started by uploading your first CSV file to generate a PR
-            report.
-          </p>
-          <button
-            onClick={() => router.push("/pr-reports")}
-            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-          >
-            <Upload className="w-4 h-4 mr-2" />
-            Upload CSV
-          </button>
-        </div>
-      )}
-
-      {/* Pagination */}
-      {totalCount > pageSize && (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4 mt-6">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-gray-700">
-              Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)}-
-              {Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
-              results
+                </thead>
+                <thead className="bg-gray-50 w-full">
+                  <tr className="w-full ">
+                    <th className="px-6 py-4 text-left text-sm font-medium text-[#1E293B]">
+                      Full Name
+                    </th>
+                    <th className="flex flex-row justify-end pr-20 px-6 py-4 text-left text-sm font-medium text-[#1E293B]">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {reports.map((report) => (
+                    <tr
+                      key={report.grid_id || report._id}
+                      className="hover:bg-gray-50"
+                    >
+                      <td className="px-6 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="flex-shrink-0">
+                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                              <FileText className="w-5 h-5 text-blue-600" />
+                            </div>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            {needsTruncation(report.report_title) ? (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="text-sm font-medium text-gray-900 truncate cursor-help">
+                                      {formatTitle(report.report_title)}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    side="top"
+                                    align="start"
+                                  >
+                                    <div className="break-words">
+                                      {report?.report_title}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <p className="text-sm font-medium text-gray-900">
+                                {report?.report_title || "Untitled Report"}
+                              </p>
+                            )}
+                            <div className="flex items-center mt-1 text-sm text-gray-500">
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <div
+                                      className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${
+                                        report.is_private
+                                          ? "bg-red-100 text-red-800 border border-red-200"
+                                          : "bg-green-100 text-green-800 border border-green-200"
+                                      }`}
+                                    >
+                                      {report.is_private ? (
+                                        <Lock className="w-3 h-3 mr-1.5" />
+                                      ) : (
+                                        <Globe className="w-3 h-3 mr-1.5" />
+                                      )}
+                                      {report.is_private ? "Private" : "Public"}
+                                    </div>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    side="top"
+                                    align="start"
+                                  >
+                                    <div className="text-center">
+                                      <p className="font-medium mb-1">
+                                        {report.is_private
+                                          ? "🔒 Private Report"
+                                          : "🌐 Public Report"}
+                                      </p>
+                                      <p className="text-sm text-gray-300">
+                                        {report.is_private
+                                          ? "Only you and people you specifically share with can view this report."
+                                          : "Anyone with the link can view this report."}
+                                      </p>
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            </div>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
+                        <div className="flex gap-8 items-center">
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/view-pr/${report.grid_id || report._id}`
+                              )
+                            }
+                            className="text-[#475569] hover:text-[#475569]/80 flex items-center gap-1"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+                          <button
+                            onClick={() => openShareDialog(report)}
+                            className="text-[#475569] hover:text-[#475569]/80 flex items-center gap-1"
+                          >
+                            <Share2 className="w-4 h-4" />
+                            Share
+                          </button>
+                          <button
+                            onClick={() => openDeleteDialog(report)}
+                            disabled={deleteLoading}
+                            className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-[#E11D48] ${
+                              deleteLoading
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-[#E11D48] hover:text-[#E11D48]/80"
+                            }`}
+                          >
+                            {deleteLoading ? (
+                              <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                            {deleteLoading ? "Deleting..." : "Delete"}
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
-            <div className="flex items-center space-x-2">
-              <button
-                onClick={() => handlePageChange(currentPage - 1)}
-                disabled={currentPage === 1}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Previous
-              </button>
-              <span className="px-3 py-1 text-sm text-gray-700">
-                Page {currentPage} of {Math.ceil(totalCount / pageSize)}
-              </span>
-              <button
-                onClick={() => handlePageChange(currentPage + 1)}
-                disabled={currentPage >= Math.ceil(totalCount / pageSize)}
-                className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-              >
-                Next
-              </button>
-            </div>
+
+            {/* Pagination */}
+            <Pagination
+              totalItems={totalCount}
+              currentPage={currentPage}
+              rowsPerPage={pageSize}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handlePageSizeChange}
+            />
           </div>
-        </div>
-      )}
+        ) : (
+          /* Empty State */
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
+            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
+              <Upload className="w-8 h-8 text-gray-400" />
+            </div>
+            <h3 className="text-lg font-medium text-gray-900 mb-2">
+              No reports yet
+            </h3>
+            <p className="text-gray-600 mb-6">
+              Get started by uploading your first CSV file to generate a PR
+              report.
+            </p>
+            <button
+              onClick={() => router.push("/pr-reports")}
+              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Upload CSV
+            </button>
+          </div>
+        )}
 
-      {/* Share Dialog */}
-      <ShareDialog
-        isOpen={shareDialogOpen}
-        onClose={() => {
-          setShareDialogOpen(false);
-          setSelectedReport(null);
-        }}
-        report={selectedReport}
-        onShare={handleShareReport}
-      />
-
-      {/* Delete Confirmation Dialog */}
-      {deleteDialogOpen && reportToDelete && (
-        <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
-                <Trash2 className="w-5 h-5 text-red-600" />
+        {/* Pagination */}
+        {/* {totalCount > pageSize && (
+          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4 mt-6">
+            <div className="flex items-center justify-between">
+              <div className="text-sm text-gray-700">
+                Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)}
+                -{Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
+                results
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900">
-                  Delete Report
-                </h3>
-                <p className="text-sm text-gray-600">
-                  This action cannot be undone
+              <div className="flex items-center space-x-2">
+                <button
+                  onClick={() => handlePageChange(currentPage - 1)}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+                <span className="px-3 py-1 text-sm text-gray-700">
+                  Page {currentPage} of {Math.ceil(totalCount / pageSize)}
+                </span>
+                <button
+                  onClick={() => handlePageChange(currentPage + 1)}
+                  disabled={currentPage >= Math.ceil(totalCount / pageSize)}
+                  className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </div>
+        )} */}
+
+        {/* Share Dialog */}
+        <ShareDialog
+          isOpen={shareDialogOpen}
+          onClose={() => {
+            setShareDialogOpen(false);
+            setSelectedReport(null);
+          }}
+          report={selectedReport}
+          onShare={handleShareReport}
+        />
+
+        {/* Delete Confirmation Dialog */}
+        {deleteDialogOpen && reportToDelete && (
+          <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4">
+            <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                  <Trash2 className="w-5 h-5 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">
+                    Delete Report
+                  </h3>
+                  <p className="text-sm text-gray-600">
+                    This action cannot be undone
+                  </p>
+                </div>
+              </div>
+
+              <div className="mb-6">
+                <p className="text-sm text-gray-700 mb-2">
+                  Are you sure you want to delete this report?
                 </p>
+                <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
+                  <p className="text-sm font-medium text-gray-900">
+                    {reportToDelete.report_title || "Untitled Report"}
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <div className="mb-6">
-              <p className="text-sm text-gray-700 mb-2">
-                Are you sure you want to delete this report?
-              </p>
-              <div className="bg-gray-50 rounded-md p-3 border border-gray-200">
-                <p className="text-sm font-medium text-gray-900">
-                  {reportToDelete.report_title || "Untitled Report"}
-                </p>
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={closeDeleteDialog}
+                  disabled={deleteLoading}
+                  className={`px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 ${
+                    deleteLoading
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "text-gray-700 hover:bg-gray-50"
+                  }`}
+                >
+                  Cancel
+                </button>
+                <Button
+                  onClick={handleDeleteReport}
+                  disabled={deleteLoading}
+                  className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  {deleteLoading ? "Deleting..." : "Delete Report"}
+                </Button>
               </div>
-            </div>
-
-            <div className="flex gap-3 justify-end">
-              <button
-                onClick={closeDeleteDialog}
-                disabled={deleteLoading}
-                className={`px-4 py-2 text-sm font-medium bg-white border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 ${
-                  deleteLoading
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-700 hover:bg-gray-50"
-                }`}
-              >
-                Cancel
-              </button>
-              <Button
-                onClick={handleDeleteReport}
-                disabled={deleteLoading}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 border border-transparent rounded-md hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                {deleteLoading ? "Deleting..." : "Delete Report"}
-              </Button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+      </div>
     </div>
   );
 }
