@@ -48,16 +48,8 @@ import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import ShareDialogView from "@/components/ShareDialogView";
-import URLTableCell from "@/components/URLTableCell";
 import PRReportPDF from "./PRReportPDF";
-import TrustBadgeModal from "@/components/TrustBadgeModal";
 import Pagination from "./Pagination";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "./ui/tooltip";
 
 // PDF Loading Component
 const PDFLoadingComponent = () => (
@@ -79,7 +71,6 @@ const PRReportViewer = ({
   const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
-  const [showTrustBadgeModal, setShowTrustBadgeModal] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -677,15 +668,6 @@ const PRReportViewer = ({
                     <Share2 className="h-4 w-4" />
                     Share Report
                   </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowTrustBadgeModal(true)}
-                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
-                  >
-                    <Shield className="h-4 w-4" />
-                    Generate Trust Badge
-                  </Button>
                 </div>
               )}
               <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
@@ -934,20 +916,6 @@ const PRReportViewer = ({
           onShare={handleShareReport}
         />
       )}
-
-      {/* Trust Badge Modal */}
-      <TrustBadgeModal
-        isOpen={showTrustBadgeModal}
-        onClose={() => setShowTrustBadgeModal(false)}
-        outlets={filteredOutlets.map((outlet, index) => ({
-          ...outlet,
-          id:
-            outlet.id ||
-            `outlet_${index}_${outlet.website_name?.replace(/\s+/g, "_")}`,
-        }))}
-        reportId={report?.id}
-        grid_id={report?.id}
-      />
     </div>
   );
 };
