@@ -68,7 +68,7 @@ export default function PRReportsNavigation({ isViewPRPage = false }) {
             </div>
 
             {/* User Info */}
-            <div className="text-right">
+            <div className="text-left">
               <div className="text-base font-bold text-gray-900">
                 {user?.fullName
                   ? `${user.fullName.substring(0, 10)}...`

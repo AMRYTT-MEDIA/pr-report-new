@@ -99,12 +99,13 @@ export default function ReportPage() {
           status: "completed", // Default status since it's not in your JSON
           date_created: new Date().toISOString(), // Default date since it's not in your JSON
           visibility: "public", // Default visibility
-
+          total_semrush_traffic: response?.data?.total_semrush_traffic || 0,
           // Transform distribution_data to outlets format
           outlets: (response.data.distribution_data || []).map((item) => ({
             website_name: item.recipient || "Unknown Outlet",
             published_url: item.url || "",
             potential_reach: item.potential_reach || 0,
+            semrush_traffic: item?.semrush_traffic || 0,
           })),
         };
 
