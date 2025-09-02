@@ -458,21 +458,26 @@
   .bg-gray-scale-10 { background-color: var(--color-gray-10) !important; }
   .bg-gray-scale-20 { background-color: var(--color-gray-20) !important; }
   .bg-gray-scale-50 { background-color: var(--color-gray-50) !important; }
+  .bg-gray-scale-60 { background-color: var(--color-gray-60) !important; }
   .bg-gray-scale-80 { background-color: var(--color-gray-80) !important; }
   .bg-gray-scale-90 { background-color: var(--color-gray-90) !important; }
   .bg-gray-scale-100 { background-color: var(--color-gray-100) !important; }
+  
   
   .text-gray-scale-0 { color: var(--color-gray-0) !important; }
   .text-gray-scale-10 { color: var(--color-gray-10) !important; }
   .text-gray-scale-20 { color: var(--color-gray-20) !important; }
   .text-gray-scale-50 { color: var(--color-gray-50) !important; }
+  .text-gray-scale-60 { color: var(--color-gray-60) !important; }
   .text-gray-scale-80 { color: var(--color-gray-80) !important; }
   .text-gray-scale-90 { color: var(--color-gray-90) !important; }
   .text-gray-scale-100 { color: var(--color-gray-100) !important; }
+  .text-gray-secondary { color: var(--color-gray-secondary) !important; }
   
   .border-gray-scale-20 { border-color: var(--color-gray-20) !important; }
   .border-gray-scale-50 { border-color: var(--color-gray-50) !important; }
   .border-gray-scale-80 { border-color: var(--color-gray-80) !important; }
+
 
   /* Brand color utilities - Core shades only */
   .bg-brand-scale { background-color: var(--color-primary) !important; }

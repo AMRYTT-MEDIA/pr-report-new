@@ -58,7 +58,7 @@ const LoginForm = () => {
   }, [user]);
 
   const handleSubmit = async (e) => {
-    // if (!isVerified) return;
+    if (!isVerified) return;
     e.preventDefault();
 
     // Prevent multiple submissions
@@ -202,7 +202,7 @@ const LoginForm = () => {
               className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={
                 loading ||
-                // !isVerified ||
+                !isVerified ||
                 email.length === 0 ||
                 password.length === 0
               }

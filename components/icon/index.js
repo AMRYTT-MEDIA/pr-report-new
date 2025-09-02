@@ -6,3 +6,4 @@ export { default as EyeOpenIcon } from "./EyeOpenIcon";
 export { default as EmailIcon } from "./EmailIcon";
 export { default as LockIcon } from "./LockIcon";
 export { default as ArrowRightIcon } from "./ArrowRightIcon";
+export { default as MenuIcon } from "./MenuIcon";

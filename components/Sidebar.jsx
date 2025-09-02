@@ -1,7 +1,8 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import {
   Users,
   Globe,
@@ -21,11 +22,17 @@ export default function Sidebar() {
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
+  const normalizePath = (path) => {
+    if (!path) return "/";
+    const trimmed = path.replace(/\/+$/, "");
+    return trimmed === "" ? "/" : trimmed;
+  };
+
   // Only the three navigation items as requested
   const navigationItems = [
     {
       name: "Users",
-      href: "/users/",
+      href: "/users",
       icon: Users,
       badge: null,
     },
@@ -44,7 +51,7 @@ export default function Sidebar() {
   ];
 
   const isActiveRoute = (href) => {
-    return href === pathname;
+    return normalizePath(href) === normalizePath(pathname);
   };
 
   const handleNavigation = (href) => {
@@ -52,39 +59,77 @@ export default function Sidebar() {
     setIsSidebarOpen(false);
   };
 
+  // Sync with global toggle events
+  useEffect(() => {
+    const handleSidebarToggle = (e) => {
+      if (e?.detail && typeof e.detail.open === "boolean") {
+        setIsSidebarOpen(e.detail.open);
+      }
+    };
+    window.addEventListener("app-sidebar-toggle", handleSidebarToggle);
+    return () =>
+      window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
+  }, []);
+
+  // Restore persisted state
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem("app-sidebar-open");
+      if (saved !== null) setIsSidebarOpen(saved === "true");
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (isSidebarOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsSidebarOpen(false);
+        window.dispatchEvent(
+          new CustomEvent("app-sidebar-toggle", { detail: { open: false } })
+        );
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    // Broadcast and persist state so NavBar button reflects it
+    try {
+      sessionStorage.setItem("app-sidebar-open", String(isSidebarOpen));
+    } catch {}
+    window.dispatchEvent(
+      new CustomEvent("app-sidebar-toggle", { detail: { open: isSidebarOpen } })
+    );
+
+    return () => {
+      document.body.style.overflow = "";
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isSidebarOpen]);
+
   return (
     <>
-      {/* Mobile menu button */}
-      <div className="lg:hidden fixed top-4 left-4 z-50">
-        <button
-          onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className="p-3 rounded-lg bg-white shadow-lg border border-gray-200 hover:bg-gray-50 transition-colors duration-200"
-        >
-          {isSidebarOpen ? (
-            <X className="h-6 w-6 text-gray-600" />
-          ) : (
-            <Menu className="h-6 w-6 text-gray-600" />
-          )}
-        </button>
-      </div>
-
       {/* Mobile sidebar overlay */}
       {isSidebarOpen && (
         <div
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsSidebarOpen(false)}
+          className="lg:hidden fixed inset-0 z-40 bg-slate-900/30 backdrop-blur-sm pointer-events-auto cursor-default"
+          aria-hidden="true"
         />
       )}
 
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full border-r bg-sidebar-background border-slate-200 z-40 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed left-0 top-0 h-full border-r bg-white lg:bg-sidebar-background border-slate-200 z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
-        // style={{
-        //   background: "var(--sidebar-background, #F8FAFC)",
-        // }}
+        id="app-sidebar"
+        role="navigation"
+        aria-label="Sidebar navigation"
       >
         <div className="flex flex-col justify-start items-start h-full px-4 py-8">
           {/* Top Section */}
@@ -104,26 +149,20 @@ export default function Sidebar() {
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
               {navigationItems.map((item) => {
                 const Icon = item.icon;
-                const isActive = isActiveRoute(item.href);
+                const active = isActiveRoute(item.href);
 
                 return (
-                  <div
+                  <Link
                     key={item.name}
+                    href={item.href}
+                    onClick={() => setIsSidebarOpen(false)}
                     className={cn(
-                      "self-stretch min-h-12 px-3 py-2.5 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden cursor-pointer transition-all duration-200",
-                      isActive
-                        ? "" // Active state styling applied via CSS variables
-                        : "hover:bg-slate-100/50" // Hover state only for non-active items
+                      "self-stretch min-h-12 px-3 py-2.5 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 focus:outline-none focus:ring-0 ",
+                      active
+                        ? "bg-slate-100 border border-slate-200"
+                        : "hover:bg-slate-100/50"
                     )}
-                    onClick={() => handleNavigation(item.href)}
-                    style={{
-                      ...(isActive && {
-                        borderRadius:
-                          "var(--border-radius-radius-full, 9999px)",
-                        border: "1px solid var(--Gray-20, #E2E8F0)",
-                        background: "var(--Gray-10, #F1F5F9)",
-                      }),
-                    }}
+                    aria-current={active ? "page" : undefined}
                   >
                     <div className="flex-1 flex justify-start items-center gap-2">
                       {/* Icon Container */}
@@ -147,7 +186,7 @@ export default function Sidebar() {
                         </div>
                       </div>
                     )}
-                  </div>
+                  </Link>
                 );
               })}
             </div>
@@ -155,8 +194,25 @@ export default function Sidebar() {
         </div>
       </div>
 
-      {/* Main content margin for desktop */}
-      <div className="hidden lg:block" style={{ marginLeft: "250px" }} />
+      {/* Floating close button to the right of the sidebar (mobile/tablet) */}
+      {isSidebarOpen && (
+        <button
+          type="button"
+          aria-label="Close sidebar"
+          className="lg:hidden fixed top-4 left-[260px] p-2 rounded-xl border border-gray-200 bg-white shadow-md z-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+          onClick={() => {
+            setIsSidebarOpen(false);
+            try {
+              sessionStorage.setItem("app-sidebar-open", "false");
+            } catch {}
+            window.dispatchEvent(
+              new CustomEvent("app-sidebar-toggle", { detail: { open: false } })
+            );
+          }}
+        >
+          <X className="h-5 w-5 text-gray-700" />
+        </button>
+      )}
     </>
   );
 }
