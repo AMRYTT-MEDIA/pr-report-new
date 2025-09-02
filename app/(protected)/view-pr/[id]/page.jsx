@@ -139,17 +139,6 @@ export default function ViewPR() {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-3xl font-bold tracking-tight">View PR Report</h1>
-        <p className="text-muted-foreground">
-          This is a shared press release distribution report
-        </p>
-      </div>
-
-      {/* Email Dialog for Private Reports */}
-
-      {report && <PRReportViewer report={report} isShowButton={true} />}
-    </div>
+    <div>{report && <PRReportViewer report={report} isPublic={false} />}</div>
   );
 }

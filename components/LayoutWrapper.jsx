@@ -20,7 +20,7 @@ const LayoutWrapper = ({ children }) => {
         <PRReportsNavigation isViewPRPage={isPRPage} />
 
         {/* Page Content */}
-        <main className="min-h-screen bg-slate-50">
+        <main className="bg-slate-50">
           <div className="m-[15px]">{children}</div>
         </main>
       </div>

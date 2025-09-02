@@ -90,6 +90,7 @@ export default function ProtectedSidebar() {
                 width={224}
                 height={44}
                 className="w-56 h-11 object-contain"
+                priority
               />
             </div>
 

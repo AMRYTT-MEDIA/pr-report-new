@@ -294,10 +294,7 @@ export default function PRReportsList() {
       <div className="mx-auto">
         {/* Reports Table */}
         {reports.length > 0 ? (
-          <div
-            className="bg-white shadow-sm border border-gray-200 overflow-hidden"
-            style={{ borderRadius: "10px" }}
-          >
+          <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 w-full">
@@ -341,7 +338,7 @@ export default function PRReportsList() {
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+                <tbody className="bg-white divide-y divide-gray-200 max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
                   {reports.map((report) => (
                     <tr
                       key={report.grid_id || report._id}
