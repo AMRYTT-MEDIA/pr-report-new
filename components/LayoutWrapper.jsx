@@ -1,8 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import ProtectedSidebar from "./ProtectedSidebar";
-import PRReportsNavigation from "./PRReportsNavigation";
+import Sidebar from "./Sidebar";
+import NavBar from "./NavBar";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
@@ -12,15 +12,15 @@ const LayoutWrapper = ({ children }) => {
   return (
     <div className="min-h-screen bg-slate-50">
       {/* Sidebar */}
-      <ProtectedSidebar />
+      <Sidebar />
 
       {/* Main Content Area */}
-      <div className="lg:ml-72">
+      <div className="lg:ml-[250px]">
         {/* Header Navigation */}
-        <PRReportsNavigation isViewPRPage={isPRPage} />
+        <NavBar isViewPRPage={isPRPage} />
 
         {/* Page Content */}
-        <main className="min-h-screen bg-slate-50">
+        <main className="bg-slate-50">
           <div className="m-[15px]">{children}</div>
         </main>
       </div>

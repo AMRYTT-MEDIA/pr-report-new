@@ -29,6 +29,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import Link from "next/link";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -406,17 +407,13 @@ export default function PRReportsList() {
                     </td>
                     <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
                       <div className="flex items-center space-x-3">
-                        <button
-                          onClick={() =>
-                            router.push(
-                              `/view-pr/${report.grid_id || report._id}`
-                            )
-                          }
+                        <Link
+                          href={`/view-pr/${report?.grid_id || report?._id}`}
                           className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
                         >
                           <Eye className="w-4 h-4" />
                           View
-                        </button>
+                        </Link>
                         <button
                           onClick={() => openShareDialog(report)}
                           className="text-green-600 hover:text-green-900 flex items-center gap-1"

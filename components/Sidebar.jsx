@@ -2,12 +2,20 @@
 
 import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
-import { Users, Globe, FileText, Menu, X, LayoutList } from "lucide-react";
+import {
+  Users,
+  Globe,
+  FileText,
+  Menu,
+  X,
+  LayoutList,
+  FileSpreadsheet,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import Image from "next/image";
 
-export default function ProtectedSidebar() {
+export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
@@ -17,20 +25,20 @@ export default function ProtectedSidebar() {
   const navigationItems = [
     {
       name: "Users",
-      href: "/users",
+      href: "/users/",
       icon: Users,
       badge: null,
     },
     {
       name: "Website",
-      href: "/website",
+      href: "/website/",
       icon: Globe,
       badge: null,
     },
     {
       name: "PR Reports",
-      href: "/pr-reports/",
-      icon: LayoutList,
+      href: "/pr-reports-list/",
+      icon: FileSpreadsheet,
       badge: "10", // Badge as shown in the image
     },
   ];
@@ -71,13 +79,12 @@ export default function ProtectedSidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full border-r border-slate-200 z-40 transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed left-0 top-0 h-full border-r bg-sidebar-background border-slate-200 z-40 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
-        style={{
-          width: "288px",
-          background: "var(--sidebar-background, #F8FAFC)",
-        }}
+        // style={{
+        //   background: "var(--sidebar-background, #F8FAFC)",
+        // }}
       >
         <div className="flex flex-col justify-start items-start h-full px-4 py-8">
           {/* Top Section */}
@@ -87,9 +94,9 @@ export default function ProtectedSidebar() {
               <Image
                 src="/guestpost-link.webp"
                 alt="GUESTPOSTLINKS"
-                width={224}
-                height={44}
-                className="w-56 h-11 object-contain"
+                width={202}
+                height={41}
+                className=" object-contain"
               />
             </div>
 
@@ -121,11 +128,11 @@ export default function ProtectedSidebar() {
                     <div className="flex-1 flex justify-start items-center gap-2">
                       {/* Icon Container */}
                       <div className="w-6 h-6 relative flex items-center justify-center">
-                        <Icon className="w-5 h-3.5 text-slate-500" />
+                        <Icon className="w-6 h-6 text-slate-500" />
                       </div>
 
                       {/* Text */}
-                      <div className="flex-1 justify-start text-slate-800 text-base font-medium font-['Inter']">
+                      <div className="flex-1 justify-start text-gray-scale-80 font-size-base font-medium">
                         {item.name}
                       </div>
                     </div>
@@ -149,7 +156,7 @@ export default function ProtectedSidebar() {
       </div>
 
       {/* Main content margin for desktop */}
-      <div className="hidden lg:block" style={{ marginLeft: "288px" }} />
+      <div className="hidden lg:block" style={{ marginLeft: "250px" }} />
     </>
   );
 }

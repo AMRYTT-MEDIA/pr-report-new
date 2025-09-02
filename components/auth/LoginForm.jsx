@@ -26,25 +26,25 @@ import {
 } from "@/components/icon";
 
 const LoginForm = () => {
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_KEY;
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [isIntentionalLogin, setIsIntentionalLogin] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login, user } = useAuth();
+  const { login, user, loading: authLoading } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
   // Redirect if already logged in
   useEffect(() => {
-    if (user && isIntentionalLogin) {
-      // Only show success toast and redirect if this was an intentional login
-      toast.success("Login successful!");
-      const next = searchParams.get("next") || "/pr-reports";
-      router.replace(next);
-    } else if (user && !isIntentionalLogin) {
-      // User is already logged in from page refresh, just redirect without toast
+    if (user) {
+      if (isIntentionalLogin) {
+        // Only show success toast and redirect if this was an intentional login
+        toast.success("Login successful!");
+      }
+      // Redirect to the intended page or default to pr-reports
       const next = searchParams.get("next") || "/pr-reports";
       router.replace(next);
     }
@@ -58,7 +58,7 @@ const LoginForm = () => {
   }, [user]);
 
   const handleSubmit = async (e) => {
-    if (!isVerified) return;
+    // if (!isVerified) return;
     e.preventDefault();
 
     // Prevent multiple submissions
@@ -82,6 +82,22 @@ const LoginForm = () => {
       toast.error("An unexpected error occurred");
     }
   };
+
+  // Show loading state if auth is loading or user is already logged in
+  if (authLoading || (user && !isIntentionalLogin)) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="text-center">
+          <Loading
+            size="lg"
+            color="primary"
+            showText={true}
+            text="Redirecting..."
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -164,25 +180,32 @@ const LoginForm = () => {
                 </Link>
               </div>
               <div className="pt-6 flex justify-center">
-                <ReCAPTCHA
-                  sitekey="6LfpshMrAAAAAAReSdqQ_dw45mW3VszBqhCHfjo1"
-                  onChange={() => {
-                    setIsVerified(true);
-                  }}
-                  onExpired={() => {
-                    setIsVerified(false);
-                  }}
-                  onErrored={() => {
-                    setIsVerified(false);
-                  }}
-                  className="mb-2"
-                />
+                {recaptchaSiteKey && (
+                  <ReCAPTCHA
+                    sitekey={recaptchaSiteKey}
+                    onChange={() => {
+                      setIsVerified(true);
+                    }}
+                    onExpired={() => {
+                      setIsVerified(false);
+                    }}
+                    onErrored={() => {
+                      setIsVerified(false);
+                    }}
+                    className="mb-2"
+                  />
+                )}
               </div>
             </div>
             <Button
               type="submit"
               className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading || !isVerified}
+              disabled={
+                loading ||
+                // !isVerified ||
+                email.length === 0 ||
+                password.length === 0
+              }
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">

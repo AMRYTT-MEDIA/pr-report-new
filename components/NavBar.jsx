@@ -8,7 +8,7 @@ import { useAuth } from "@/lib/auth";
 import PRBreadcrumb from "./PRBreadcrumb";
 import { useState, useRef, useEffect } from "react";
 
-export default function PRReportsNavigation({ isViewPRPage = false }) {
+export default function NavBar({ isViewPRPage = false }) {
   const pathname = usePathname();
   const router = useRouter();
   const { user, logout } = useAuth();
@@ -105,9 +105,6 @@ export default function PRReportsNavigation({ isViewPRPage = false }) {
           )}
         </div>
       </div>
-
-      {/* Bottom Blue Line */}
-      <div className="h-0.5 bg-blue-500"></div>
     </header>
   );
 }
