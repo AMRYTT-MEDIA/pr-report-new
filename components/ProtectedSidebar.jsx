@@ -29,7 +29,7 @@ export default function ProtectedSidebar() {
     },
     {
       name: "PR Reports",
-      href: "/pr-reports",
+      href: "/pr-reports/",
       icon: LayoutList,
       badge: "10", // Badge as shown in the image
     },
