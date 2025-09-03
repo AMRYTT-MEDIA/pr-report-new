@@ -2,26 +2,11 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Search,
-  Upload,
-  Eye,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-  Share2,
-  Trash2,
-  FileText,
-  Lock,
-  EyeOff,
-  Globe,
-} from "lucide-react";
+import { Upload, Eye, Share2, Trash2, File } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import ShareDialog from "@/components/ShareDialog";
 import {
   Tooltip,
@@ -134,14 +119,14 @@ export default function PRReportsList() {
   };
 
   // Handle sorting
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
+  // const handleSort = (field) => {
+  //   if (sortField === field) {
+  //     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  //   } else {
+  //     setSortField(field);
+  //     setSortOrder("asc");
+  //   }
+  // };
 
   // Handle share report
   const handleShareReport = async (payload) => {
@@ -203,14 +188,14 @@ export default function PRReportsList() {
   };
 
   // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toISOString().split("T")[0];
-    } catch {
-      return "N/A";
-    }
-  };
+  // const formatDate = (dateString) => {
+  //   if (!dateString) return "N/A";
+  //   try {
+  //     return new Date(dateString).toISOString().split("T")[0];
+  //   } catch {
+  //     return "N/A";
+  //   }
+  // };
 
   // Format title with truncation
   const formatTitle = (title, maxLength = 50) => {
@@ -225,18 +210,18 @@ export default function PRReportsList() {
   };
 
   // Get status color
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "processing":
-        return "bg-yellow-100 text-yellow-800";
-      case "failed":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // const getStatusColor = (status) => {
+  //   switch (status?.toLowerCase()) {
+  //     case "completed":
+  //       return "bg-green-100 text-green-800";
+  //     case "processing":
+  //       return "bg-yellow-100 text-yellow-800";
+  //     case "failed":
+  //       return "bg-red-100 text-red-800";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
 
   // Fetch reports on mount and when dependencies change
   useEffect(() => {
@@ -302,7 +287,7 @@ export default function PRReportsList() {
                     {/* Header */}
                     <th className="px-6 py-4 w-full">
                       <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-bold text-gray-900">
+                        <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                           All PR Reports
                         </h1>
                         <div
@@ -313,7 +298,7 @@ export default function PRReportsList() {
                         </div>
                       </div>
                     </th>
-                    <th className="px-6 py-4 w-full flex justify-end">
+                    <th className="px-6 py-4 flex justify-end">
                       <Button
                         onClick={() => router.push("/pr-reports")}
                         className="text-white px-6 py-3 flex items-center gap-2"
@@ -345,18 +330,22 @@ export default function PRReportsList() {
                       className="hover:bg-gray-50"
                     >
                       <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-blue-600" />
-                            </div>
+                        <div className="flex items-center gap-4">
+                          <div className="relative">
+                            <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
+                              CSV
+                            </p>
+                            <File className="w-10 h-10 text-gray-scale-20" />
                           </div>
+                          {/* <div className="text-base font-medium text-gray-scale-60 truncate max-w-[200px] lg:max-w-[230px] xl:max-w-[500px] 2xl:max-w-[700px] 3xl:max-w-[900px]">
+                            {report?.report_title}
+                          </div> */}
                           <div className="flex-1 min-w-0">
                             {needsTruncation(report.report_title) ? (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-900 truncate cursor-help">
+                                    <p className="text-base font-medium text-gray-scale-60 truncate cursor-help">
                                       {formatTitle(report.report_title)}
                                     </p>
                                   </TooltipTrigger>
@@ -372,14 +361,14 @@ export default function PRReportsList() {
                                 </Tooltip>
                               </TooltipProvider>
                             ) : (
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-base font-medium text-gray-scale-60">
                                 {report?.report_title || "Untitled Report"}
                               </p>
                             )}
                             <div className="flex items-center mt-1 text-sm text-gray-500">
                               <TooltipProvider>
                                 <Tooltip>
-                                  <TooltipTrigger asChild>
+                                  {/* <TooltipTrigger asChild>
                                     <div
                                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${
                                         report.is_private
@@ -394,7 +383,7 @@ export default function PRReportsList() {
                                       )}
                                       {report.is_private ? "Private" : "Public"}
                                     </div>
-                                  </TooltipTrigger>
+                                  </TooltipTrigger> */}
                                   <TooltipContent
                                     className="max-w-sm bg-gray-900 text-white border-gray-700"
                                     side="top"
@@ -420,21 +409,21 @@ export default function PRReportsList() {
                         </div>
                       </td>
                       <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
-                        <div className="flex gap-8 items-center">
+                        <div className="flex gap-2 items-center">
                           <button
                             onClick={() =>
                               router.push(
                                 `/view-pr/${report.grid_id || report._id}`
                               )
                             }
-                            className="text-[#475569] hover:text-[#475569]/80 flex items-center gap-1"
+                            className="text-gray-scale-60 hover:text-[#475569]/80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Eye className="w-4 h-4" />
                             View
                           </button>
                           <button
                             onClick={() => openShareDialog(report)}
-                            className="text-[#475569] hover:text-[#475569]/80 flex items-center gap-1"
+                            className="text-gray-scale-60 hover:text-[#475569]/80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Share2 className="w-4 h-4" />
                             Share

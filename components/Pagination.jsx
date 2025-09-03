@@ -212,7 +212,7 @@ const Pagination = ({
             value={goToPage}
             onChange={(e) => setGoToPage(e.target.value)}
             onKeyPress={handleKeyPress}
-            className="text-center bg-white max-w-[50px] py-0 max-h-[40px]"
+            className="text-center bg-white max-w-[50px] py-2 max-h-[40px]"
           />
         </div>
       </div>

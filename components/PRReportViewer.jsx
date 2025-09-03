@@ -5,10 +5,8 @@ import {
   TotalReachIcon,
   StatusIcon,
 } from "@/components/icon";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import LoadingSpinner from "@/components/LoadingSpinner";
 import {
   Table,
   TableBody,
@@ -18,31 +16,33 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Search, Download, Eye, Share2, FileDown } from "lucide-react";
-import { toast } from "sonner";
 import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card.jsx";
+  Search,
+  Eye,
+  Share2,
+  FileSpreadsheet,
+  FileArchive,
+} from "lucide-react";
+import { toast } from "sonner";
+import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
 import { pdf } from "@react-pdf/renderer";
 import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
-import ShareDialogView from "@/components/ShareDialogView";
 import PRReportPDF from "./PRReportPDF";
 import Pagination from "./Pagination";
 import URLTableCell from "./URLTableCell";
 import Loading from "./ui/loading";
+import ShareDialog from "./ShareDialog";
 
 // PDF Loading Component
-const PDFLoadingComponent = () => (
-  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
-    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-    Pdf
-  </div>
-);
+// const PDFLoadingComponent = () => (
+//   <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
+//     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+//     Pdf
+//   </div>
+// );
 
 const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -562,12 +562,14 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
         <CardHeader>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
-              PR Report :
-              <span className="block text-primary-50 max-w-[370px] truncate overflow-hidden">
+              <p className={`${isPublic && "xl:inline-block"} hidden`}>
+                PR Report :
+              </p>
+              <span className="block text-primary-50 max-w-[294px] truncate overflow-hidden">
                 {report.title}
               </span>
             </CardTitle>
-            <div className="flex flex-col lg:flex-row items-start lg:items-center gap-3 w-full sm:w-auto">
+            <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -575,7 +577,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                     placeholder="Search outlets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-full focus:border-gray-300 rounded-3xl"
+                    className="pl-10 w-full focus:border-gray-300 rounded-3xl min-w-[100%] md:min-w-[300px]"
                   />
                 </div>
               </div>
@@ -584,15 +586,15 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                   onClick={() => handleDownload("badge")}
                   className="px-4 py-2.5 text-sm border font-semibold border-Gray-20 rounded-3xl flex items-center gap-2 transition-colors  text-Gray-60"
                 >
-                  <FileDown className="h-4 w-4" />
-                  Create badge
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden xl:inline-block">Create badge</span>
                 </button> */}
                 <button
                   onClick={() => handleDownload("csv")}
                   className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
                 >
-                  <FileDown className="h-4 w-4" />
-                  CSV
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span className="hidden xl:inline-block">CSV</span>
                 </button>
                 <button
                   onClick={() => handleDownload("pdf")}
@@ -613,8 +615,8 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                     />
                   ) : (
                     <>
-                      <FileDown className="h-4 w-4" />
-                      PDF
+                      <FileArchive className="h-4 w-4" />
+                      <span className="hidden xl:inline-block">PDF</span>
                     </>
                   )}
                 </button>
@@ -624,7 +626,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                     className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
                   >
                     <Share2 className="h-4 w-4" />
-                    Share
+                    <span className="hidden xl:inline-block">Share</span>
                   </button>
                 )}
               </div>
@@ -632,9 +634,9 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="border overflow-hidden">
+          <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <div className="max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
+              <div className="max-h-[374px] 2xl:max-h-[374px] 3xl:max-h-[590px] overflow-y-auto scrollbar-custom">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -738,8 +740,8 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                               const colorClasses = [
                                 "text-blue-700 border-blue-300 bg-blue-50",
                                 "text-green-700 border-green-300 bg-green-50",
-                                "text-purple-700 border-purple-300 bg-purple-50",
-                                "text-orange-700 border-orange-300 bg-orange-50",
+                                "text-purple-700 border-purple-300 bg-purple-10",
+                                "text-orange-700 border-orange-300 bg-orange-10",
                                 "text-red-700 border-red-300 bg-red-50",
                                 "text-indigo-700 border-indigo-300 bg-indigo-50",
                               ];
@@ -826,7 +828,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
 
       {/* Share Dialog */}
       {showShareDialog && (
-        <ShareDialogView
+        <ShareDialog
           isOpen={showShareDialog}
           onClose={() => {
             setShowShareDialog(false);

@@ -45,11 +45,9 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
   useEffect(() => {
     if (report) {
       const url = `${window.location.origin}/report/${
-        report.grid_id || report._id
+        report.grid_id || report._id || report.id
       }`;
-      if (report.grid_id) {
-        setShareUrl(url);
-      }
+      setShareUrl(url);
     }
   }, [report]);
 
@@ -144,7 +142,10 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       }
 
       onClose();
-      window.open(`/report/${report.grid_id || report._id}`, "_blank");
+      window.open(
+        `/report/${report.grid_id || report._id || report.id}`,
+        "_blank"
+      );
       toast.success("Report shared successfully!");
     } catch (error) {
       console.error("Error sharing report:", error);
@@ -154,7 +155,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
 
   const copyLink = async () => {
     try {
-      if (report.grid_id) {
+      if (report.grid_id || report._id || report.id) {
         await navigator.clipboard.writeText(shareUrl);
       }
       toast.success("Link copied to clipboard!");
@@ -224,7 +225,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
               </div>
 
               {isDropdownOpen && (
-                <div className="absolute top-7 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-10 p-2">
+                <div className="absolute top-7 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-10 p-2 min-w-max">
                   <div
                     onClick={() => handlePrivacyChange("private")}
                     className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-gray-50 first:rounded-t-md border-b border-gray-200"
