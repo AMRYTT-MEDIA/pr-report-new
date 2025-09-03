@@ -82,6 +82,13 @@
     --color-black-64: rgba(0, 0, 0, 0.64);
     --color-black-80: rgba(0, 0, 0, 0.8);
 
+    /* Text colors */
+    --color-font-h2: #263145;
+    --color-font-h2-5: rgba(38, 49, 69, 0.5);
+
+    /* Border colors */
+    --color-border-gray: #DBE2ED;
+
     /* Primary brand */
     --color-primary: #6366f1;
     --color-primary-5: #eef2ff;
@@ -455,6 +462,7 @@
 @layer utilities {
   /* Gray scale utilities - Core shades only */
   .bg-gray-scale-0 { background-color: var(--color-gray-0) !important; }
+  .bg-gray-scale-5 { background-color: var(--color-gray-5) !important; }
   .bg-gray-scale-10 { background-color: var(--color-gray-10) !important; }
   .bg-gray-scale-20 { background-color: var(--color-gray-20) !important; }
   .bg-gray-scale-50 { background-color: var(--color-gray-50) !important; }
@@ -508,4 +516,42 @@
   
   .text-danger-scale { color: var(--color-danger) !important; }
   .text-danger-scale-90 { color: var(--color-danger-90) !important; }
+}
+
+/* scrollbar custom */
+@layer utilities {
+  .scrollbar-custom::-webkit-scrollbar-button {
+    display: none;
+    width: 0;
+    height: 0;
+  }
+  
+  .scrollbar-custom {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-primary-30) var(--color-gray-10);
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-track {
+    background: var(--color-gray-10);
+    border-radius: 3px;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb {
+    background: var(--color-primary-30);
+    border-radius: 3px;
+    transition: background-color 0.2s ease;
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-thumb:hover {
+    background: var(--color-primary-40);
+  }
+  
+  .scrollbar-custom::-webkit-scrollbar-corner {
+    display: none;
+  }
 }

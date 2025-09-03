@@ -1,25 +1,45 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
+import { Formik, Form, Field } from "formik";
+import * as Yup from "yup";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Share2, Link, Copy, Check, Lock, Users, X } from "lucide-react";
+import {
+  Share2,
+  Copy,
+  Lock,
+  X,
+  LockKeyhole,
+  ChevronDown,
+  Link2,
+  CircleCheckBig,
+  CircleMinus,
+  Info,
+  LockKeyholeOpen,
+} from "lucide-react";
+
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+
+// Validation schema for email input
+const createEmailValidationSchema = (existingEmails) =>
+  Yup.object().shape({
+    newEmail: Yup.string()
+      .email("Please enter a valid email address")
+      .required("Email is required")
+      .test("unique-email", "This email is already added", function (value) {
+        return !existingEmails.includes(value);
+      }),
+  });
 
 export default function ShareDialog({ isOpen, onClose, report, onShare }) {
-  const router = useRouter();
   const [isPrivate, setIsPrivate] = useState(true);
-  const [emails, setEmails] = useState([""]);
+  const [emails, setEmails] = useState([]);
   const [shareUrl, setShareUrl] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const resetFormRef = useRef(null);
 
   // Generate share URL when component mounts
   useEffect(() => {
@@ -40,10 +60,24 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       // If shared emails exist, set to private mode
       setIsPrivate(true);
     } else {
-      setEmails([""]);
-      setIsPrivate(true);
+      setEmails([]);
+      setIsPrivate(false);
     }
   }, [report]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isDropdownOpen && !event.target.closest(".dropdown-container")) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isDropdownOpen]);
 
   const handleEmailChange = (index, value) => {
     const newEmails = [...emails];
@@ -51,19 +85,33 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
     setEmails(newEmails);
   };
 
-  const addEmailField = () => {
-    setEmails([...emails, ""]);
+  const removeEmailField = (index) => {
+    const newEmails = emails.filter((_, i) => i !== index);
+    setEmails(newEmails);
   };
 
-  const removeEmailField = (index) => {
-    if (emails.length > 1) {
-      const newEmails = emails.filter((_, i) => i !== index);
-      setEmails(newEmails);
+  const addEmailFromFormik = (values, { setFieldValue, resetForm }) => {
+    const emailToAdd = values.newEmail.trim();
+    if (emailToAdd !== "") {
+      setEmails([...emails, emailToAdd]);
+      resetForm();
     }
   };
 
-  const clearAllEmails = () => {
-    setEmails([""]);
+  const handlePrivacyChange = (privacy) => {
+    setIsPrivate(privacy === "private");
+    if (privacy === "public") {
+      setEmails([]);
+    } else {
+      if (report?.sharedEmails?.length > 0) {
+        setEmails(report.sharedEmails);
+        setIsPrivate(true);
+      }
+    }
+    setIsDropdownOpen(false);
+    if (resetFormRef.current) {
+      resetFormRef.current();
+    }
   };
 
   const handleShare = async () => {
@@ -71,20 +119,9 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       let payload;
 
       if (isPrivate) {
-        // Filter out empty emails and validate
         const validEmails = emails.filter((email) => email.trim() !== "");
         if (validEmails.length === 0) {
           toast.error("Please add at least one email address");
-          return;
-        }
-
-        // Validate email format
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const invalidEmails = validEmails.filter(
-          (email) => !emailRegex.test(email)
-        );
-        if (invalidEmails.length > 0) {
-          toast.error("Please enter valid email addresses");
           return;
         }
 
@@ -103,7 +140,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
 
       // Don't reset emails if they were pre-populated from API
       if (!report?.sharedEmails || report.sharedEmails.length === 0) {
-        setEmails([""]);
+        setEmails([]);
       }
 
       onClose();
@@ -142,151 +179,210 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           pointerEvents: "auto",
         }}
       >
-        <DialogHeader className="p-0 pb-0 flex-shrink-0 bg-white border-b border-gray-100">
-          <div className="flex items-center justify-between w-full">
-            <div className="flex items-center gap-3">
-              <Share2 className="h-5 w-5 text-purple-600" />
-              <div>
-                <DialogTitle className="text-lg font-semibold">
-                  Share your PR Report
-                </DialogTitle>
-                {report?.sharedEmails && report.sharedEmails.length > 0 && (
-                  <p className="text-xs text-blue-600 mt-1">
-                    Editing existing shared emails
-                  </p>
-                )}
-              </div>
-            </div>
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={onClose}
-              className="h-8 w-8 p-0 hover:bg-gray-100 focus:ring-0 focus:ring-offset-0 border-0"
-            >
-              <X className="h-8 w-8" />
-            </Button>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center border border-purple-70 rounded-xl p-2.5">
+            <Share2 className="h-7 w-7" />
           </div>
-        </DialogHeader>
-
-        <div className="flex-1 space-y-6 px-0 py-0 overflow-y-auto min-h-0">
-          {/* Share Link Section */}
-          <div className="space-y-3">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">
-                  Anyone with the Email can view
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsPrivate(!isPrivate)}
-                  className="h-6 px-2 text-xs"
-                >
-                  {isPrivate ? "Private" : "Public"}
-                  <Lock className="h-3 w-3 ml-1" />
-                </Button>
-              </div>
-              <div className="text-sm text-gray-500 break-all">{shareUrl}</div>
-            </div>
-          </div>
-
-          {/* Privacy Toggle */}
-          <div className="flex items-center gap-3">
-            <Button
-              variant={isPrivate ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsPrivate(true)}
-              className="flex-1"
-            >
-              <Lock className="h-4 w-4 mr-2" />
-              Private
-            </Button>
-            <Button
-              variant={!isPrivate ? "default" : "outline"}
-              size="sm"
-              onClick={() => setIsPrivate(false)}
-              className="flex-1"
-            >
-              <Users className="h-4 w-4 mr-2" />
-              Public
-            </Button>
-          </div>
-
-          {/* People With Access Section - Only show for private */}
-          {isPrivate && (
-            <div className="space-y-3">
-              <div>
-                <Label className="text-sm font-medium">
-                  People With Access
-                </Label>
-                <p className="text-xs text-gray-500">
-                  Email addresses at these domains are allowed.
-                </p>
-                {report?.sharedEmails && report.sharedEmails.length > 0 && (
-                  <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
-                    <p className="text-xs text-blue-700">
-                      📧 {report.sharedEmails.length} email(s) already shared
-                      with this report
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                {emails.map((email, index) => (
-                  <div key={index} className="flex items-center gap-2">
-                    <Input
-                      type="email"
-                      placeholder="Enter email address"
-                      value={email}
-                      onChange={(e) => handleEmailChange(index, e.target.value)}
-                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:border-gray-300 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
-                    />
-                    {emails.length > 1 && (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeEmailField(index)}
-                        className="h-8 w-8 p-0 text-red-500 hover:text-red-700"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    )}
-                  </div>
-                ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={addEmailField}
-                  className="w-full"
-                >
-                  + Add another email
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={clearAllEmails}
-                  className="w-full text-red-600 hover:text-red-700"
-                >
-                  Clear All Emails
-                </Button>
-              </div>
-            </div>
-          )}
+          <Button
+            variant="ghost"
+            size="xl"
+            onClick={onClose}
+            className="h-10 w-10 p-0 hover:bg-gray-100 focus:ring-0 focus:ring-offset-0 border-0 ml-auto"
+          >
+            <X className="h-10 w-10" />
+          </Button>
         </div>
 
+        <div className="flex flex-col gap-1">
+          <h2 className="text-lg font-semibold text-font-h2">
+            Share your PR Report
+          </h2>
+          <p className="text-font-h2-5 text-sm font-medium">
+            Invite your client or team member by adding their email address
+            below.
+          </p>
+        </div>
+
+        <div className="flex items-center justify-between p-2.5 border border-gray-200 rounded-lg gap-4 bg-gray-scale-5">
+          <div className="flex items-center gap-3.5">
+            <div className="border border-gray-200 rounded-lg p-2.5 bg-gray-scale-20">
+              <Link2 className="h-5 w-5" />
+            </div>
+            <div className="flex flex-col gap-1 relative dropdown-container">
+              <div
+                className="flex items-center gap-1 text-sm font-medium text-font-h2 font-semibold cursor-pointer hover:opacity-80"
+                onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              >
+                <span>
+                  {isPrivate ? "Restricted" : "Anyone with the link can view"}
+                </span>
+                <ChevronDown
+                  className={`h-4 w-4 transition-transform ${
+                    isDropdownOpen ? "rotate-180" : ""
+                  }`}
+                />
+              </div>
+
+              {isDropdownOpen && (
+                <div className="absolute top-7 left-0 bg-white border border-gray-200 rounded-md shadow-lg z-10 p-2">
+                  <div
+                    onClick={() => handlePrivacyChange("private")}
+                    className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-gray-50 first:rounded-t-md border-b border-gray-200"
+                  >
+                    {/* <Lock className="h-4 w-4" /> */}
+                    Restricted
+                  </div>
+                  <div
+                    onClick={() => handlePrivacyChange("public")}
+                    className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-gray-50 last:rounded-b-md"
+                  >
+                    {/* <LockKeyholeOpen className="h-4 w-4" /> */}
+                    Anyone with the link
+                  </div>
+                </div>
+              )}
+              <p className="text-sm text-gray-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[340px]">
+                {shareUrl || "-"}
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-1 rounded-md py-1 px-2 border border-border-gray">
+            {isPrivate ? (
+              <>
+                <LockKeyhole className="h-5 w-4 text-gray-secondary" />
+                <p className="text-xs font-medium text-gray-secondary mt-0.5">
+                  Private
+                </p>
+              </>
+            ) : (
+              <>
+                <LockKeyholeOpen className="h-5 w-4 text-gray-secondary" />
+                <p className="text-xs font-medium text-gray-secondary mt-0.5">
+                  Public
+                </p>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* People With Access Section - Only show for private */}
+        <div className="">
+          <div className="flex flex-col gap-1">
+            <Label className="text-base font-medium text-font-h2 font-semibold">
+              Authorized Email Addresses
+            </Label>
+            <p className="text-sm text-font-h2 opacity-50 font-medium">
+              Only emails from approved domains are allowed.
+            </p>
+            {report?.sharedEmails &&
+              report.sharedEmails.length > 0 &&
+              isPrivate && (
+                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
+                  <p className="text-xs text-blue-700">
+                    📧 {report.sharedEmails.length} email(s) already shared with
+                    this report
+                  </p>
+                </div>
+              )}
+          </div>
+        </div>
+
+        <Formik
+          initialValues={{ newEmail: "" }}
+          validationSchema={createEmailValidationSchema(emails)}
+          onSubmit={addEmailFromFormik}
+        >
+          {({
+            values,
+            errors,
+            touched,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            resetForm,
+          }) => {
+            // Store resetForm function in ref
+            resetFormRef.current = resetForm;
+
+            return (
+              <Form onSubmit={handleSubmit}>
+                <div>
+                  <Field name="newEmail">
+                    {({ field, meta }) => (
+                      <Input
+                        {...field}
+                        type="email"
+                        placeholder="Enter email address"
+                        className={`flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none ${
+                          meta.touched && meta.error
+                            ? "border-danger-60 focus:border-danger-60"
+                            : "border-gray-300 focus:border-gray-300"
+                        }`}
+                        disabled={!isPrivate}
+                        onKeyPress={(e) => {
+                          if (e.key === "Enter") {
+                            e.preventDefault();
+                            handleSubmit();
+                          }
+                        }}
+                      />
+                    )}
+                  </Field>
+                  {errors.newEmail && touched.newEmail && (
+                    <div className="text-danger-60 text-xs font-medium mt-2 flex items-center gap-1">
+                      <Info className="h-3.5 w-3.5" /> {errors.newEmail}
+                    </div>
+                  )}
+                </div>
+              </Form>
+            );
+          }}
+        </Formik>
+
+        {emails.length > 0 && isPrivate && (
+          <div className="flex flex-col gap-3.5">
+            <Label className="text-sm font-medium">People With Access</Label>
+            <div className="flex flex-col gap-2.5 max-h-[90px] overflow-y-auto scrollbar-custom">
+              {emails.map((email, index) => (
+                <div key={index} className="relative">
+                  <Input
+                    type="email"
+                    placeholder="Enter email address"
+                    value={email}
+                    onChange={(e) => handleEmailChange(index, e.target.value)}
+                    className="flex-1 focus:ring-0 focus:ring-offset-0 focus:border-gray-300 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+                  />
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => removeEmailField(index)}
+                    className="h-8 w-8 p-0 text-danger-60 hover:text-danger-70 absolute top-1.5 right-2 hover:bg-white"
+                  >
+                    <CircleMinus className="h-4 w-4" />
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Footer Buttons */}
-        <div className="flex gap-3 p-0 pt-4 flex-shrink-0 bg-white border-t border-gray-100">
-          <Button variant="outline" onClick={copyLink} className="flex-1">
-            <Copy className="h-4 w-4 mr-2" />
+        <div className="flex gap-2.5 items-center justify-end">
+          <Button
+            variant="default"
+            onClick={copyLink}
+            className="gap-1.5 px-4 py-2.5 bg-primary-10 hover:bg-primary-20 text-primary-50 hover:text-primary-60 rounded-3xl font-semibold"
+          >
+            <Copy className="h-4 w-4" />
             Copy Link
           </Button>
           <Button
+            variant="default"
             onClick={handleShare}
-            className="flex-1 bg-orange-600 hover:bg-orange-700"
+            className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold"
           >
-            <Check className="h-4 w-4 mr-2" />
-            Done
+            <CircleCheckBig className="h-4 w-4" />
+            Grant Access
           </Button>
         </div>
       </DialogContent>
