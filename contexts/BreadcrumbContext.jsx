@@ -1,0 +1,48 @@
+"use client";
+
+import {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useRef,
+} from "react";
+
+const BreadcrumbContext = createContext();
+
+export const useBreadcrumb = () => {
+  const context = useContext(BreadcrumbContext);
+  if (!context) {
+    throw new Error("useBreadcrumb must be used within a BreadcrumbProvider");
+  }
+  return context;
+};
+
+export const BreadcrumbProvider = ({ children }) => {
+  const [breadcrumbItems, setBreadcrumbItems] = useState([]);
+
+  const setBreadcrumb = useCallback((items) => {
+    setBreadcrumbItems(items);
+  }, []);
+
+  return (
+    <BreadcrumbContext.Provider value={{ breadcrumbItems, setBreadcrumb }}>
+      {children}
+    </BreadcrumbContext.Provider>
+  );
+};
+
+// Custom hook for setting breadcrumb with useLayoutEffect
+export const useBreadcrumbDirect = (items) => {
+  const { setBreadcrumb } = useBreadcrumb();
+  const itemsRef = useRef(null);
+
+  useLayoutEffect(() => {
+    const itemsString = JSON.stringify(items);
+    if (itemsRef.current !== itemsString) {
+      itemsRef.current = itemsString;
+      setBreadcrumb(items);
+    }
+  }, [setBreadcrumb, items]);
+};

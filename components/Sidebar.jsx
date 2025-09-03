@@ -15,17 +15,33 @@ import {
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import Image from "next/image";
+import { prReportsService } from "@/services/prReports";
 
-export default function Sidebar() {
+const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [prReportsCount, setPrReportsCount] = useState(0);
 
   const normalizePath = (path) => {
     if (!path) return "/";
     const trimmed = path.replace(/\/+$/, "");
     return trimmed === "" ? "/" : trimmed;
+  };
+
+  // Fetch PR reports count
+  const fetchPRReportsCount = async () => {
+    try {
+      if (user) {
+        const response = await prReportsService.getPRReportTotalCount();
+        if (response && response?.data !== undefined) {
+          setPrReportsCount(response?.data);
+        }
+      }
+    } catch (error) {
+      console.error("Error fetching PR reports count:", error);
+    }
   };
 
   // Only the three navigation items as requested
@@ -46,7 +62,7 @@ export default function Sidebar() {
       name: "PR Reports",
       href: "/pr-reports-list/",
       icon: FileSpreadsheet,
-      badge: "10", // Badge as shown in the image
+      badge: prReportsCount > 0 ? prReportsCount.toString() : null,
     },
   ];
 
@@ -58,6 +74,13 @@ export default function Sidebar() {
     router.push(href);
     setIsSidebarOpen(false);
   };
+
+  // Fetch PR reports count when user is available
+  useEffect(() => {
+    if (user) {
+      fetchPRReportsCount();
+    }
+  }, [user]);
 
   // Sync with global toggle events
   useEffect(() => {
@@ -124,7 +147,7 @@ export default function Sidebar() {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full border-r bg-white lg:bg-sidebar-background border-slate-200 z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed left-0 top-0 h-full border-r bg-white lg:bg-[#F8FAFC] border-slate-200 lg:border-[#E2E8F0] z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         id="app-sidebar"
@@ -157,21 +180,21 @@ export default function Sidebar() {
                     href={item.href}
                     onClick={() => setIsSidebarOpen(false)}
                     className={cn(
-                      "self-stretch min-h-12 px-3 py-2.5 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 focus:outline-none focus:ring-0 ",
+                      "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",
                       active
                         ? "bg-slate-100 border border-slate-200"
-                        : "hover:bg-slate-100/50"
+                        : "hover:bg-slate-100/50 border border-transparent"
                     )}
                     aria-current={active ? "page" : undefined}
                   >
                     <div className="flex-1 flex justify-start items-center gap-2">
                       {/* Icon Container */}
-                      <div className="w-6 h-6 relative flex items-center justify-center">
-                        <Icon className="w-6 h-6 text-slate-500" />
+                      <div className="w-5 h-5 relative flex items-center justify-center">
+                        <Icon className=" text-slate-500" />
                       </div>
 
                       {/* Text */}
-                      <div className="flex-1 justify-start text-gray-scale-80 font-size-base font-medium">
+                      <div className="flex-1 justify-start text-gray-scale-80 text-sm font-medium">
                         {item.name}
                       </div>
                     </div>
@@ -215,4 +238,6 @@ export default function Sidebar() {
       )}
     </>
   );
-}
+};
+
+export default Sidebar;

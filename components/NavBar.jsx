@@ -16,14 +16,13 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
-import PRBreadcrumb from "./PRBreadcrumb";
+import CommonBreadcrumb from "./CommonBreadcrumb";
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import { MenuIcon } from "./icon";
 import DropdownMenu from "./ui/dropdown-menu";
 
-export default function NavBar({ isViewPRPage = false }) {
-  const pathname = usePathname();
+const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   const router = useRouter();
   const { user, logout } = useAuth();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
@@ -74,7 +73,7 @@ export default function NavBar({ isViewPRPage = false }) {
 
   return (
     <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30 ">
-      <div className="flex justify-between items-center h-16 mx-[15px]">
+      <div className="flex justify-between items-center h-14 mx-[15px]">
         {/* Left: Logo on mobile/tablet, breadcrumb on desktop */}
         <div className="flex items-center">
           {/* Logo (mobile/tablet only) */}
@@ -87,7 +86,7 @@ export default function NavBar({ isViewPRPage = false }) {
           />
           {/* Breadcrumb (desktop only) */}
           <div className="hidden lg:block">
-            <PRBreadcrumb />
+            <CommonBreadcrumb items={breadcrumbItems} />
           </div>
         </div>
 
@@ -122,10 +121,10 @@ export default function NavBar({ isViewPRPage = false }) {
               },
             ]}
             trigger={
-              <div className="flex items-center space-x-2 lg:space-x-3">
+              <div className="flex items-center space-x-2 lg:space-x-3 ">
                 {/* User Avatar with Online Status */}
                 <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
+                  <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
                     {user?.avatar ? (
                       <img
                         src={user.avatar}
@@ -133,7 +132,7 @@ export default function NavBar({ isViewPRPage = false }) {
                         className="w-full h-full object-cover"
                       />
                     ) : user?.fullName ? (
-                      <span className="text-blue-600 font-semibold text-lg">
+                      <span className="text-blue-600 font-semibold text-sm">
                         {user.fullName.charAt(0).toUpperCase()}
                       </span>
                     ) : (
@@ -146,12 +145,12 @@ export default function NavBar({ isViewPRPage = false }) {
 
                 {/* User Info (desktop only) */}
                 <div className="hidden lg:block text-left">
-                  <div className="text-base font-bold text-gray-900">
+                  <div className="text-sm font-semibold text-gray-900">
                     {user?.fullName
                       ? `${user.fullName.substring(0, 10)}...`
                       : "Publish rt..."}
                   </div>
-                  <div className="text-sm text-gray-500">Admin</div>
+                  <div className="text-xss text-gray-500">Admin</div>
                 </div>
 
                 {/* Dropdown Button */}
@@ -182,4 +181,6 @@ export default function NavBar({ isViewPRPage = false }) {
       </div>
     </header>
   );
-}
+};
+
+export default NavBar;

@@ -14,6 +14,7 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/lib/auth";
 import PRReportViewer from "@/components/PRReportViewer";
+import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 
 export default function ViewPR() {
   const params = useParams();
@@ -23,6 +24,12 @@ export default function ViewPR() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Set breadcrumb - direct render, no useEffect needed
+  useBreadcrumbDirect([
+    { name: "All Reports", href: "/pr-reports-list" },
+    { name: "View Report", href: `/view-pr/${reportId}`, current: true },
+  ]);
 
   // Single optimized function to fetch report data
   const fetchReportData = async () => {
