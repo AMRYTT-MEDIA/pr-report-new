@@ -277,42 +277,37 @@ export default function PRReportsList() {
   return (
     <div className="bg-gray-50 p-4">
       <div className="mx-auto">
-        {/* Reports Table */}
         {reports.length > 0 ? (
           <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
+            {/* Header Section */}
+            <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+              <div className="flex items-center gap-2">
+                <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+                  All PR Reports
+                </h1>
+                <div
+                  className="text-sm px-3 py-0.5 border border-[#4F46E5] rounded-full"
+                  style={{ color: "#4F46E5" }}
+                >
+                  {totalCount}
+                </div>
+              </div>
+              <Button
+                onClick={() => router.push("/pr-reports")}
+                className="text-white px-6 py-3 flex items-center gap-2"
+                style={{
+                  backgroundColor: "#4F46E5",
+                  borderRadius: "40px",
+                }}
+              >
+                <ImportIcon color="#fff" width={20} height={20} />
+                <span className="hidden sm:inline">Import</span>
+              </Button>
+            </div>
+
             <div className="overflow-x-auto">
+              {/* Table Section */}
               <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50 w-full">
-                  <tr className="w-full ">
-                    {/* Header */}
-                    <th className="px-6 py-4 w-full">
-                      <div className="flex items-center gap-2">
-                        <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
-                          All PR Reports
-                        </h1>
-                        <div
-                          className="text-sm px-3 py-0.5 border border-[#4F46E5] rounded-full"
-                          style={{ color: "#4F46E5" }}
-                        >
-                          {totalCount}
-                        </div>
-                      </div>
-                    </th>
-                    <th className="px-6 py-4 flex justify-end">
-                      <Button
-                        onClick={() => router.push("/pr-reports")}
-                        className="text-white px-6 py-3 flex items-center gap-2"
-                        style={{
-                          backgroundColor: "#4F46E5",
-                          borderRadius: "40px",
-                        }}
-                      >
-                        <ImportIcon color="#fff" width={20} height={20} />
-                        Import
-                      </Button>
-                    </th>
-                  </tr>
-                </thead>
                 <thead className="bg-gray-50 w-full">
                   <tr className="w-full ">
                     <th className="px-6 py-4 text-left text-sm font-medium text-[#1E293B]">
