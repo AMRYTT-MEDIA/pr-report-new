@@ -2,39 +2,9 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Search,
-  ExternalLink,
-  Download,
-  Eye,
-  BarChart3,
-  Share2,
-  Copy,
-  ArrowLeft,
-  Mail,
-  Lock,
-} from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Mail, X, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
-import { getLogoForUrl, getOutletName } from "@/utils/logoMapping";
 import { publicPrReportsService } from "@/services/publicPrReports";
 import PRReportViewer from "@/components/PRReportViewer";
 import { AlertCircle } from "lucide-react";
@@ -221,7 +191,10 @@ export default function ReportPage() {
         </nav>
       )}
       <div className="bg-background">
-        <div className="container mx-auto py-8" style={{ padding: "15px" }}>
+        <div
+          className="container mx-auto py-8 min-h-[calc(100vh-100px)] relative"
+          style={{ padding: "15px" }}
+        >
           {/* <div className="mb-6">
             <h1 className="text-3xl font-bold tracking-tight">PR Report</h1>
             <p className="text-muted-foreground">
@@ -231,59 +204,118 @@ export default function ReportPage() {
 
           {/* Email Dialog for Private Reports */}
           {showEmailDialog && (
-            <Card className="mb-8 max-w-md mx-auto">
-              <CardHeader className="text-center">
-                <Lock className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <CardTitle>Private Report</CardTitle>
-                <CardDescription>
-                  This report requires email verification to view the full
-                  content. Please enter an authorized email address.
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleEmailSubmit} className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      Email Address
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="Enter your email address"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={verifying}
-                      className={`${
-                        verifying ? "opacity-50" : ""
-                      } focus:border-gray-300`}
-                    />
+            <div className="mb-8 mx-auto max-w-[90vw] sm:max-w-[550px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+              <div className="bg-slate-100 content-stretch flex flex-col items-start justify-start relative rounded-[14px] size-full">
+                <div
+                  aria-hidden="true"
+                  className="absolute border border-slate-200 border-solid inset-[-1px] pointer-events-none rounded-[15px] shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)]"
+                />
+                <div className="bg-white box-border content-stretch flex flex-col gap-5 items-start justify-start p-[20px] relative rounded-[14px] shrink-0 w-full">
+                  <div
+                    aria-hidden="true"
+                    className="absolute border border-slate-200 border-solid inset-[-1px] pointer-events-none rounded-[15px]"
+                  />
+
+                  {/* Header Section */}
+                  <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
+                    <div className="bg-white relative rounded-[10px] shrink-0 size-12">
+                      <div
+                        aria-hidden="true"
+                        className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px]"
+                      />
+                      <div className="absolute left-1/2 size-7 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+                        <Mail className="w-7 h-7 text-slate-600" />
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowEmailDialog(false)}
+                      className="relative shrink-0 size-6 hover:bg-gray-100 rounded"
+                    >
+                      <X className="w-6 h-6 text-slate-600" />
+                    </button>
                   </div>
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={verifying || !email.trim()}
+
+                  {/* Title and Description */}
+                  <div className="content-stretch flex flex-col font-['Inter:Semi_Bold',_sans-serif] font-semibold gap-[5px] items-start justify-start leading-[0] not-italic relative shrink-0 text-[#263145] text-nowrap">
+                    <div className="relative shrink-0 text-[18px]">
+                      <p className="leading-[normal] text-nowrap whitespace-pre flex items-center">
+                        🔓 Access Your PR Report
+                      </p>
+                    </div>
+                    <div className="opacity-50 relative shrink-0 text-[14px]">
+                      <p className="leading-[normal] text-nowrap whitespace-pre truncate w-full max-w-[300px] sm:max-w-[520px]">
+                        Enter your business email to unlock and view your
+                        personalized PR report.
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Form */}
+                  <form
+                    onSubmit={handleEmailSubmit}
+                    className="content-stretch flex flex-col gap-3 items-start justify-start relative shrink-0 w-full"
                   >
-                    {verifying ? (
-                      <>
-                        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                        Verifying Email...
-                      </>
-                    ) : (
-                      <>
-                        <Mail className="h-4 w-4 mr-2" />
-                        Verify Email & View Report
-                      </>
-                    )}
-                  </Button>
-                  {verifying && (
-                    <p className="text-sm text-muted-foreground text-center">
-                      Verifying your email access...
-                    </p>
-                  )}
-                </form>
-              </CardContent>
-            </Card>
+                    <div className="content-stretch flex flex-col gap-6 items-start justify-start relative shrink-0 w-full">
+                      <div className="content-stretch flex flex-col gap-2 items-end justify-start relative shrink-0 w-full">
+                        <div className="content-stretch flex flex-col gap-2 items-end justify-start relative shrink-0 w-full">
+                          <div className="bg-white h-10 relative rounded-[6px] shrink-0 w-full">
+                            <div className="box-border content-stretch flex gap-2 h-10 items-center justify-start overflow-clip px-3.5 py-2.5 relative w-full">
+                              <div className="basis-0 content-stretch flex gap-2 grow items-center justify-start min-h-px min-w-px relative shrink-0">
+                                <div className="basis-0 content-stretch flex gap-2 grow items-end justify-start min-h-px min-w-px relative shrink-0">
+                                  <div className="relative shrink-0 size-5">
+                                    <Mail className="w-5 h-5 text-slate-600" />
+                                  </div>
+                                  <input
+                                    id="email"
+                                    type="email"
+                                    placeholder="Enter your email address (e.g. name@company.com)"
+                                    value={email}
+                                    onChange={(e) => setEmail(e.target.value)}
+                                    required
+                                    disabled={verifying}
+                                    className={`basis-0 font-['Inter:Regular',_sans-serif] font-normal grow leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-[16px] text-slate-600 focus:outline-none ${
+                                      verifying ? "opacity-50" : ""
+                                    }`}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                            <div
+                              aria-hidden="true"
+                              className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[6px]"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+
+                {/* Action Button */}
+                <div className="box-border content-stretch flex flex-col gap-5 items-start justify-start p-[20px] relative rounded-bl-[14px] rounded-br-[14px] shrink-0 w-full">
+                  <div className="content-stretch flex gap-2.5 items-center justify-end relative shrink-0 w-full">
+                    <button
+                      onClick={handleEmailSubmit}
+                      disabled={verifying || !email.trim()}
+                      className="bg-indigo-500 box-border content-stretch flex gap-[5px] items-center justify-center overflow-clip px-[15px] py-2.5 relative rounded-[40px] shrink-0 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto"
+                    >
+                      <div className="relative shrink-0 size-5">
+                        {verifying ? (
+                          <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
+                        ) : (
+                          <CircleCheckBig className="w-5 h-5 text-white" />
+                        )}
+                      </div>
+                      <div className="css-u7wei flex flex-col font-['Inter:Semi_Bold',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-center text-nowrap text-white">
+                        <p className="leading-[20px] whitespace-pre">
+                          {verifying ? "Verifying..." : "Unlock Report"}
+                        </p>
+                      </div>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
           )}
 
           {/* Report Content */}

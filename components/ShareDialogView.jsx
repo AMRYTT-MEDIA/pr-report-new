@@ -242,7 +242,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
                       placeholder="Enter email address"
                       value={email}
                       onChange={(e) => handleEmailChange(index, e.target.value)}
-                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:border-gray-300 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
                     />
                     {emails.length > 1 && (
                       <Button
