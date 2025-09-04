@@ -287,20 +287,13 @@ export default function PRReportsList() {
                 <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                   All PR Reports
                 </h1>
-                <div
-                  className="text-sm px-3 py-0.5 border border-[#4F46E5] rounded-full"
-                  style={{ color: "#4F46E5" }}
-                >
+                <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
                   {totalCount}
                 </div>
               </div>
               <Button
                 onClick={() => setImportDialogOpen(true)}
-                className="text-white px-6 py-3 flex items-center gap-2"
-                style={{
-                  backgroundColor: "#4F46E5",
-                  borderRadius: "40px",
-                }}
+                className="text-white px-6 py-3 flex items-center gap-2 bg-primary-50 rounded-3xl"
               >
                 <ImportIcon color="#fff" width={20} height={20} />
                 <span className="hidden sm:inline">Import</span>
@@ -424,14 +417,14 @@ export default function PRReportsList() {
                                 `/view-pr/${report.grid_id || report._id}`
                               )
                             }
-                            className="text-gray-scale-60 hover:text-[#475569]/80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Eye className="w-4 h-4" />
                             View
                           </button>
                           <button
                             onClick={() => openShareDialog(report)}
-                            className="text-gray-scale-60 hover:text-[#475569]/80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Share2 className="w-4 h-4" />
                             Share
@@ -439,10 +432,10 @@ export default function PRReportsList() {
                           <button
                             onClick={() => openDeleteDialog(report)}
                             disabled={deleteLoading}
-                            className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-[#E11D48] ${
+                            className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-danger-60 ${
                               deleteLoading
                                 ? "text-gray-400 cursor-not-allowed"
-                                : "text-[#E11D48] hover:text-[#E11D48]/80"
+                                : "text-danger-60 hover:text-danger-80"
                             }`}
                           >
                             {deleteLoading ? (

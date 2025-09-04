@@ -167,7 +167,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose} onClose={onClose}>
       <DialogContent
-        className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] max-h-[90vh] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0"
+        className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
         // onPointerDownOutside={(e) => e.preventDefault()}
         // onInteractOutside={(e) => e.preventDefault()}
         showCloseButton={false}
@@ -180,19 +180,14 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           pointerEvents: "auto",
         }}
       >
-        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white">
+        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[80vh] scrollbar-custom">
           <div className="flex items-center justify-between">
             <div className="flex items-center border border-purple-70 rounded-xl p-2.5">
               <Share2 className="h-7 w-7" />
             </div>
-            <Button
-              variant="ghost"
-              size="xl"
-              onClick={onClose}
-              className="h-10 w-10 p-0 hover:bg-gray-100 focus:ring-0 focus:ring-offset-0 border-0 ml-auto"
-            >
-              <X className="h-10 w-10" />
-            </Button>
+            <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded">
+              <X className="w-5 h-5 text-gray-500" />
+            </button>
           </div>
 
           <div className="flex flex-col gap-1">
@@ -243,7 +238,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                     </div>
                   </div>
                 )}
-                <p className="text-sm text-gray-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[340px]">
+                <p className="text-sm text-gray-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[138px] sm:max-w-[340px]">
                   {shareUrl || "-"}
                 </p>
               </div>
@@ -358,7 +353,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                       variant="ghost"
                       size="sm"
                       onClick={() => removeEmailField(index)}
-                      className="h-8 w-8 p-0 text-danger-60 hover:text-danger-70 absolute top-1.5 right-2 hover:bg-white"
+                      className="h-8 w-8 p-0 text-danger-60 hover:text-danger-70 absolute top-1.5 right-2 bg-white"
                     >
                       <CircleMinus className="h-4 w-4" />
                     </Button>
@@ -370,11 +365,11 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
         </div>
 
         {/* Footer Buttons */}
-        <div className="flex gap-2.5 items-center justify-end p-5">
+        <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
           <Button
             variant="default"
             onClick={copyLink}
-            className="gap-1.5 px-4 py-2.5 bg-primary-10 hover:bg-primary-20 text-primary-50 hover:text-primary-60 rounded-3xl font-semibold"
+            className="gap-1.5 px-4 py-2.5 bg-primary-10 hover:bg-primary-20 text-primary-50 hover:text-primary-60 rounded-3xl font-semibold w-full sm:w-auto"
           >
             <Copy className="h-4 w-4" />
             Copy Link
@@ -382,7 +377,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           <Button
             variant="default"
             onClick={handleShare}
-            className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold"
+            className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold w-full sm:w-auto"
           >
             <CircleCheckBig className="h-4 w-4" />
             Grant Access
