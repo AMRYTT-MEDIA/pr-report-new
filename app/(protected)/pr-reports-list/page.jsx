@@ -7,6 +7,9 @@ import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import ShareDialog from "@/components/ShareDialog";
 import {
   Tooltip,
@@ -17,6 +20,7 @@ import {
 import { ImportIcon } from "@/components/icon";
 import Pagination from "@/components/Pagination";
 import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
+import Link from "next/link";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -224,6 +228,11 @@ export default function PRReportsList() {
   //       return "bg-gray-100 text-gray-800";
   //   }
   // };
+
+  // Direct render - no useEffect needed
+  useBreadcrumbDirect([
+    { name: "All Reports", href: "/pr-reports-list", current: true },
+  ]);
 
   // Fetch reports on mount and when dependencies change
   useEffect(() => {

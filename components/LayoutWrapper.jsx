@@ -1,23 +1,25 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import ProtectedSidebar from "./ProtectedSidebar";
-import PRReportsNavigation from "./PRReportsNavigation";
+import Sidebar from "./Sidebar";
+import NavBar from "./NavBar";
+import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
+  const { breadcrumbItems } = useBreadcrumb();
 
   const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       {/* Sidebar */}
-      <ProtectedSidebar />
+      <Sidebar />
 
       {/* Main Content Area */}
-      <div className="lg:ml-72">
+      <div className="lg:ml-[250px]">
         {/* Header Navigation */}
-        <PRReportsNavigation isViewPRPage={isPRPage} />
+        <NavBar isViewPRPage={isPRPage} breadcrumbItems={breadcrumbItems} />
 
         {/* Page Content */}
         <main className="bg-slate-50">

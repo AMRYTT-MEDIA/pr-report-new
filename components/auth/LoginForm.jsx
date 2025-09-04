@@ -15,6 +15,7 @@ import {
 import { toast } from "sonner";
 import Image from "next/image";
 import Loading from "@/components/ui/loading";
+import ErrorMessage from "@/components/ui/error-message";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
 import {
@@ -24,64 +25,151 @@ import {
   EyeOpenIcon,
   ArrowRightIcon,
 } from "@/components/icon";
+import { useFormik } from "formik";
+import { isEmail } from "validator";
+import * as Yup from "yup";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
+import { globalConstants } from "@/lib/constants/globalConstants";
+import { getuserdatabyfirebaseid } from "@/services/user";
+import { EyeClosed } from "lucide-react";
 
 const LoginForm = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const recaptchaSiteKey = process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_KEY;
   const [loading, setLoading] = useState(false);
-  const [isIntentionalLogin, setIsIntentionalLogin] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { login, user } = useAuth();
+  const { setUser, logout } = useAuth();
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Redirect if already logged in
-  useEffect(() => {
-    if (user && isIntentionalLogin) {
-      // Only show success toast and redirect if this was an intentional login
-      toast.success("Login successful!");
-      const next = searchParams.get("next") || "/pr-reports";
-      router.replace(next);
-    } else if (user && !isIntentionalLogin) {
-      // User is already logged in from page refresh, just redirect without toast
-      const next = searchParams.get("next") || "/pr-reports";
-      router.replace(next);
-    }
-  }, [user, router, searchParams, isIntentionalLogin]);
-
-  // Reset intentional login flag when user changes or component unmounts
-  useEffect(() => {
-    if (!user) {
-      setIsIntentionalLogin(false);
-    }
-  }, [user]);
-
-  const handleSubmit = async (e) => {
-    if (!isVerified) return;
-    e.preventDefault();
-
-    // Prevent multiple submissions
-    if (loading) return;
-
-    setLoading(true);
-    setIsIntentionalLogin(true); // Mark this as an intentional login attempt
-
-    try {
-      const result = await login(email, password);
-      if (result.success) {
-        // Keep loading true until navigation happens
-      } else {
-        setIsIntentionalLogin(false); // Reset flag on failure
-        setLoading(false); // Re-enable button on failure
-        toast.error(result.error || "Login failed");
-      }
-    } catch (error) {
-      setIsIntentionalLogin(false); // Reset flag on error
-      setLoading(false); // Re-enable button on error
-      toast.error("An unexpected error occurred");
+  // Firebase error mapping
+  const getFirebaseErrorMessage = (error) => {
+    switch (error.code) {
+      case "auth/user-not-found":
+        return "No user found with this email address.";
+      case "auth/wrong-password":
+        return "Incorrect password. Please try again.";
+      case "auth/invalid-email":
+        return "Please enter a valid email address.";
+      case "auth/user-disabled":
+        return "This account has been disabled. Please contact support.";
+      case "auth/too-many-requests":
+        return "Too many failed attempts. Please try again later.";
+      case "auth/network-request-failed":
+        return "Network error. Please check your connection.";
+      case "auth/invalid-credential":
+        return "Invalid email or password. Please check your credentials.";
+      case "auth/email-not-verified":
+        return "Please verify your email address before signing in.";
+      case "auth/account-exists-with-different-credential":
+        return "An account already exists with this email using a different sign-in method.";
+      default:
+        return error.message || globalConstants?.SomethingWentWrong;
     }
   };
+
+  // Backend API error mapping
+  const getApiErrorMessage = (error) => {
+    if (error.response?.status === 401) {
+      return "User not found. Please check your email and try again.";
+    } else if (error.response?.status === 404) {
+      return "Please try again.";
+    } else if (error.response?.status === 403) {
+      return "Access denied. Please contact support.";
+    } else if (error.response?.status >= 500) {
+      return "Server error. Please try again later.";
+    } else if (error.response?.data?.message) {
+      return error.response.data.message;
+    } else {
+      return error.message || globalConstants?.SomethingWentWrong;
+    }
+  };
+
+  // Formik configuration
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object().shape({
+      email: Yup.string()
+        .test(
+          "is-valid-email",
+          "Please enter a valid email address. (e.g., username@example.com)",
+          function (value) {
+            if (!value) return false;
+            return isEmail(value.trim());
+          }
+        )
+        .required("Email is required"),
+      password: Yup.string()
+        .required("Password is required")
+        .min(8, "Password should be a minimum of 8 characters"),
+    }),
+    onSubmit: async (values) => {
+      if (!isVerified) return;
+      setLoading(true);
+
+      try {
+        // Step 1: Firebase sign-in
+        const result = await signInWithEmailAndPassword(
+          auth,
+          values.email,
+          values.password
+        );
+
+        if (result.user) {
+          // Step 2: Check if user exists in backend database
+          try {
+            const userData = await getuserdatabyfirebaseid(result.user.uid);
+            if (userData) {
+              // User exists in backend - set user data in auth context
+              setUser(userData);
+              toast.success("Sign in successful! Redirecting...");
+
+              // Redirect to the intended page or default to pr-reports
+              const next = searchParams.get("next") || "/pr-reports-list";
+              router.replace(next);
+            } else {
+              logout();
+              // User doesn't exist in backend
+              setLoading(false);
+              toast.error(
+                "User not found. Please check your email and try again."
+              );
+            }
+          } catch (apiError) {
+            // Backend API error
+            setLoading(false);
+            logout();
+            const apiErrorMessage = getApiErrorMessage(apiError);
+            toast.error(apiErrorMessage);
+          }
+        }
+      } catch (error) {
+        setLoading(false);
+        const errorMessage = getFirebaseErrorMessage(error);
+        toast.error(errorMessage);
+      }
+    },
+  });
+
+  // Handle input changes with trimming
+  const handleEmailChange = (e) => {
+    const trimmedValue = e.target.value.replace(/\s+/g, "").toLowerCase();
+    formik.setFieldValue("email", trimmedValue);
+  };
+
+  const handlePasswordChange = (e) => {
+    const trimmedValue = e.target.value.replace(/\s+/g, "");
+    formik.setFieldValue("password", trimmedValue);
+  };
+
+  // Remove the old handleSubmit function as it's now handled by Formik
+
+  // Loading state is handled by parent component (login page)
+  // This component only renders when user is not logged in and auth is initialized
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
@@ -104,7 +192,7 @@ const LoginForm = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 pt-10">
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={formik.handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -117,13 +205,22 @@ const LoginForm = () => {
                   id="email"
                   type="email"
                   placeholder="example@gmail.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  name="email"
+                  value={formik.values.email}
+                  onChange={handleEmailChange}
+                  onBlur={formik.handleBlur}
                   required
                   disabled={loading}
-                  className="pl-10"
+                  className={`pl-10 text-input-field ${
+                    formik.touched.email && formik.errors.email
+                      ? "border-red-500"
+                      : ""
+                  }`}
                 />
               </div>
+              {formik.touched.email && formik.errors.email && (
+                <ErrorMessage message={formik.errors.email} />
+              )}
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
@@ -137,11 +234,17 @@ const LoginForm = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Enter your password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  name="password"
+                  value={formik.values.password}
+                  onChange={handlePasswordChange}
+                  onBlur={formik.handleBlur}
                   required
                   disabled={loading}
-                  className="pl-10 pr-10"
+                  className={`pl-10 pr-10 text-input-field ${
+                    formik.touched.password && formik.errors.password
+                      ? "border-red-500"
+                      : ""
+                  }`}
                 />
                 <button
                   type="button"
@@ -149,40 +252,47 @@ const LoginForm = () => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeCloseIcon className="h-5 w-5 text-gray-500" />
+                    <EyeClosed className="h-5 w-5 text-gray-scale-100" />
                   ) : (
-                    <EyeOpenIcon className="h-5 w-5 text-gray-500" />
+                    <EyeOpenIcon className="h-5 w-5 text-gray-scale-100" />
                   )}
                 </button>
               </div>
+              {formik.touched.password && formik.errors.password && (
+                <ErrorMessage message={formik.errors.password} />
+              )}
               <div className="flex justify-end">
                 <Link
-                  href="/forget-password"
+                  href="/forgot-password"
                   className="text-sm font-medium text-brand-scale-60"
                 >
                   Forgot Password?
                 </Link>
               </div>
               <div className="pt-6 flex justify-center">
-                <ReCAPTCHA
-                  sitekey="6LfpshMrAAAAAAReSdqQ_dw45mW3VszBqhCHfjo1"
-                  onChange={() => {
-                    setIsVerified(true);
-                  }}
-                  onExpired={() => {
-                    setIsVerified(false);
-                  }}
-                  onErrored={() => {
-                    setIsVerified(false);
-                  }}
-                  className="mb-2"
-                />
+                {recaptchaSiteKey && (
+                  <ReCAPTCHA
+                    sitekey={recaptchaSiteKey}
+                    onChange={() => {
+                      setIsVerified(true);
+                    }}
+                    onExpired={() => {
+                      setIsVerified(false);
+                    }}
+                    onErrored={() => {
+                      setIsVerified(false);
+                    }}
+                    className="mb-2"
+                  />
+                )}
               </div>
             </div>
             <Button
               type="submit"
               className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={loading || !isVerified}
+              disabled={
+                loading || !isVerified || !formik.isValid || !formik.dirty
+              }
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
@@ -191,6 +301,7 @@ const LoginForm = () => {
                     color="white"
                     showText={true}
                     text="Signing in..."
+                    textPosition="start"
                   />
                 </div>
               ) : (

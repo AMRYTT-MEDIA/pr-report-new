@@ -217,6 +217,7 @@ module.exports = {
 
       /* Typography Scale */
       fontSize: {
+        xss: "var(--font-size-xxs)",
         xs: "var(--font-size-xs)",
         sm: "var(--font-size-sm)",
         base: "var(--font-size-base)",
