@@ -44,7 +44,7 @@ const Sidebar = () => {
     }
   };
 
-  // Only the three navigation items as requested
+  // Navigation items with proper PR Reports routing
   const navigationItems = [
     {
       name: "Users",
@@ -54,20 +54,31 @@ const Sidebar = () => {
     },
     {
       name: "Website",
-      href: "/website/",
+      href: "/website",
       icon: Globe,
       badge: null,
     },
     {
       name: "PR Reports",
-      href: "/pr-reports-list/",
+      href: "/pr-reports-list",
       icon: FileSpreadsheet,
-      badge: prReportsCount > 0 ? prReportsCount.toString() : null,
+      badge: prReportsCount > 0 ? prReportsCount.toString() : 0,
     },
   ];
 
   const isActiveRoute = (href) => {
-    return normalizePath(href) === normalizePath(pathname);
+    const normalizedHref = normalizePath(href);
+    const normalizedPathname = normalizePath(pathname);
+
+    // Special handling for PR Reports - check if current path starts with pr-reports
+    if (normalizedHref === "/pr-reports-list") {
+      return (
+        normalizedPathname.startsWith("/pr-reports") ||
+        normalizedPathname.startsWith("/view-pr")
+      );
+    }
+
+    return normalizedHref === normalizedPathname;
   };
 
   const handleNavigation = (href) => {

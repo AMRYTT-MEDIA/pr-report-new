@@ -417,6 +417,22 @@
   font-family: 'Inter', system-ui, sans-serif;
 }
 
+/* Input field text styling */
+.input-text {
+  color: var(--Gray-60, #475569);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+}
+
+/* Input placeholder styling */
+.input-text::placeholder {
+  opacity: 0.7;
+  color: var(--Gray-60, #475569);
+}
+
 /* Reset margins for card components */
 .card-title p,
 .card-description p {
@@ -514,4 +530,19 @@
   
   .text-danger-scale { color: var(--color-danger) !important; }
   .text-danger-scale-90 { color: var(--color-danger-90) !important; }
+
+  /* Input text styling */
+  .text-input-field { 
+    color: var(--Gray-60, #475569) !important; 
+    font-family: 'Inter', system-ui, sans-serif !important;
+    font-size: 16px !important;
+    font-weight: 400 !important;
+    line-height: normal !important;
+  }
+
+  /* Input placeholder styling */
+  .text-input-field::placeholder {
+    opacity: 0.7 !important;
+    color: var(--Gray-60, #475569) !important;
+  }
 }

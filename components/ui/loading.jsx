@@ -7,6 +7,7 @@ const Loading = ({
   text = "",
   showText = false,
   textColor = "white",
+  textPosition = "end", // "start" or "end"
 }) => {
   const sizeClasses = {
     sm: "h-4 w-4",
@@ -33,15 +34,37 @@ const Loading = ({
     return `border-2 border-gray-200 ${colorClasses[color]} border-t-transparent`;
   };
 
+  const textColorClasses = {
+    white: "text-white",
+    black: "text-black",
+    gray: "text-gray-600",
+    primary: "text-primary-60",
+  };
+
   return (
     <div className={`flex items-center justify-center gap-2 ${className}`}>
+      {showText && text && textPosition === "start" && (
+        <p
+          className={`text-sm font-medium ${
+            textColorClasses[textColor] || textColorClasses.gray
+          }`}
+        >
+          {text}
+        </p>
+      )}
       <div
         className={`animate-spin rounded-full ${
           sizeClasses[size]
         } ${getBorderStyle(color)}`}
       />
-      {showText && text && (
-        <p className={`text-sm font-medium text-${textColor}`}>{text}</p>
+      {showText && text && textPosition === "end" && (
+        <p
+          className={`text-sm font-medium ${
+            textColorClasses[textColor] || textColorClasses.gray
+          }`}
+        >
+          {text}
+        </p>
       )}
     </div>
   );

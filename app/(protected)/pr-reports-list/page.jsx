@@ -519,7 +519,7 @@ export default function PRReportsList() {
 
       {/* Delete Confirmation Dialog */}
       {deleteDialogOpen && reportToDelete && (
-        <div className="fixed inset-0 z-[10000] bg-black/50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[10000]  bg-black/50 flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
