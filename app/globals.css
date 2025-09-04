@@ -479,6 +479,7 @@
   .text-gray-scale-80 { color: var(--color-gray-80) !important; }
   .text-gray-scale-90 { color: var(--color-gray-90) !important; }
   .text-gray-scale-100 { color: var(--color-gray-100) !important; }
+  .text-gray-scale-secondary { color: var(--color-gray-secondary) !important; }
   
   .border-gray-scale-20 { border-color: var(--color-gray-20) !important; }
   .border-gray-scale-50 { border-color: var(--color-gray-50) !important; }

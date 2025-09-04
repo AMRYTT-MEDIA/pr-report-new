@@ -212,7 +212,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
               </div>
               <div className="flex flex-col gap-1 relative dropdown-container">
                 <div
-                  className="flex items-center gap-1 text-sm font-medium text-font-h2 font-semibold cursor-pointer hover:opacity-80"
+                  className="flex items-center gap-1 text-sm text-font-h2 font-semibold cursor-pointer hover:opacity-80"
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                 >
                   <span>
@@ -270,7 +270,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           {/* People With Access Section - Only show for private */}
           <div className="">
             <div className="flex flex-col gap-1">
-              <Label className="text-base font-medium text-font-h2 font-semibold">
+              <Label className="text-base text-font-h2 font-semibold">
                 Authorized Email Addresses
               </Label>
               <p className="text-sm text-font-h2 opacity-50 font-medium">
@@ -352,7 +352,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                       placeholder="Enter email address"
                       value={email}
                       onChange={(e) => handleEmailChange(index, e.target.value)}
-                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:border-gray-300 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:border-gray-300 focus:outline-none border-gray-300  focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
                     />
                     <Button
                       variant="ghost"

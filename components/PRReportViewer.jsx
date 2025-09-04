@@ -636,7 +636,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
         <CardContent className="p-0">
           <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <div className="max-h-[374px] 2xl:max-h-[374px] 3xl:max-h-[590px] overflow-y-auto scrollbar-custom">
+              <div className="max-h-[374px] 2xl:max-h-[446px] 3xl:max-h-[660px] overflow-y-auto scrollbar-custom">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -648,7 +648,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
                     </TableRow>
                   </TableHeader>
 
-                  {/* Table Body0 */}
+                  {/* Table Body */}
                   <TableBody>
                     {paginatedOutlets.map((outlet, index) => {
                       // Add unique ID for trust badge selection
@@ -663,7 +663,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
 
                       return (
                         <TableRow key={index} className="bg-white">
-                          <TableCell className="flex items-center gap-3 h-[72px] min-w-[200px]">
+                          <TableCell className="flex items-center gap-3 min-w-[200px]">
                             {/* Logo Display Logic */}
                             {(() => {
                               const logoUrl = getLogoUrl(
@@ -798,13 +798,13 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
               </div>
 
               {/* Pagination */}
-              <Pagination
+              {/* <Pagination
                 totalItems={filteredOutlets.length}
                 currentPage={currentPage}
                 rowsPerPage={rowsPerPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
-              />
+              /> */}
             </div>
           </div>
 

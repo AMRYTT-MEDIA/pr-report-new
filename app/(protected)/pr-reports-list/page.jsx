@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/tooltip";
 import { ImportIcon } from "@/components/icon";
 import Pagination from "@/components/Pagination";
+import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -28,6 +29,7 @@ export default function PRReportsList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -188,14 +190,14 @@ export default function PRReportsList() {
   };
 
   // Format date
-  // const formatDate = (dateString) => {
-  //   if (!dateString) return "N/A";
-  //   try {
-  //     return new Date(dateString).toISOString().split("T")[0];
-  //   } catch {
-  //     return "N/A";
-  //   }
-  // };
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    try {
+      return new Date(dateString).toISOString().split("T")[0];
+    } catch {
+      return "N/A";
+    }
+  };
 
   // Format title with truncation
   const formatTitle = (title, maxLength = 50) => {
@@ -293,7 +295,7 @@ export default function PRReportsList() {
                 </div>
               </div>
               <Button
-                onClick={() => router.push("/pr-reports")}
+                onClick={() => setImportDialogOpen(true)}
                 className="text-white px-6 py-3 flex items-center gap-2"
                 style={{
                   backgroundColor: "#4F46E5",
@@ -310,10 +312,13 @@ export default function PRReportsList() {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50 w-full">
                   <tr className="w-full ">
-                    <th className="px-6 py-4 text-left text-sm font-medium text-[#1E293B]">
+                    <th className="px-6 py-4 text-left text-sm font-medium">
                       Full Name
                     </th>
-                    <th className="flex flex-row justify-end pr-20 px-6 py-4 text-left text-sm font-medium text-[#1E293B]">
+                    <th className="px-6 py-4 text-left text-sm font-medium min-w-[150px]">
+                      Created by
+                    </th>
+                    <th className="flex flex-row px-6 py-4 text-left text-sm font-medium">
                       Actions
                     </th>
                   </tr>
@@ -324,7 +329,7 @@ export default function PRReportsList() {
                       key={report.grid_id || report._id}
                       className="hover:bg-gray-50"
                     >
-                      <td className="px-6 py-4">
+                      <td className="px-6 py-3">
                         <div className="flex items-center gap-4">
                           <div className="relative">
                             <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
@@ -403,7 +408,15 @@ export default function PRReportsList() {
                           </div>
                         </div>
                       </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
+                      <td className="px-6 py-3 min-w-[150px]">
+                        <p className="text-gray-scale-60 font-semibold mb-1">
+                          {report?.uploaded_by?.name || "-"}
+                        </p>
+                        <p className="text-gray-scale-60 font-medium text-sm">
+                          {formatDate(report?.createdAt || "-")}
+                        </p>
+                      </td>
+                      <td className="px-6 py-3 whitespace-nowrap text-sm font-medium flex flex-row items-center">
                         <div className="flex gap-2 items-center">
                           <button
                             onClick={() =>
@@ -575,6 +588,17 @@ export default function PRReportsList() {
           </div>
         )}
       </div>
+
+      {/* Import CSV Dialog */}
+      <ImportCsvDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onUploadSuccess={(response) => {
+          // Refresh the reports list after successful upload
+          fetchReports();
+          toast.success("CSV uploaded successfully!");
+        }}
+      />
     </div>
   );
 }
