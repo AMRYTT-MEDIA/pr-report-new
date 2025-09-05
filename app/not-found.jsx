@@ -16,7 +16,7 @@ export default function NotFound() {
 
   return (
     <div
-      className="min-h-screen flex items-center justify-center relative"
+      className="min-h-dvh flex items-center justify-center relative"
       style={{
         background:
           "radial-gradient(40.82% 42.04% at 78.69% 74.73%, #EBECFF 0%, #F8FAFC 100%)",

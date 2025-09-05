@@ -190,7 +190,7 @@ const LoginForm = ({ searchParams }) => {
   // Show loading while checking auth state or redirecting
   if (!initialized || authLoading || isRedirecting) {
     return (
-      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-background flex items-center justify-center p-4">
         <div className="flex flex-col items-center justify-center space-y-4">
           <Loading
             size="lg"
@@ -206,7 +206,7 @@ const LoginForm = ({ searchParams }) => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-[607px] rounded-3xl border border-gray-200 bg-white/99 shadow-login-card p-[45px]">
         <CardHeader className="text-center p-0">
           <div className="flex justify-center items-center">

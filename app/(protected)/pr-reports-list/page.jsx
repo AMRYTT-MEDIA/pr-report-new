@@ -20,7 +20,6 @@ import {
 import { ImportIcon } from "@/components/icon";
 import Pagination from "@/components/Pagination";
 import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
-import Link from "next/link";
 import Loading from "@/components/ui/loading";
 
 export default function PRReportsList() {
@@ -273,7 +272,7 @@ export default function PRReportsList() {
   // Show loading while auth is initializing
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
         <Loading
           size="lg"
           color="purple"
@@ -316,16 +315,16 @@ export default function PRReportsList() {
 
           <div className="overflow-x-auto">
             {/* Table Section */}
-            <table className="min-w-full divide-y divide-gray-200">
+            <table className="w-full divide-y divide-gray-200 table-auto">
               <thead className="bg-gray-50 w-full">
                 <tr className="w-full ">
-                  <th className="px-6 py-4 text-left text-sm font-medium">
+                  <th className="px-6 py-4 text-left text-sm font-medium w-[60%]">
                     Full Name
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-medium min-w-[150px]">
+                  <th className="px-6 py-4 text-left text-sm font-medium w-[20%]">
                     Created by
                   </th>
-                  <th className="flex flex-row px-6 py-4 text-left text-sm font-medium">
+                  <th className="px-6 py-3  whitespace-nowrap text-sm font-medium text-left  w-[20%]">
                     Actions
                   </th>
                 </tr>
@@ -417,56 +416,54 @@ export default function PRReportsList() {
                             </div>
                           </div>
                         </td>
-                        <td className="px-6 py-3 min-w-[150px]">
+                        <td className="px-6 py-3">
                           <p className="text-gray-scale-60 font-semibold mb-1">
                             {report?.uploaded_by?.name || "-"}
                           </p>
-                          <p className="text-gray-scale-60 font-medium text-sm">
+                          <p className="text-gray-scale-60 text-nowrap font-medium text-sm">
                             {formatDate(report?.createdAt || "-")}
                           </p>
                         </td>
-                        <td className="px-6 py-3 whitespace-nowrap text-sm font-medium flex flex-row items-center">
-                          <div className="flex gap-2 items-center">
-                            <button
-                              onClick={() =>
-                                router.push(
-                                  `/view-pr/${report.grid_id || report._id}`
-                                )
-                              }
-                              className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
-                            >
-                              <Eye className="w-4 h-4" />
-                              View
-                            </button>
-                            <button
-                              onClick={() => openShareDialog(report)}
-                              className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
-                            >
-                              <Share2 className="w-4 h-4" />
-                              {report?.is_private &&
-                              report?.sharedEmails?.length === 0
-                                ? "Share"
-                                : report?.is_private
-                                ? "Private"
-                                : "Public"}
-                            </button>
-                            <button
-                              onClick={() => openDeleteDialog(report)}
-                              disabled={deleteLoading}
-                              className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-danger-60 ${
-                                deleteLoading
-                                  ? "text-gray-400 cursor-not-allowed"
-                                  : "text-danger-60 hover:text-danger-80"
-                              }`}
-                            >
-                              {deleteLoading ? (
-                                <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
-                              ) : (
-                                <Trash2 className="w-4 h-4" />
-                              )}
-                              {deleteLoading ? "Deleting..." : "Delete"}
-                            </button>
-                          </div>
+                        <td className="px-6 py-3 whitespace-nowrap gap-2 text-sm font-medium flex flex-row  items-center">
+                          <button
+                            onClick={() =>
+                              router.push(
+                                `/view-pr/${report.grid_id || report._id}`
+                              )
+                            }
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
+                          >
+                            <Eye className="w-4 h-4" />
+                            View
+                          </button>
+                          <button
+                            onClick={() => openShareDialog(report)}
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
+                          >
+                            <Share2 className="w-4 h-4" />
+                            {report?.is_private &&
+                            report?.sharedEmails?.length === 0
+                              ? "Share"
+                              : report?.is_private
+                              ? "Private"
+                              : "Public"}
+                          </button>
+                          <button
+                            onClick={() => openDeleteDialog(report)}
+                            disabled={deleteLoading}
+                            className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-danger-60 ${
+                              deleteLoading
+                                ? "text-gray-400 cursor-not-allowed"
+                                : "text-danger-60 hover:text-danger-80"
+                            }`}
+                          >
+                            {deleteLoading ? (
+                              <div className="w-4 h-4 border-2 border-gray-300 border-t-red-600 rounded-full animate-spin" />
+                            ) : (
+                              <Trash2 className="w-4 h-4" />
+                            )}
+                            {deleteLoading ? "Deleting..." : "Delete"}
+                          </button>
                         </td>
                       </tr>
                     ))}
@@ -484,13 +481,13 @@ export default function PRReportsList() {
                         Get started by uploading your first CSV file to generate
                         a PR report.
                       </p>
-                      <button
+                      {/* <button
                         onClick={() => router.push("/pr-reports")}
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                       >
                         <Upload className="w-4 h-4 mr-2" />
                         Upload CSV
-                      </button>
+                      </button> */}
                     </div>
                   </>
                 )}
@@ -580,7 +577,6 @@ export default function PRReportsList() {
         onUploadSuccess={(response) => {
           // Refresh the reports list after successful upload
           fetchReports();
-          toast.success("CSV uploaded successfully!");
         }}
       />
     </div>

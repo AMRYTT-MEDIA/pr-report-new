@@ -72,10 +72,7 @@ const Sidebar = () => {
 
     // Special handling for PR Reports - check if current path starts with pr-reports
     if (normalizedHref === "/pr-reports-list") {
-      return (
-        normalizedPathname.startsWith("/pr-reports") ||
-        normalizedPathname.startsWith("/view-pr")
-      );
+      return normalizedPathname.startsWith("/view-pr");
     }
 
     return normalizedHref === normalizedPathname;

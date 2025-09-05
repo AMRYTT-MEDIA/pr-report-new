@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth";
 import PRReportViewer from "@/components/PRReportViewer";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import Loading from "@/components/ui/loading";
 
 export default function ViewPR() {
   const params = useParams();
@@ -126,8 +127,15 @@ export default function ViewPR() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center py-20">
-        <div className="animate-spin rounded-full border-b-2 border-purple-600 h-12 w-12"></div>
+      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
       </div>
     );
   }
