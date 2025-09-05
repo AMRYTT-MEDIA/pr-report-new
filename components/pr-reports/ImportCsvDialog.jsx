@@ -119,13 +119,13 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       onOpenChange(false);
 
       // Call success callback if provided
-      if (onUploadSuccess) {
-        onUploadSuccess(response);
-      }
 
       // Navigate to view page if grid_id is available
       if (response.data?.grid_id) {
-        router.push(`/view-pr/${response.data.grid_id}`);
+        window.open(`/view-pr/${response.data.grid_id}`, "_blank");
+      }
+      if (onUploadSuccess) {
+        onUploadSuccess(response);
       }
     } catch (error) {
       console.error("Upload error:", error);

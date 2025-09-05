@@ -20,7 +20,6 @@ import {
 import { ImportIcon } from "@/components/icon";
 import Pagination from "@/components/Pagination";
 import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
-import Link from "next/link";
 import Loading from "@/components/ui/loading";
 
 export default function PRReportsList() {
@@ -273,7 +272,7 @@ export default function PRReportsList() {
   // Show loading while auth is initializing
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
         <Loading
           size="lg"
           color="purple"
@@ -484,13 +483,13 @@ export default function PRReportsList() {
                         Get started by uploading your first CSV file to generate
                         a PR report.
                       </p>
-                      <button
+                      {/* <button
                         onClick={() => router.push("/pr-reports")}
                         className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
                       >
                         <Upload className="w-4 h-4 mr-2" />
                         Upload CSV
-                      </button>
+                      </button> */}
                     </div>
                   </>
                 )}
@@ -580,7 +579,6 @@ export default function PRReportsList() {
         onUploadSuccess={(response) => {
           // Refresh the reports list after successful upload
           fetchReports();
-          toast.success("CSV uploaded successfully!");
         }}
       />
     </div>

@@ -12,7 +12,7 @@ const LayoutWrapper = ({ children }) => {
   const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (
-    <div className="min-h-screen">
+    <div className="min-h-dvh">
       {/* Sidebar */}
       <Sidebar />
 
@@ -22,7 +22,7 @@ const LayoutWrapper = ({ children }) => {
         <NavBar isViewPRPage={isPRPage} breadcrumbItems={breadcrumbItems} />
 
         {/* Page Content */}
-        <main className="bg-slate-50">
+        <main>
           <div className="m-[15px]">{children}</div>
         </main>
       </div>
