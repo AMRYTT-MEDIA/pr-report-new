@@ -474,7 +474,6 @@ const PRReportViewer = ({
     }
   };
 
-  console.log(filteredOutlets?.map((outlet) => outlet.website_name) || []);
   if (loading) {
     return (
       <div className="space-y-6">

@@ -107,12 +107,12 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
               {
                 label: "View Profile",
                 icon: User,
-                onClick: () => console.log("View Profile clicked"),
+                onClick: () => {},
               },
               {
                 label: "Settings",
                 icon: Settings,
-                onClick: () => console.log("Settings clicked"),
+                onClick: () => {},
               },
               {
                 label: "Sign Out",
