@@ -7,7 +7,7 @@ const Loading = ({
   text = "",
   showText = false,
   textColor = "white",
-  textPosition = "end", // "start" or "end"
+  textPosition = "end", // "start", "end", "top", or "bottom"
 }) => {
   const sizeClasses = {
     sm: "h-4 w-4",
@@ -41,33 +41,71 @@ const Loading = ({
     primary: "text-primary-60",
   };
 
-  return (
-    <div className={`flex items-center justify-center gap-2 ${className}`}>
-      {showText && text && textPosition === "start" && (
-        <p
-          className={`text-sm font-medium ${
-            textColorClasses[textColor] || textColorClasses.gray
-          }`}
+  // Handle different text positions
+  const renderContent = () => {
+    if (textPosition === "top" || textPosition === "bottom") {
+      return (
+        <div
+          className={`flex flex-col items-center justify-center gap-2 ${className}`}
         >
-          {text}
-        </p>
-      )}
-      <div
-        className={`animate-spin rounded-full ${
-          sizeClasses[size]
-        } ${getBorderStyle(color)}`}
-      />
-      {showText && text && textPosition === "end" && (
-        <p
-          className={`text-sm font-medium ${
-            textColorClasses[textColor] || textColorClasses.gray
-          }`}
-        >
-          {text}
-        </p>
-      )}
-    </div>
-  );
+          {showText && text && textPosition === "top" && (
+            <p
+              className={`text-sm font-medium ${
+                textColorClasses[textColor] || textColorClasses.gray
+              }`}
+            >
+              {text}
+            </p>
+          )}
+          <div
+            className={`animate-spin rounded-full ${
+              sizeClasses[size]
+            } ${getBorderStyle(color)}`}
+          />
+          {showText && text && textPosition === "bottom" && (
+            <p
+              className={`text-sm font-medium ${
+                textColorClasses[textColor] || textColorClasses.gray
+              }`}
+            >
+              {text}
+            </p>
+          )}
+        </div>
+      );
+    }
+
+    // Horizontal layout for start/end positions
+    return (
+      <div className={`flex items-center justify-center gap-2 ${className}`}>
+        {showText && text && textPosition === "start" && (
+          <p
+            className={`text-sm font-medium ${
+              textColorClasses[textColor] || textColorClasses.gray
+            }`}
+          >
+            {text}
+          </p>
+        )}
+        <div
+          className={`animate-spin rounded-full ${
+            sizeClasses[size]
+          } ${getBorderStyle(color)}`}
+        />
+        {showText && text && textPosition === "end" && (
+          <p
+            className={`text-sm font-medium ${
+              textColorClasses[textColor] || textColorClasses.gray
+            }`}
+          >
+            {text}
+          </p>
+        )}
+      </div>
+    );
+  };
+
+  return renderContent();
 };
 
 export default Loading;

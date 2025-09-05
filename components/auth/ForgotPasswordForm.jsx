@@ -175,7 +175,11 @@ const ForgotPasswordForm = () => {
 
               {/* Form */}
               <div className="content-stretch flex flex-col gap-8 items-start justify-start relative shrink-0 w-full">
-                <form onSubmit={formik.handleSubmit} className="w-full">
+                <form
+                  onSubmit={formik.handleSubmit}
+                  className="w-full"
+                  autoComplete="off"
+                >
                   <div className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0 w-full">
                     <div className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0 w-full">
                       <div className="font-semibold leading-[0] min-w-full not-italic relative shrink-0 text-[14px] text-slate-80">
@@ -203,6 +207,7 @@ const ForgotPasswordForm = () => {
                                 onBlur={formik.handleBlur}
                                 required
                                 disabled={formik.isSubmitting}
+                                autoComplete="off"
                                 className="basis-0 font-['Inter:Regular',_sans-serif] font-normal grow leading-[0] min-h-px min-w-px not-italic relative shrink-0 text-[16px] text-slate-600 bg-transparent border-none outline-none w-full"
                               />
                             </div>
@@ -230,6 +235,7 @@ const ForgotPasswordForm = () => {
                             color="white"
                             showText={true}
                             text="Sending..."
+                            textPosition="start"
                           />
                         </div>
                       ) : (

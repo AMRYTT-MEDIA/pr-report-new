@@ -34,7 +34,14 @@ export function Guard({ mode, children }) {
   if (loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loading size="lg" color="purple" />
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
       </div>
     );
   }
