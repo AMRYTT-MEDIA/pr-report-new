@@ -154,6 +154,14 @@ export default function ViewPR() {
   }
 
   return (
-    <div>{report && <PRReportViewer report={report} isPublic={false} />}</div>
+    <div>
+      {report && (
+        <PRReportViewer
+          report={report}
+          isPublic={false}
+          fetchReportData={fetchReportData}
+        />
+      )}
+    </div>
   );
 }

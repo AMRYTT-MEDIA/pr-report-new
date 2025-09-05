@@ -112,7 +112,7 @@ export default function ReportPage() {
           // Email is verified, now load the report data
           await loadReportData(email.trim());
           setShowEmailDialog(false);
-          toast.success("Email verified successfully! Loading report...");
+          toast.success("Email verified successfully!");
         } else {
           toast.error("Email not authorized for this report");
         }
