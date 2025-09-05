@@ -164,8 +164,26 @@ const formatDate = (dateString) => {
 
 const getLogoUrl = (outletName) => {
   if (!outletName) return null;
-  const src = logoMapping[outletName];
-  return src || null;
+
+  // Helper function to normalize strings for matching
+  const normalizeString = (str) => {
+    if (!str) return "";
+    return str.toLowerCase().trim();
+  };
+
+  // First try exact match
+  let src = logoMapping[outletName];
+  if (src) return src;
+
+  // Try normalized match
+  const normalizedName = normalizeString(outletName);
+  for (const [key, value] of Object.entries(logoMapping)) {
+    if (normalizeString(key) === normalizedName) {
+      return value;
+    }
+  }
+
+  return null;
 };
 
 const PRReportPDF = ({ report, formatData }) => {

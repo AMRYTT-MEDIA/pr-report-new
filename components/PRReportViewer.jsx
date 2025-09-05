@@ -22,6 +22,7 @@ import {
   Share2,
   FileSpreadsheet,
   FileArchive,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
@@ -116,15 +117,33 @@ const PRReportViewer = ({
 
   // Optimized logo lookup to prevent lag
   const getLogoUrl = (outletName) => {
-    // Check if we have a logo for this outlet
-    const logoPath = logoMapping[outletName];
+    if (!outletName) return null;
+
+    // Helper function to normalize strings for matching
+    const normalizeString = (str) => {
+      if (!str) return "";
+      return str.toLowerCase().trim();
+    };
+
+    // First try exact match
+    let logoPath = logoMapping[outletName];
     if (logoPath) {
       // Only return the path if it's a valid format and likely exists
       if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
         return logoPath;
       }
-      // Silently skip invalid logo formats
     }
+
+    // Try normalized match
+    const normalizedName = normalizeString(outletName);
+    for (const [key, value] of Object.entries(logoMapping)) {
+      if (normalizeString(key) === normalizedName) {
+        if (value && value.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
+          return value;
+        }
+      }
+    }
+
     // Return null for unknown outlets to trigger fallback (no console output)
     return null;
   };
@@ -321,27 +340,53 @@ const PRReportViewer = ({
   const formatData = useMemo(() => {
     if (!report?.outlets) return [];
 
-    // Create a map from website_name to its order index, if present in orderMapping
+    // Helper function to normalize strings for matching
+    const normalizeString = (str) => {
+      if (!str) return "";
+      return str.toLowerCase().trim();
+    };
+
+    // Create a map from normalized website_name to its order index, if present in orderMapping
     const orderIndex = Object.entries(orderMapping).reduce(
       (acc, [key, value], idx) => {
-        acc[value] = idx;
+        const normalizedValue = normalizeString(value);
+        acc[normalizedValue] = idx;
+        return acc;
+      },
+      {}
+    );
+
+    // Create a map from normalized API website_name to orderMapping value
+    const outletNameMapping = Object.entries(orderMapping).reduce(
+      (acc, [key, value]) => {
+        const normalizedValue = normalizeString(value);
+        acc[normalizedValue] = value; // Store the original formatted value
         return acc;
       },
       {}
     );
 
     // Map and format the outlets
-    const formatted = report.outlets.map((outlet) => ({
-      ...outlet,
-      original_website_name: outlet.website_name, // Preserve original for logo mapping
-      website_name:
-        orderMapping[outlet.website_name] || outlet.website_name || "Unknown",
-    }));
+    const formatted = report.outlets.map((outlet) => {
+      const normalizedApiName = normalizeString(outlet.website_name);
+      const mappedName =
+        outletNameMapping[normalizedApiName] ||
+        outlet.website_name ||
+        "Unknown";
+
+      return {
+        ...outlet,
+        original_website_name: outlet.website_name, // Preserve original for logo mapping
+        website_name: mappedName,
+      };
+    });
 
     // Sort by orderMapping order if present, otherwise keep at the end
     const sorted = formatted.sort((a, b) => {
-      const aIdx = orderIndex[a.website_name];
-      const bIdx = orderIndex[b.website_name];
+      const aNormalized = normalizeString(a.website_name);
+      const bNormalized = normalizeString(b.website_name);
+      const aIdx = orderIndex[aNormalized];
+      const bIdx = orderIndex[bNormalized];
       if (aIdx === undefined && bIdx === undefined) return 0;
       if (aIdx === undefined) return 1;
       if (bIdx === undefined) return -1;
@@ -429,6 +474,7 @@ const PRReportViewer = ({
     }
   };
 
+  console.log(filteredOutlets?.map((outlet) => outlet.website_name) || []);
   if (loading) {
     return (
       <div className="space-y-6">
@@ -584,6 +630,12 @@ const PRReportViewer = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full focus:border-gray-300 rounded-3xl min-w-[100%] md:min-w-[300px]"
                   />
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <X
+                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                      onClick={() => setSearchTerm("")}
+                    />
+                  </div>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -641,7 +693,7 @@ const PRReportViewer = ({
         <CardContent className="p-0">
           <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <div className="max-h-[374px] 2xl:max-h-[446px] 3xl:max-h-[660px] overflow-y-auto scrollbar-custom">
+              <div className="max-h-[374px] lg:max-h-[calc(100dvh-282px)] overflow-y-auto scrollbar-custom">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -655,7 +707,7 @@ const PRReportViewer = ({
 
                   {/* Table Body */}
                   <TableBody>
-                    {filteredOutlets.map((outlet, index) => {
+                    {filteredOutlets?.map((outlet, index) => {
                       // Add unique ID for trust badge selection
                       const outletWithId = {
                         ...outlet,
@@ -667,7 +719,7 @@ const PRReportViewer = ({
                       };
 
                       return (
-                        <TableRow key={index} className="bg-white">
+                        <TableRow key={index}>
                           <TableCell className="flex items-center gap-3 min-w-[200px]">
                             {/* Logo Display Logic */}
                             {(() => {
