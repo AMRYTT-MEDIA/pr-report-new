@@ -44,7 +44,12 @@ import ShareDialog from "./ShareDialog";
 //   </div>
 // );
 
-const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
+const PRReportViewer = ({
+  report,
+  loading = false,
+  isPublic = true,
+  fetchReportData = () => {},
+}) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [imageErrors, setImageErrors] = useState(new Set());
@@ -146,7 +151,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
         payload.is_private,
         payload.sharedEmails || []
       );
-
+      fetchReportData && fetchReportData();
       toast.success("Report shared successfully!");
     } catch (error) {
       toast.error("Failed to share report");
@@ -361,14 +366,14 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
           outlet.original_website_name.toLowerCase().includes(searchLower))
       );
     });
-  }, [formatData, debouncedSearchTerm]);
+  }, [formatData, debouncedSearchTerm, showShareDialog]);
 
   // Paginate the filtered outlets
-  const paginatedOutlets = useMemo(() => {
-    const startIndex = (currentPage - 1) * rowsPerPage;
-    const endIndex = startIndex + rowsPerPage;
-    return filteredOutlets.slice(startIndex, endIndex);
-  }, [filteredOutlets, currentPage, rowsPerPage]);
+  // const paginatedOutlets = useMemo(() => {
+  //   const startIndex = (currentPage - 1) * rowsPerPage;
+  //   const endIndex = startIndex + rowsPerPage;
+  //   return filteredOutlets.slice(startIndex, endIndex);
+  // }, [filteredOutlets, currentPage, rowsPerPage]);
 
   const formatNumber = (num) => {
     // Handle undefined, null, or invalid numbers
@@ -650,7 +655,7 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
 
                   {/* Table Body */}
                   <TableBody>
-                    {paginatedOutlets.map((outlet, index) => {
+                    {filteredOutlets.map((outlet, index) => {
                       // Add unique ID for trust badge selection
                       const outletWithId = {
                         ...outlet,
@@ -816,13 +821,13 @@ const PRReportViewer = ({ report, loading = false, isPublic = true }) => {
             </div>
           )}
 
-          {filteredOutlets.length > 0 && paginatedOutlets.length === 0 && (
+          {/* {filteredOutlets.length > 0 && paginatedOutlets.length === 0 && (
             <div className="text-center py-6">
               <p className="text-muted-foreground">
                 No results for the current page. Please go to a previous page.
               </p>
             </div>
-          )}
+          )} */}
         </CardContent>
       </Card>
 

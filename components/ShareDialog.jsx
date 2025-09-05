@@ -28,7 +28,12 @@ const createEmailValidationSchema = (existingEmails) =>
   Yup.object().shape({
     newEmail: Yup.string()
       .email("Please enter a valid email address")
-      .required("Email is required")
+      .test("required-when-no-emails", "Email is required", function (value) {
+        if (existingEmails.length === 0 && (!value || value.trim() === "")) {
+          return false;
+        }
+        return true;
+      })
       .test("unique-email", "This email is already added", function (value) {
         return !existingEmails.includes(value);
       }),
@@ -51,7 +56,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
     }
   }, [report]);
 
-  // Initialize emails with shared emails from API if available
+  // Initialize emails with shared emails from API if available (only once)
   useEffect(() => {
     if (report && report.sharedEmails && report.sharedEmails.length > 0) {
       setEmails(report.sharedEmails);
@@ -61,7 +66,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       setEmails([]);
       setIsPrivate(false);
     }
-  }, [report]);
+  }, [report?.grid_id || report?._id || report?.id]); // Only re-initialize when report ID changes
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -101,9 +106,9 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
     if (privacy === "public") {
       setEmails([]);
     } else {
-      if (report?.sharedEmails?.length > 0) {
+      // Only initialize from API if no emails are currently set locally
+      if (emails.length === 0 && report?.sharedEmails?.length > 0) {
         setEmails(report.sharedEmails);
-        setIsPrivate(true);
       }
     }
     setIsDropdownOpen(false);
@@ -136,10 +141,8 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       // Call the share API
       await onShare(payload);
 
-      // Don't reset emails if they were pre-populated from API
-      if (!report?.sharedEmails || report.sharedEmails.length === 0) {
-        setEmails([]);
-      }
+      // Don't reset emails - preserve current state
+      // The API call will update the report data, so we keep the current emails
 
       onClose();
       window.open(
@@ -306,23 +309,35 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                   <div>
                     <Field name="newEmail">
                       {({ field, meta }) => (
-                        <Input
-                          {...field}
-                          type="email"
-                          placeholder="Enter email address"
-                          className={`flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none ${
-                            meta.touched && meta.error
-                              ? "border-danger-60 focus:border-danger-60"
-                              : "border-gray-300 focus:border-gray-300"
-                          }`}
-                          disabled={!isPrivate}
-                          onKeyPress={(e) => {
-                            if (e.key === "Enter") {
-                              e.preventDefault();
-                              handleSubmit();
-                            }
-                          }}
-                        />
+                        <div className="relative">
+                          <Input
+                            {...field}
+                            type="email"
+                            placeholder="Enter email address"
+                            className={`flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none ${
+                              meta.touched && meta.error
+                                ? "border-danger-60 focus:border-danger-60"
+                                : "border-gray-300 focus:border-gray-300"
+                            }`}
+                            disabled={!isPrivate}
+                            onKeyPress={(e) => {
+                              if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSubmit();
+                              }
+                            }}
+                          />
+                          <div
+                            className={`text-xs text-gray-scale-80 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-gray-scale-20 rounded-md px-2 py-1 font-medium cursor-pointer border border-gray-scale-20 ${
+                              isPrivate
+                                ? "opacity-100"
+                                : "opacity-0 cursor-not-allowed pointer-events-none"
+                            }`}
+                            onClick={handleSubmit}
+                          >
+                            Press Enter
+                          </div>
+                        </div>
                       )}
                     </Field>
                     {errors.newEmail && touched.newEmail && (
@@ -377,6 +392,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           <Button
             variant="default"
             onClick={handleShare}
+            disabled={emails.length === 0 && isPrivate}
             className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold w-full sm:w-auto"
           >
             <CircleCheckBig className="h-4 w-4" />
