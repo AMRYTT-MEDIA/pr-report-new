@@ -19,8 +19,8 @@ const Pagination = ({
   const dropdownRef = useRef(null);
 
   const rowsPerPageOptions = [25, 50, 100];
-  // const totalPages = Math.ceil(totalItems / localRowsPerPage);
-  const totalPages = 100; // for testing
+  const totalPages = Math.ceil(totalItems / localRowsPerPage);
+  // const totalPages = 100; // for testing
   const startItem = (localCurrentPage - 1) * localRowsPerPage + 1;
   const endItem = Math.min(localCurrentPage * localRowsPerPage, totalItems);
 
