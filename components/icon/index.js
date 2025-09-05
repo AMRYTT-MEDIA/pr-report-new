@@ -11,3 +11,4 @@ export { default as RightArrow } from "./RightArrow";
 export { default as ImportIcon } from "./ImportIcon";
 export { default as HomeIcon } from "./HomeIcon";
 export { default as MenuIcon } from "./MenuIcon";
+export { default as NoDataFound } from "./NoDataFound";

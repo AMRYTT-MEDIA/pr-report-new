@@ -7,6 +7,7 @@ import { Mail, X, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
 import { publicPrReportsService } from "@/services/publicPrReports";
 import PRReportViewer from "@/components/PRReportViewer";
+import ReportNotFound from "@/components/ReportNotFound";
 import { AlertCircle } from "lucide-react";
 import Image from "next/image";
 
@@ -155,22 +156,10 @@ export default function ReportPage() {
     );
   }
 
+  // if report is not found and not in email dialog
+  // show report not found component
   if (!report && !showEmailDialog) {
-    return (
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-8">
-          <Card>
-            <CardContent className="text-center py-12">
-              <AlertCircle className="h-12 w-12 text-destructive mx-auto mb-4" />
-              <h3 className="text-lg font-semibold mb-2">Report Not Found</h3>
-              <p className="text-muted-foreground">
-                The report you're looking for doesn't exist or has been removed.
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
+    return <ReportNotFound />;
   }
 
   return (
@@ -227,12 +216,12 @@ export default function ReportPage() {
                         <Mail className="w-7 h-7 text-slate-600" />
                       </div>
                     </div>
-                    <button
+                    {/* <button
                       onClick={() => setShowEmailDialog(false)}
                       className="relative shrink-0 size-6 hover:bg-gray-100 rounded"
                     >
                       <X className="w-6 h-6 text-slate-600" />
-                    </button>
+                    </button> */}
                   </div>
 
                   {/* Title and Description */}

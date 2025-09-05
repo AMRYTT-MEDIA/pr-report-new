@@ -62,7 +62,7 @@ const Sidebar = () => {
       name: "PR Reports",
       href: "/pr-reports-list",
       icon: FileSpreadsheet,
-      badge: prReportsCount > 0 ? prReportsCount.toString() : 0,
+      badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
     },
   ];
 
@@ -191,7 +191,9 @@ const Sidebar = () => {
                       "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",
                       active
                         ? "bg-slate-100 border border-slate-200"
-                        : "hover:bg-slate-100/50 border border-transparent"
+                        : "hover:bg-slate-100/50 border border-transparent",
+                      (item.href === "/website" || item.href === "/users") &&
+                        "opacity-50 cursor-not-allowed pointer-events-none"
                     )}
                     aria-current={active ? "page" : undefined}
                   >
