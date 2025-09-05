@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +22,6 @@ import {
   EmailIcon,
   LockIcon,
   EyeCloseIcon,
-  EyeOpenIcon,
   ArrowRightIcon,
 } from "@/components/icon";
 import { useFormik } from "formik";
@@ -32,16 +31,33 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { globalConstants } from "@/lib/constants/globalConstants";
 import { getuserdatabyfirebaseid } from "@/services/user";
-import { EyeClosed } from "lucide-react";
+import { Eye, EyeClosed } from "lucide-react";
 
-const LoginForm = () => {
+const LoginForm = ({ searchParams }) => {
   const recaptchaSiteKey = process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_KEY;
   const [loading, setLoading] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
-  const { setUser, logout } = useAuth();
+  const [isRedirecting, setIsRedirecting] = useState(false);
+  const {
+    user,
+    setUser,
+    logout,
+    loading: authLoading,
+    initialized,
+  } = useAuth();
   const router = useRouter();
-  const searchParams = useSearchParams();
+
+  // Handle redirect for already logged in users
+  useEffect(() => {
+    if (initialized && user) {
+      setIsRedirecting(true);
+      const next = searchParams.next || "/pr-reports-list";
+      setTimeout(() => {
+        router.push(next);
+      }, 100);
+    }
+  }, [user, initialized, router, searchParams]);
 
   // Firebase error mapping
   const getFirebaseErrorMessage = (error) => {
@@ -126,10 +142,10 @@ const LoginForm = () => {
             if (userData) {
               // User exists in backend - set user data in auth context
               setUser(userData);
-              toast.success("Sign in successful! Redirecting...");
+              toast.success("Sign in successful!");
 
               // Redirect to the intended page or default to pr-reports
-              const next = searchParams.get("next") || "/pr-reports-list";
+              const next = searchParams.next || "/pr-reports-list";
               router.replace(next);
             } else {
               logout();
@@ -171,6 +187,24 @@ const LoginForm = () => {
   // Loading state is handled by parent component (login page)
   // This component only renders when user is not logged in and auth is initialized
 
+  // Show loading while checking auth state or redirecting
+  if (!initialized || authLoading || isRedirecting) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center p-4">
+        <div className="flex flex-col items-center justify-center space-y-4">
+          <Loading
+            size="lg"
+            color="purple"
+            showText={true}
+            textColor="black"
+            textPosition="bottom"
+            text={isRedirecting ? "Redirecting..." : "Loading..."}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <Card className="w-full max-w-[607px] rounded-3xl border border-gray-200 bg-white/99 shadow-login-card p-[45px]">
@@ -192,7 +226,11 @@ const LoginForm = () => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 pt-10">
-          <form onSubmit={formik.handleSubmit} className="space-y-4">
+          <form
+            onSubmit={formik.handleSubmit}
+            className="space-y-4"
+            autoComplete="off"
+          >
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -211,6 +249,7 @@ const LoginForm = () => {
                   onBlur={formik.handleBlur}
                   required
                   disabled={loading}
+                  autoComplete="off"
                   className={`pl-10 text-input-field ${
                     formik.touched.email && formik.errors.email
                       ? "border-red-500"
@@ -240,6 +279,7 @@ const LoginForm = () => {
                   onBlur={formik.handleBlur}
                   required
                   disabled={loading}
+                  autoComplete="off"
                   className={`pl-10 pr-10 text-input-field ${
                     formik.touched.password && formik.errors.password
                       ? "border-red-500"
@@ -254,7 +294,7 @@ const LoginForm = () => {
                   {showPassword ? (
                     <EyeClosed className="h-5 w-5 text-gray-scale-100" />
                   ) : (
-                    <EyeOpenIcon className="h-5 w-5 text-gray-scale-100" />
+                    <Eye className="h-5 w-5 text-gray-scale-100" />
                   )}
                 </button>
               </div>

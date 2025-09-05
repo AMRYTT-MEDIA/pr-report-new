@@ -11,7 +11,7 @@ import React, {
 
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { usePathname, useRouter } from "next/navigation";
-import { auth } from "./firebase";
+import { getFirebaseAuth } from "./firebase";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { toast } from "sonner";
 import { globalConstants } from "./constants/globalConstants";
@@ -38,6 +38,20 @@ const AuthProvider = ({ children }) => {
   const [initialized, setInitialized] = useState(false);
   const pathName = usePathname();
   useEffect(() => {
+    // Only run auth state listener on client side
+    if (typeof window === "undefined") {
+      setLoading(false);
+      setInitialized(true);
+      return;
+    }
+
+    const auth = getFirebaseAuth();
+    if (!auth) {
+      setLoading(false);
+      setInitialized(true);
+      return;
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       if (!initialized) {
         setLoading(true);
@@ -73,7 +87,10 @@ const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      const auth = getFirebaseAuth();
+      if (auth) {
+        await signOut(auth);
+      }
       setUser(null);
       return { success: true };
     } catch (error) {

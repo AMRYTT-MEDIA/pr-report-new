@@ -21,6 +21,7 @@ import { ImportIcon } from "@/components/icon";
 import Pagination from "@/components/Pagination";
 import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
 import Link from "next/link";
+import Loading from "@/components/ui/loading";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -273,9 +274,14 @@ export default function PRReportsList() {
   if (authLoading || loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-        </div>
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
       </div>
     );
   }
