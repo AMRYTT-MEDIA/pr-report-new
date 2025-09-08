@@ -2,24 +2,12 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import {
-  Search,
-  Upload,
-  Eye,
-  ChevronUp,
-  ChevronDown,
-  ArrowUpDown,
-  Share2,
-  Trash2,
-  FileText,
-  Lock,
-  EyeOff,
-  Globe,
-} from "lucide-react";
+import { Upload, Eye, Share2, Trash2, File } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/lib/auth";
+import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import ShareDialog from "@/components/ShareDialog";
@@ -29,6 +17,10 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { ImportIcon, NoDataFound } from "@/components/icon";
+import Pagination from "@/components/Pagination";
+import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
+import Loading from "@/components/ui/loading";
 
 export default function PRReportsList() {
   const { user, loading: authLoading } = useAuth();
@@ -41,6 +33,7 @@ export default function PRReportsList() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [reportToDelete, setReportToDelete] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -132,14 +125,14 @@ export default function PRReportsList() {
   };
 
   // Handle sorting
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortOrder(sortOrder === "asc" ? "desc" : "asc");
-    } else {
-      setSortField(field);
-      setSortOrder("asc");
-    }
-  };
+  // const handleSort = (field) => {
+  //   if (sortField === field) {
+  //     setSortOrder(sortOrder === "asc" ? "desc" : "asc");
+  //   } else {
+  //     setSortField(field);
+  //     setSortOrder("asc");
+  //   }
+  // };
 
   // Handle share report
   const handleShareReport = async (payload) => {
@@ -223,18 +216,23 @@ export default function PRReportsList() {
   };
 
   // Get status color
-  const getStatusColor = (status) => {
-    switch (status?.toLowerCase()) {
-      case "completed":
-        return "bg-green-100 text-green-800";
-      case "processing":
-        return "bg-yellow-100 text-yellow-800";
-      case "failed":
-        return "bg-red-100 text-red-800";
-      default:
-        return "bg-gray-100 text-gray-800";
-    }
-  };
+  // const getStatusColor = (status) => {
+  //   switch (status?.toLowerCase()) {
+  //     case "completed":
+  //       return "bg-green-100 text-green-800";
+  //     case "processing":
+  //       return "bg-yellow-100 text-yellow-800";
+  //     case "failed":
+  //       return "bg-red-100 text-red-800";
+  //     default:
+  //       return "bg-gray-100 text-gray-800";
+  //   }
+  // };
+
+  // Direct render - no useEffect needed
+  useBreadcrumbDirect([
+    { name: "All Reports", href: "/pr-reports-list", current: true },
+  ]);
 
   // Fetch reports on mount and when dependencies change
   useEffect(() => {
@@ -274,10 +272,15 @@ export default function PRReportsList() {
   // Show loading while auth is initializing
   if (authLoading || loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
-        </div>
+      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
       </div>
     );
   }
@@ -288,86 +291,92 @@ export default function PRReportsList() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="container mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-4 mb-4 sm:mb-0">
-              <h1 className="text-3xl font-bold text-gray-900">
+    <div className="bg-gray-50">
+      <div className="mx-auto">
+        <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
+          {/* Header Section */}
+          <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                 All PR Reports
               </h1>
-              <Badge variant="secondary" className="text-lg px-3 py-1">
+              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
                 {totalCount}
-              </Badge>
+              </div>
             </div>
             <Button
-              onClick={() => router.push("/pr-reports")}
-              className="bg-orange-500 hover:bg-orange-600 text-white px-6 py-3 border-orange-500"
+              onClick={() => setImportDialogOpen(true)}
+              className="text-white px-6 py-3 flex items-center gap-2 bg-primary-50 rounded-3xl"
             >
-              <Upload className="w-5 h-5 mr-2" />
-              Import
+              <ImportIcon color="#fff" width={20} height={20} />
+              <span className="hidden sm:inline">Import</span>
             </Button>
           </div>
-        </div>
 
-        {/* Reports Table */}
-        {reports.length > 0 ? (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
+          <div className="overflow-x-auto">
+            {/* Table Section */}
+            <div className="max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
+              <table className="w-full divide-y divide-gray-200 table-auto">
                 <thead className="bg-gray-50 w-full">
                   <tr className="w-full ">
-                    <th className="px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-sm font-medium w-[60%]">
                       Full Name
                     </th>
-                    <th className="flex flex-row justify-end pr-20 px-6 py-4 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-4 text-left text-sm font-medium w-[20%]">
+                      Created by
+                    </th>
+                    <th className="px-6 py-3  whitespace-nowrap text-sm font-medium text-left  w-[20%]">
                       Actions
                     </th>
                   </tr>
                 </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {reports.map((report) => (
-                    <tr
-                      key={report.grid_id || report._id}
-                      className="hover:bg-gray-50"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="flex-shrink-0">
-                            <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                              <FileText className="w-5 h-5 text-blue-600" />
-                            </div>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            {needsTruncation(report.report_title) ? (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-900 truncate cursor-help">
-                                      {formatTitle(report.report_title)}
-                                    </p>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                    side="top"
-                                    align="start"
-                                  >
-                                    <div className="break-words">
-                                      {report?.report_title}
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ) : (
-                              <p className="text-sm font-medium text-gray-900">
-                                {report?.report_title || "Untitled Report"}
+                {reports?.length > 0 && (
+                  <tbody className="bg-white divide-y divide-gray-200 max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
+                    {reports.map((report) => (
+                      <tr
+                        key={report.grid_id || report._id}
+                        className="hover:bg-gray-50"
+                      >
+                        <td className="px-6 py-3">
+                          <div className="flex items-center gap-4">
+                            <div className="relative">
+                              <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
+                                CSV
                               </p>
-                            )}
-                            <div className="flex items-center mt-1 text-sm text-gray-500">
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
+                              <File className="w-10 h-10 text-gray-scale-20" />
+                            </div>
+                            {/* <div className="text-base font-medium text-gray-scale-60 truncate max-w-[200px] lg:max-w-[230px] xl:max-w-[500px] 2xl:max-w-[700px] 3xl:max-w-[900px]">
+                            {report?.report_title}
+                          </div> */}
+                            <div className="flex-1 min-w-0">
+                              {needsTruncation(report.report_title) ? (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <p className="text-base font-medium text-gray-scale-60 truncate cursor-help">
+                                        {formatTitle(report.report_title)}
+                                      </p>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                      side="top"
+                                      align="start"
+                                    >
+                                      <div className="break-words">
+                                        {report?.report_title}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ) : (
+                                <p className="text-base font-medium text-gray-scale-60">
+                                  {report?.report_title || "Untitled Report"}
+                                </p>
+                              )}
+                              <div className="flex items-center mt-1 text-sm text-gray-500">
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    {/* <TooltipTrigger asChild>
                                     <div
                                       className={`inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium cursor-help ${
                                         report.is_private
@@ -382,58 +391,70 @@ export default function PRReportsList() {
                                       )}
                                       {report.is_private ? "Private" : "Public"}
                                     </div>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                    side="top"
-                                    align="start"
-                                  >
-                                    <div className="text-center">
-                                      <p className="font-medium mb-1">
-                                        {report.is_private
-                                          ? "🔒 Private Report"
-                                          : "🌐 Public Report"}
-                                      </p>
-                                      <p className="text-sm text-gray-300">
-                                        {report.is_private
-                                          ? "Only you and people you specifically share with can view this report."
-                                          : "Anyone with the link can view this report."}
-                                      </p>
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
+                                  </TooltipTrigger> */}
+                                    <TooltipContent
+                                      className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                      side="top"
+                                      align="start"
+                                    >
+                                      <div className="text-center">
+                                        <p className="font-medium mb-1">
+                                          {report.is_private
+                                            ? "🔒 Private Report"
+                                            : "🌐 Public Report"}
+                                        </p>
+                                        <p className="text-sm text-gray-300">
+                                          {report.is_private
+                                            ? "Only you and people you specifically share with can view this report."
+                                            : "Anyone with the link can view this report."}
+                                        </p>
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-6 whitespace-nowrap text-sm font-medium flex flex-row justify-end items-center">
-                        <div className="flex items-center space-x-3">
+                        </td>
+                        <td className="px-6 py-3">
+                          <p className="text-gray-scale-60 font-semibold mb-1">
+                            {report?.uploaded_by?.name || "-"}
+                          </p>
+                          <p className="text-gray-scale-60 text-nowrap font-medium text-sm">
+                            {formatDate(report?.createdAt || "-")}
+                          </p>
+                        </td>
+                        <td className="px-6 py-3 whitespace-nowrap gap-2 text-sm font-medium flex flex-row  items-center">
                           <button
                             onClick={() =>
                               router.push(
                                 `/view-pr/${report.grid_id || report._id}`
                               )
                             }
-                            className="text-blue-600 hover:text-blue-900 flex items-center gap-1"
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Eye className="w-4 h-4" />
                             View
                           </button>
                           <button
                             onClick={() => openShareDialog(report)}
-                            className="text-green-600 hover:text-green-900 flex items-center gap-1"
+                            className="text-gray-scale-60 hover:text-gray-scale-80 flex items-center gap-1 bg-gray-scale-10 py-2.5 px-4 rounded-3xl"
                           >
                             <Share2 className="w-4 h-4" />
-                            Share
+                            {report?.is_private &&
+                            report?.sharedEmails?.length === 0
+                              ? "Share"
+                              : report?.is_private
+                              ? "Private"
+                              : "Public"}
                           </button>
                           <button
                             onClick={() => openDeleteDialog(report)}
                             disabled={deleteLoading}
-                            className={`flex items-center gap-1 ${
+                            className={`flex items-center gap-1 bg-[#E11D481A]/10 rounded-full px-4 py-2 text-danger-60 ${
                               deleteLoading
                                 ? "text-gray-400 cursor-not-allowed"
-                                : "text-red-600 hover:text-red-900"
+                                : "text-danger-60 hover:text-danger-80"
                             }`}
                           >
                             {deleteLoading ? (
@@ -443,68 +464,34 @@ export default function PRReportsList() {
                             )}
                             {deleteLoading ? "Deleting..." : "Delete"}
                           </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                )}
               </table>
             </div>
+            {reports?.length === 0 && (
+              <div className="flex items-center justify-center h-full min-h-[368px] 2xl:min-h-[368px] 3xl:min-h-[580px] w-full border-t border-gray-200">
+                <div className="flex flex-col items-center justify-center gap-2">
+                  <NoDataFound />
+                  <p className="text-gray-scale-80 text-sm font-semibold">
+                    No Data Found...
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
-        ) : (
-          /* Empty State */
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-12 text-center">
-            <div className="mx-auto w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4">
-              <Upload className="w-8 h-8 text-gray-400" />
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No reports yet
-            </h3>
-            <p className="text-gray-600 mb-6">
-              Get started by uploading your first CSV file to generate a PR
-              report.
-            </p>
-            <button
-              onClick={() => router.push("/pr-reports")}
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-orange-500 hover:bg-orange-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Upload CSV
-            </button>
-          </div>
-        )}
 
-        {/* Pagination */}
-        {totalCount > pageSize && (
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 px-6 py-4 mt-6">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-700">
-                Showing {Math.min((currentPage - 1) * pageSize + 1, totalCount)}
-                -{Math.min(currentPage * pageSize, totalCount)} of {totalCount}{" "}
-                results
-              </div>
-              <div className="flex items-center space-x-2">
-                <button
-                  onClick={() => handlePageChange(currentPage - 1)}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                >
-                  Previous
-                </button>
-                <span className="px-3 py-1 text-sm text-gray-700">
-                  Page {currentPage} of {Math.ceil(totalCount / pageSize)}
-                </span>
-                <button
-                  onClick={() => handlePageChange(currentPage + 1)}
-                  disabled={currentPage >= Math.ceil(totalCount / pageSize)}
-                  className="px-3 py-1 border border-gray-300 rounded-md text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
-                >
-                  Next
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
+          {/* Pagination */}
+          <Pagination
+            totalItems={totalCount}
+            currentPage={currentPage}
+            rowsPerPage={pageSize}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handlePageSizeChange}
+          />
+        </div>
 
         {/* Share Dialog */}
         <ShareDialog
@@ -570,6 +557,16 @@ export default function PRReportsList() {
           </div>
         )}
       </div>
+
+      {/* Import CSV Dialog */}
+      <ImportCsvDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        onUploadSuccess={(response) => {
+          // Refresh the reports list after successful upload
+          fetchReports();
+        }}
+      />
     </div>
   );
 }

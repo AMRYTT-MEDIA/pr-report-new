@@ -22,6 +22,11 @@ export const prReportsService = {
     });
   },
 
+  // Get total count of PR reports
+  getPRReportTotalCount: async () => {
+    return await apiGet("/pr-distributions/getPRReportTotalCount");
+  },
+
   // Get PR report by ID
   getReportById: async (reportId) => {
     return await apiGet(`/pr-distributions/getPRReportByBatchId/${reportId}`);

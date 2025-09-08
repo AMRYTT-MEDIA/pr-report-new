@@ -12,6 +12,11 @@ const nextConfig = {
   basePath: "", // Ensure no base path issues
   assetPrefix: "", // Ensure assets load correctly
 
+  // Firebase compatibility
+  experimental: {
+    esmExternals: false,
+  },
+
   env: {
     NEXT_PUBLIC_GPL_BACKEND_BASE_URL:
       process.env.ENV === "staging" || process.env.NODE_ENV === "development"

@@ -1,17 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  TotalPublicationIcon,
-  TotalReachIcon,
-  StatusIcon,
-} from "@/components/icon";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { TotalPublicationIcon, TotalReachIcon } from "@/components/icon";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -25,41 +14,39 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Search,
-  ExternalLink,
-  Download,
   Eye,
-  BarChart3,
   Share2,
-  Copy,
+  FileSpreadsheet,
+  FileArchive,
+  X,
+  FileSpreadsheetIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import {
-  HoverCard,
-  HoverCardContent,
-  HoverCardTrigger,
-} from "@/components/ui/hover-card.jsx";
+import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
 import { pdf } from "@react-pdf/renderer";
 import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
-import ShareDialogView from "@/components/ShareDialogView";
-import URLTableCell from "@/components/URLTableCell";
 import PRReportPDF from "./PRReportPDF";
+import Pagination from "./Pagination";
+import URLTableCell from "./URLTableCell";
+import Loading from "./ui/loading";
+import ShareDialog from "./ShareDialog";
 
 // PDF Loading Component
-const PDFLoadingComponent = () => (
-  <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
-    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-    Pdf
-  </div>
-);
+// const PDFLoadingComponent = () => (
+//   <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
+//     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
+//     Pdf
+//   </div>
+// );
 
 const PRReportViewer = ({
   report,
   loading = false,
-  onShare,
-  isShowButton = false,
+  isPublic = true,
+  fetchReportData = () => {},
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
@@ -67,6 +54,9 @@ const PRReportViewer = ({
   const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(25);
 
   // Debounce search term to prevent excessive filtering
   useEffect(() => {
@@ -76,6 +66,11 @@ const PRReportViewer = ({
 
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  // Reset to first page when search term changes
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [debouncedSearchTerm]);
 
   const handleImageError = (outletName) => {
     // Silently handle image errors without console output
@@ -107,17 +102,45 @@ const PRReportViewer = ({
     return imageLoading.has(outletName);
   };
 
+  // Pagination handlers
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const handleRowsPerPageChange = (newRowsPerPage) => {
+    setRowsPerPage(newRowsPerPage);
+    setCurrentPage(1); // Reset to first page when changing rows per page
+  };
+
   // Optimized logo lookup to prevent lag
   const getLogoUrl = (outletName) => {
-    // Check if we have a logo for this outlet
-    const logoPath = logoMapping[outletName];
+    if (!outletName) return null;
+
+    // Helper function to normalize strings for matching
+    const normalizeString = (str) => {
+      if (!str) return "";
+      return str.toLowerCase().trim();
+    };
+
+    // First try exact match
+    let logoPath = logoMapping[outletName];
     if (logoPath) {
       // Only return the path if it's a valid format and likely exists
       if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
         return logoPath;
       }
-      // Silently skip invalid logo formats
     }
+
+    // Try normalized match
+    const normalizedName = normalizeString(outletName);
+    for (const [key, value] of Object.entries(logoMapping)) {
+      if (normalizeString(key) === normalizedName) {
+        if (value && value.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
+          return value;
+        }
+      }
+    }
+
     // Return null for unknown outlets to trigger fallback (no console output)
     return null;
   };
@@ -144,7 +167,7 @@ const PRReportViewer = ({
         payload.is_private,
         payload.sharedEmails || []
       );
-
+      fetchReportData && fetchReportData();
       toast.success("Report shared successfully!");
     } catch (error) {
       toast.error("Failed to share report");
@@ -208,7 +231,7 @@ const PRReportViewer = ({
           `PR_Report_${report.id || "report"}.pdf`,
           "application/pdf"
         );
-        toast.success("PDF download started");
+        toast.success("PDF download completed");
       } catch (error) {
         console.error("PDF generation failed:", error);
         toast.error("PDF generation failed");
@@ -219,7 +242,7 @@ const PRReportViewer = ({
       // Generate CSV content
       const csvContent = generateCSVContent(report);
       downloadFile(csvContent, `PR_Report_${csvContent}.csv`, "text/csv");
-      toast.success("CSV download started");
+      toast.success("CSV download completed");
     }
   };
 
@@ -314,27 +337,53 @@ const PRReportViewer = ({
   const formatData = useMemo(() => {
     if (!report?.outlets) return [];
 
-    // Create a map from website_name to its order index, if present in orderMapping
+    // Helper function to normalize strings for matching
+    const normalizeString = (str) => {
+      if (!str) return "";
+      return str.toLowerCase().trim();
+    };
+
+    // Create a map from normalized website_name to its order index, if present in orderMapping
     const orderIndex = Object.entries(orderMapping).reduce(
       (acc, [key, value], idx) => {
-        acc[value] = idx;
+        const normalizedValue = normalizeString(value);
+        acc[normalizedValue] = idx;
+        return acc;
+      },
+      {}
+    );
+
+    // Create a map from normalized API website_name to orderMapping value
+    const outletNameMapping = Object.entries(orderMapping).reduce(
+      (acc, [key, value]) => {
+        const normalizedValue = normalizeString(value);
+        acc[normalizedValue] = value; // Store the original formatted value
         return acc;
       },
       {}
     );
 
     // Map and format the outlets
-    const formatted = report.outlets.map((outlet) => ({
-      ...outlet,
-      original_website_name: outlet.website_name, // Preserve original for logo mapping
-      website_name:
-        orderMapping[outlet.website_name] || outlet.website_name || "Unknown",
-    }));
+    const formatted = report.outlets.map((outlet) => {
+      const normalizedApiName = normalizeString(outlet.website_name);
+      const mappedName =
+        outletNameMapping[normalizedApiName] ||
+        outlet.website_name ||
+        "Unknown";
+
+      return {
+        ...outlet,
+        original_website_name: outlet.website_name, // Preserve original for logo mapping
+        website_name: mappedName,
+      };
+    });
 
     // Sort by orderMapping order if present, otherwise keep at the end
     const sorted = formatted.sort((a, b) => {
-      const aIdx = orderIndex[a.website_name];
-      const bIdx = orderIndex[b.website_name];
+      const aNormalized = normalizeString(a.website_name);
+      const bNormalized = normalizeString(b.website_name);
+      const aIdx = orderIndex[aNormalized];
+      const bIdx = orderIndex[bNormalized];
       if (aIdx === undefined && bIdx === undefined) return 0;
       if (aIdx === undefined) return 1;
       if (bIdx === undefined) return -1;
@@ -359,7 +408,14 @@ const PRReportViewer = ({
           outlet.original_website_name.toLowerCase().includes(searchLower))
       );
     });
-  }, [formatData, debouncedSearchTerm]);
+  }, [formatData, debouncedSearchTerm, showShareDialog]);
+
+  // Paginate the filtered outlets
+  // const paginatedOutlets = useMemo(() => {
+  //   const startIndex = (currentPage - 1) * rowsPerPage;
+  //   const endIndex = startIndex + rowsPerPage;
+  //   return filteredOutlets.slice(startIndex, endIndex);
+  // }, [filteredOutlets, currentPage, rowsPerPage]);
 
   const formatNumber = (num) => {
     // Handle undefined, null, or invalid numbers
@@ -457,330 +513,344 @@ const PRReportViewer = ({
   }
 
   return (
-    <div className="space-y-6">
-      {/* Report Header */}
-      {/* <Card>
-        <CardHeader>
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <CardTitle className="text-2xl">{report.title}</CardTitle>
-              <CardDescription>
-                Press Release Distribution Report •{" "}
-                {formatDate(report.date_created)}
-              </CardDescription>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={handleShare}>
-                <Share2 className="h-4 w-4 mr-2" />
-                Share
-              </Button>
-              <Button variant="outline" size="sm">
-                <Download className="h-4 w-4 mr-2" />
-                Export
-              </Button>
-            </div>
-          </div>
-        </CardHeader>
-      </Card> */}
-
+    <div className="">
       {/* Summary Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
-              Total Publications
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
+        <Card className="bg-primary-5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
+                Total Publications
+              </div>
+              <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
+                {report.total_outlets || 0}
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                  / Media outlets
+                </p>
+              </div>
             </CardTitle>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
+            <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
               <TotalPublicationIcon
-                color="#6366F1"
-                width={16}
-                height={16}
-                className="sm:w-5 sm:h-5"
+                color="#4F46E5"
+                width={50}
+                height={50}
+                // className="sm:w-5 sm:h-5"
               />
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="text-xl sm:text-2xl font-bold">
-              {report.total_outlets || 0}
-            </div>
-            <p className="text-xs text-muted-foreground">Media outlets</p>
-          </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
-              Total Reach
+        <Card className="bg-orange-5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
+                Total Reach
+              </div>
+              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end gap-2 text-gray-scale-80">
+                {formatNumber(report.total_semrush_traffic)}
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                  / Potential audience
+                </p>
+              </div>
             </CardTitle>
-            <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center">
-              <StatusIcon
-                color="#6366F1"
-                width={16}
-                height={16}
-                className="sm:w-5 sm:h-5"
+            <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
+              <TotalReachIcon
+                color="#EEAE00"
+                width={50}
+                height={50}
+                // className="sm:w-5 sm:h-5"
               />
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
-            <div className="text-xl sm:text-2xl font-bold">
-              {formatNumber(report.total_semrush_traffic)}
-            </div>
-            <p className="text-xs text-muted-foreground">Potential audience</p>
-          </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between pb-2">
-            <CardTitle className="text-sm sm:text-[16px] font-medium text-blue-500">
-              Report Status
+        <Card className="bg-lime-5">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
+                Report Status
+              </div>
+              <div className="flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
+                <Badge
+                  className="capitalize text-[#65A30D] bg-[#65A30D1A] py-2 px-3 text-sm"
+                  variant={
+                    report.status === "completed" ? "green" : "secondary"
+                  }
+                >
+                  {report?.status || "Completed"}
+                </Badge>
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                  {report?.date_created
+                    ? `Created ${formatDate(report.date_created)}`
+                    : "/ Distribution complete"}
+                </p>
+              </div>
             </CardTitle>
             <div className="relative">
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-50 rounded-lg flex items-center justify-center cursor-pointer hover:bg-blue-100 active:bg-blue-200 transition-colors">
-                    <TotalReachIcon
-                      color="#6366F1"
-                      width={16}
-                      height={16}
-                      className="sm:w-5 sm:h-5"
-                    />
-                  </div>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-32 p-0" align="center">
-                  <div className="p-3">
-                    <div className="space-y-1">
-                      <button
-                        onClick={() => handleDownload("pdf")}
-                        disabled={isGeneratingPDF}
-                        className={`w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2 transition-colors ${
-                          isGeneratingPDF ? "opacity-50 cursor-not-allowed" : ""
-                        }`}
-                      >
-                        {isGeneratingPDF ? (
-                          <PDFLoadingComponent />
-                        ) : (
-                          <>
-                            <Download className="h-4 w-4" />
-                            PDF
-                          </>
-                        )}
-                      </button>
-                      <button
-                        onClick={() => handleDownload("csv")}
-                        className="w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 rounded-md flex items-center gap-2 transition-colors"
-                      >
-                        <Download className="h-4 w-4" />
-                        CSV
-                      </button>
-                    </div>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
+              <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
+                <FileSpreadsheetIcon className="text-lime-60 w-[50px] h-[50px]" />
+              </div>
             </div>
           </CardHeader>
-          <CardContent className="pt-0">
-            <Badge
-              variant={report.status === "completed" ? "green" : "secondary"}
-            >
-              {report.status}
-            </Badge>
-            <p className="text-xs text-muted-foreground mt-1">
-              {report?.date_created
-                ? `Created ${formatDate(report.date_created)}`
-                : "Distribution complete"}
-            </p>
-          </CardContent>
         </Card>
       </div>
 
       {/* Media Outlets Table */}
-      <Card>
-        <CardHeader>
+      <Card className="mt-4">
+        <CardHeader className="sticky top-0 z-10 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <CardTitle>
-              PR Report : Media Outlets ({filteredOutlets.length})
+            <CardTitle className="flex items-center gap-2">
+              <p className={`${isPublic && "xl:inline-block"} hidden`}>
+                PR Report :
+              </p>
+              <span className="block text-primary-50 max-w-[294px] truncate overflow-hidden">
+                {report.title}
+              </span>
             </CardTitle>
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full sm:w-auto">
-              {isShowButton && (
-                <div className="flex flex-col sm:flex-row items-start sm:items-center gap-2 w-full sm:w-auto">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDownload("csv")}
-                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
-                  >
-                    <Download className="h-4 w-4" />
-                    Download CSV
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowShareDialog(true)}
-                    className="flex items-center gap-2 w-full sm:w-auto justify-center"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    Share Report
-                  </Button>
-                </div>
-              )}
-              <div className="flex items-center gap-2 w-full sm:w-auto sm:ml-4">
+            <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
+              <div className="flex items-center gap-2 w-full sm:w-auto">
                 <div className="relative flex-1 sm:flex-none">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search outlets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-full sm:w-64 lg:w-80 focus:border-gray-300"
+                    className="pl-10 w-full focus:border-gray-300 rounded-3xl min-w-[100%] md:min-w-[300px]"
                   />
+                  {searchTerm && (
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                      <X
+                        className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                        onClick={() => setSearchTerm("")}
+                      />
+                    </div>
+                  )}
                 </div>
+              </div>
+              <div className="flex items-center gap-2">
+                {/* <button
+                  onClick={() => handleDownload("badge")}
+                  className="px-4 py-2.5 text-sm border font-semibold border-Gray-20 rounded-3xl flex items-center gap-2 transition-colors  text-Gray-60"
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden xl:inline-block">Create badge</span>
+                </button> */}
+                <button
+                  onClick={() => handleDownload("csv")}
+                  className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
+                >
+                  <FileSpreadsheet className="h-4 w-4" />
+                  <span className="hidden xl:inline-block">CSV</span>
+                </button>
+                <button
+                  onClick={() => handleDownload("pdf")}
+                  disabled={isGeneratingPDF}
+                  className={`px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white ${
+                    isGeneratingPDF
+                      ? "opacity-50 cursor-not-allowed bg-none"
+                      : ""
+                  }`}
+                >
+                  {isGeneratingPDF ? (
+                    <Loading
+                      size="sm"
+                      color="white"
+                      showText={true}
+                      text="PDF"
+                      textColor="white"
+                    />
+                  ) : (
+                    <>
+                      <FileArchive className="h-4 w-4" />
+                      <span className="hidden xl:inline-block">PDF</span>
+                    </>
+                  )}
+                </button>
+                {!isPublic && (
+                  <button
+                    onClick={() => setShowShareDialog(true)}
+                    className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
+                  >
+                    <Share2 className="h-4 w-4" />
+                    <span className="hidden xl:inline-block">Share</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>
         </CardHeader>
-        <CardContent>
-          <div className="rounded-md border overflow-hidden">
+        <CardContent className="p-0">
+          <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[150px]">Outlet</TableHead>
-                    <TableHead className="min-w-[400px]">Website</TableHead>
-                    <TableHead className="text-right min-w-[120px]">
-                      Potential Reach
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredOutlets.map((outlet, index) => (
-                    <TableRow key={index} className="bg-white">
-                      <TableCell className="flex items-center gap-3 h-[72px] min-w-[150px]">
-                        {/* Logo Display Logic */}
-                        {(() => {
-                          const logoUrl = getLogoUrl(
-                            outlet.original_website_name || outlet.website_name
-                          );
-                          const hasValidLogo =
-                            logoUrl &&
-                            isValidLogoUrl(logoUrl) &&
-                            !isImageError(
-                              outlet.original_website_name ||
-                                outlet.website_name
-                            );
-                          const isLoading = isImageLoading(
-                            outlet.original_website_name || outlet.website_name
-                          );
-
-                          if (isLoading) {
-                            // Show skeleton while loading
-                            return (
-                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                <Skeleton className="w-full h-full" />
-                              </div>
-                            );
-                          }
-
-                          if (hasValidLogo) {
-                            // Show logo image with error handling
-                            return (
-                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                <Image
-                                  src={logoUrl}
-                                  alt={outlet.website_name}
-                                  title={outlet.website_name}
-                                  className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain"
-                                  onLoadStart={() =>
-                                    handleImageStartLoad(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  onLoad={() =>
-                                    handleImageLoad(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  onError={() =>
-                                    handleImageError(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                  loading="lazy"
-                                  height={38}
-                                  width={137}
-                                  // Add error handling for missing images
-                                  onErrorCapture={() =>
-                                    handleImageError(
-                                      outlet.original_website_name ||
-                                        outlet.website_name
-                                    )
-                                  }
-                                />
-                              </div>
-                            );
-                          }
-
-                          // Show circular first character fallback (always available)
-                          const firstChar = outlet.website_name
-                            .charAt(0)
-                            .toUpperCase();
-                          const colorClasses = [
-                            "text-blue-700 border-blue-300 bg-blue-50",
-                            "text-green-700 border-green-300 bg-green-50",
-                            "text-purple-700 border-purple-300 bg-purple-50",
-                            "text-orange-700 border-orange-300 bg-orange-50",
-                            "text-red-700 border-red-300 bg-red-50",
-                            "text-indigo-700 border-indigo-300 bg-indigo-50",
-                          ];
-                          const colorClass =
-                            colorClasses[index % colorClasses.length];
-
-                          return (
-                            <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                              <div
-                                className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
-                                style={{
-                                  borderRadius: "50%",
-                                  aspectRatio: "1 / 1",
-                                  textAlign: "center",
-                                  display: "flex",
-                                  alignItems: "center",
-                                  justifyContent: "center",
-                                  border: "1px solid currentColor",
-                                }}
-                              >
-                                {firstChar}
-                              </div>
-                            </div>
-                          );
-                        })()}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground min-w-[400px]">
-                        <div>
-                          <div
-                            className="truncate max-w-[380px]"
-                            title={outlet.website_name}
-                          >
-                            {outlet.website_name}
-                          </div>
-                          <URLTableCell
-                            url={outlet.published_url}
-                            textMaxWidth="max-w-[650px]"
-                            textColor="text-blue-600"
-                            iconSize="h-4 w-4"
-                            iconColor="text-blue-600"
-                          />
-                        </div>
-                      </TableCell>
-
-                      <TableCell className="text-right font-medium min-w-[120px]">
-                        {formatNumber(outlet?.semrush_traffic)}
-                      </TableCell>
+              <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="min-w-[200px]">Outlet</TableHead>
+                      <TableHead className="min-w-[400px]">Website</TableHead>
+                      <TableHead className="min-w-[200px]">
+                        Potential Reach
+                      </TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+
+                  {/* Table Body */}
+                  <TableBody>
+                    {filteredOutlets?.map((outlet, index) => {
+                      // Add unique ID for trust badge selection
+                      const outletWithId = {
+                        ...outlet,
+                        id:
+                          outlet.id ||
+                          `outlet_${
+                            (currentPage - 1) * rowsPerPage + index + 1
+                          }_${outlet.website_name?.replace(/\s+/g, "_")}`,
+                      };
+
+                      return (
+                        <TableRow key={index}>
+                          <TableCell className="flex items-center gap-3 min-w-[200px]">
+                            {/* Logo Display Logic */}
+                            {(() => {
+                              const logoUrl = getLogoUrl(
+                                outletWithId.original_website_name ||
+                                  outletWithId.website_name
+                              );
+                              const hasValidLogo =
+                                logoUrl &&
+                                isValidLogoUrl(logoUrl) &&
+                                !isImageError(
+                                  outletWithId.original_website_name ||
+                                    outletWithId.website_name
+                                );
+                              const isLoading = isImageLoading(
+                                outletWithId.original_website_name ||
+                                  outletWithId.website_name
+                              );
+
+                              if (isLoading) {
+                                // Show skeleton while loading
+                                return (
+                                  <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                    <Skeleton className="w-full h-full" />
+                                  </div>
+                                );
+                              }
+
+                              if (hasValidLogo) {
+                                // Show logo image with error handling
+                                return (
+                                  <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                    <Image
+                                      src={logoUrl}
+                                      alt={outletWithId.website_name}
+                                      title={outletWithId.website_name}
+                                      className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
+                                      onLoadStart={() =>
+                                        handleImageStartLoad(
+                                          outletWithId.original_website_name ||
+                                            outletWithId.website_name
+                                        )
+                                      }
+                                      onLoad={() =>
+                                        handleImageLoad(
+                                          outletWithId.original_website_name ||
+                                            outletWithId.website_name
+                                        )
+                                      }
+                                      onError={() =>
+                                        handleImageError(
+                                          outletWithId.original_website_name ||
+                                            outletWithId.website_name
+                                        )
+                                      }
+                                      loading="lazy"
+                                      height={38}
+                                      width={137}
+                                      // Add error handling for missing images
+                                      onErrorCapture={() =>
+                                        handleImageError(
+                                          outletWithId.original_website_name ||
+                                            outletWithId.website_name
+                                        )
+                                      }
+                                    />
+                                  </div>
+                                );
+                              }
+
+                              // Show circular first character fallback (always available)
+                              const firstChar = outletWithId.website_name
+                                .charAt(0)
+                                .toUpperCase();
+                              const colorClasses = [
+                                "text-blue-700 border-blue-300 bg-blue-50",
+                                "text-green-700 border-green-300 bg-green-50",
+                                "text-purple-700 border-purple-300 bg-purple-10",
+                                "text-orange-700 border-orange-300 bg-orange-10",
+                                "text-red-700 border-red-300 bg-red-50",
+                                "text-indigo-700 border-indigo-300 bg-indigo-50",
+                              ];
+                              const colorClass =
+                                colorClasses[index % colorClasses.length];
+
+                              return (
+                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                  <div
+                                    className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
+                                    style={{
+                                      borderRadius: "50%",
+                                      aspectRatio: "1 / 1",
+                                      textAlign: "center",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      border: "1px solid currentColor",
+                                    }}
+                                  >
+                                    {firstChar}
+                                  </div>
+                                </div>
+                              );
+                            })()}
+                          </TableCell>
+
+                          <TableCell className="text-muted-foreground min-w-[400px]">
+                            <div>
+                              <div
+                                className="truncate max-w-[380px]"
+                                title={outlet.website_name}
+                              >
+                                {outlet.website_name}
+                              </div>
+                              <URLTableCell
+                                url={outlet.published_url}
+                                textMaxWidth="max-w-[300px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[650px] 2xl:max-w-[900px]"
+                                textColor="text-primary-50"
+                                iconSize="h-4 w-4"
+                                iconColor="text-primary-50"
+                              />
+                            </div>
+                          </TableCell>
+
+                          <TableCell className="font-medium min-w-[200px]">
+                            {formatNumber(outlet?.semrush_traffic)}
+                          </TableCell>
+                        </TableRow>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+
+              {/* Pagination */}
+              {/* <Pagination
+                totalItems={filteredOutlets.length}
+                currentPage={currentPage}
+                rowsPerPage={rowsPerPage}
+                onPageChange={handlePageChange}
+                onRowsPerPageChange={handleRowsPerPageChange}
+              /> */}
             </div>
           </div>
 
@@ -791,12 +861,20 @@ const PRReportViewer = ({
               </p>
             </div>
           )}
+
+          {/* {filteredOutlets.length > 0 && paginatedOutlets.length === 0 && (
+            <div className="text-center py-6">
+              <p className="text-muted-foreground">
+                No results for the current page. Please go to a previous page.
+              </p>
+            </div>
+          )} */}
         </CardContent>
       </Card>
 
       {/* Share Dialog */}
       {showShareDialog && (
-        <ShareDialogView
+        <ShareDialog
           isOpen={showShareDialog}
           onClose={() => {
             setShowShareDialog(false);

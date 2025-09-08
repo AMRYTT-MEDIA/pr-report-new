@@ -14,6 +14,8 @@ import { toast } from "sonner";
 
 import { useAuth } from "@/lib/auth";
 import PRReportViewer from "@/components/PRReportViewer";
+import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import Loading from "@/components/ui/loading";
 
 export default function ViewPR() {
   const params = useParams();
@@ -23,6 +25,12 @@ export default function ViewPR() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  // Set breadcrumb - direct render, no useEffect needed
+  useBreadcrumbDirect([
+    { name: "All Reports", href: "/pr-reports-list" },
+    { name: "View Report", href: `/view-pr/${reportId}`, current: true },
+  ]);
 
   // Single optimized function to fetch report data
   const fetchReportData = async () => {
@@ -119,22 +127,27 @@ export default function ViewPR() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="animate-spin rounded-full border-b-2 border-purple-600 h-12 w-12"></div>
+      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gray-50 py-12">
-        <div className="max-w-7xl mx-auto ">
-          <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-            <h2 className="text-lg font-medium text-red-800 mb-2">
-              Error Loading Report
-            </h2>
-            <p className="text-red-700">{error}</p>
-          </div>
+      <div>
+        <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
+          <h2 className="text-lg font-medium text-red-800 mb-2">
+            Error Loading Report
+          </h2>
+          <p className="text-red-700">{error}</p>
         </div>
       </div>
     );
@@ -142,22 +155,13 @@ export default function ViewPR() {
 
   return (
     <div>
-      <div className="min-h-screen bg-background">
-        <div className="container mx-auto py-8">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold tracking-tight">
-              View PR Report
-            </h1>
-            <p className="text-muted-foreground">
-              This is a shared press release distribution report
-            </p>
-          </div>
-
-          {/* Email Dialog for Private Reports */}
-
-          {report && <PRReportViewer report={report} isShowButton={true} />}
-        </div>
-      </div>
+      {report && (
+        <PRReportViewer
+          report={report}
+          isPublic={false}
+          fetchReportData={fetchReportData}
+        />
+      )}
     </div>
   );
 }
