@@ -183,7 +183,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           pointerEvents: "auto",
         }}
       >
-        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[80vh] scrollbar-custom">
+        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
           <div className="flex items-center justify-between">
             <div className="flex items-center border border-purple-70 rounded-xl p-2.5">
               <Share2 className="h-7 w-7" />
@@ -241,7 +241,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                     </div>
                   </div>
                 )}
-                <p className="text-sm text-gray-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[138px] sm:max-w-[340px]">
+                <p className="text-sm text-gray-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[138px] sm:max-w-[332px]">
                   {shareUrl || "-"}
                 </p>
               </div>
@@ -328,7 +328,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                             }}
                           />
                           <div
-                            className={`text-xs text-gray-scale-80 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-gray-scale-20 rounded-md px-2 py-1 font-medium cursor-pointer border border-gray-scale-20 ${
+                            className={`text-xs text-gray-scale-80 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-gray-scale-10 rounded-sm px-2 py-1 font-medium cursor-pointer border border-gray-scale-20 ${
                               isPrivate
                                 ? "opacity-100"
                                 : "opacity-0 cursor-not-allowed pointer-events-none"

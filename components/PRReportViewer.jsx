@@ -1,10 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import {
-  TotalPublicationIcon,
-  TotalReachIcon,
-  StatusIcon,
-} from "@/components/icon";
+import { TotalPublicationIcon, TotalReachIcon } from "@/components/icon";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -23,6 +19,7 @@ import {
   FileSpreadsheet,
   FileArchive,
   X,
+  FileSpreadsheetIcon,
 } from "lucide-react";
 import { toast } from "sonner";
 import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
@@ -522,21 +519,21 @@ const PRReportViewer = ({
         <Card className="bg-primary-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-sm sm:text-[16px] pb-3 font-medium text-primary-50">
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
                 Total Publications
               </div>
-              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row items-start xl:items-end xl:gap-2 gap-4">
+              <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
                 {report.total_outlets || 0}
-                <p className="text-sm font-medium text-[#64748B] mb-1">
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
                   / Media outlets
                 </p>
               </div>
             </CardTitle>
-            <div className="m-0 p-3 rounded-lg flex items-center justify-center">
+            <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
               <TotalPublicationIcon
                 color="#4F46E5"
-                width={34}
-                height={34}
+                width={50}
+                height={50}
                 // className="sm:w-5 sm:h-5"
               />
             </div>
@@ -546,21 +543,21 @@ const PRReportViewer = ({
         <Card className="bg-orange-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-sm sm:text-[16px] pb-3 font-medium text-primary-50">
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
                 Total Reach
               </div>
-              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end xl:gap-2 gap-4">
+              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end gap-2 text-gray-scale-80">
                 {formatNumber(report.total_semrush_traffic)}
-                <p className="text-sm font-medium text-[#64748B] mb-1">
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
                   / Potential audience
                 </p>
               </div>
             </CardTitle>
-            <div className="m-0 p-3 rounded-lg flex items-center justify-center">
+            <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
               <TotalReachIcon
                 color="#EEAE00"
-                width={34}
-                height={34}
+                width={50}
+                height={50}
                 // className="sm:w-5 sm:h-5"
               />
             </div>
@@ -570,19 +567,19 @@ const PRReportViewer = ({
         <Card className="bg-lime-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-sm sm:text-[16px] pb-3 font-medium text-primary-50">
+              <div className="text-base pb-2 font-medium text-gray-scale-70">
                 Report Status
               </div>
-              <div className="flex flex-col xl:flex-row items-start xl:items-end xl:gap-2 gap-4">
+              <div className="flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
                 <Badge
-                  className="capitalize text-[#65A30D] bg-[#65A30D1A] py-2 px-3"
+                  className="capitalize text-[#65A30D] bg-[#65A30D1A] py-2 px-3 text-sm"
                   variant={
                     report.status === "completed" ? "green" : "secondary"
                   }
                 >
                   {report?.status || "Completed"}
                 </Badge>
-                <p className="text-sm font-medium text-[#64748B] mb-1">
+                <p className="text-sm font-medium text-gray-scale-50 mb-1">
                   {report?.date_created
                     ? `Created ${formatDate(report.date_created)}`
                     : "/ Distribution complete"}
@@ -590,18 +587,9 @@ const PRReportViewer = ({
               </div>
             </CardTitle>
             <div className="relative">
-              <HoverCard>
-                <HoverCardTrigger asChild>
-                  <div className="m-0 p-3 rounded-lg flex items-center justify-center">
-                    <StatusIcon
-                      color="#65A30D"
-                      width={34}
-                      height={34}
-                      // className="sm:w-5 sm:h-5"
-                    />
-                  </div>
-                </HoverCardTrigger>
-              </HoverCard>
+              <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
+                <FileSpreadsheetIcon className="text-lime-60 w-[50px] h-[50px]" />
+              </div>
             </div>
           </CardHeader>
         </Card>
@@ -609,7 +597,7 @@ const PRReportViewer = ({
 
       {/* Media Outlets Table */}
       <Card className="mt-4">
-        <CardHeader>
+        <CardHeader className="sticky top-0 z-10 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
               <p className={`${isPublic && "xl:inline-block"} hidden`}>
@@ -629,12 +617,14 @@ const PRReportViewer = ({
                     onChange={(e) => setSearchTerm(e.target.value)}
                     className="pl-10 w-full focus:border-gray-300 rounded-3xl min-w-[100%] md:min-w-[300px]"
                   />
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                    <X
-                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
-                      onClick={() => setSearchTerm("")}
-                    />
-                  </div>
+                  {searchTerm && (
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                      <X
+                        className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                        onClick={() => setSearchTerm("")}
+                      />
+                    </div>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -692,7 +682,7 @@ const PRReportViewer = ({
         <CardContent className="p-0">
           <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <div className="max-h-[374px] lg:max-h-[calc(100dvh-282px)] overflow-y-auto scrollbar-custom">
+              <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
                 <Table>
                   <TableHeader>
                     <TableRow>

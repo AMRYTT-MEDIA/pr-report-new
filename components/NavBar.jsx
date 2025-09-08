@@ -72,7 +72,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   if (isViewPRPage) return null;
 
   return (
-    <header className="bg-white border-b border-gray-200 shadow-sm sticky top-0 z-30 ">
+    <header className="bg-white border-b border-gray-200 sticky top-0 z-30 ">
       <div className="flex justify-between items-center h-14 mx-[15px]">
         {/* Left: Logo on mobile/tablet, breadcrumb on desktop */}
         <div className="flex items-center">

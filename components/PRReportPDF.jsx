@@ -11,6 +11,7 @@ import {
   Image,
 } from "@react-pdf/renderer";
 import { logoMapping } from "@/utils/logoMapping";
+import { PublicationsIcon, ReachIcon, StatusPdfIcon } from "./icon";
 
 const styles = StyleSheet.create({
   page: {
@@ -26,37 +27,82 @@ const styles = StyleSheet.create({
   title: { fontSize: 20, fontWeight: 700, color: "#1f2937" },
 
   // Stats
-  statsGrid: { marginTop: 16, flexDirection: "row" },
+  statsGrid: {
+    marginTop: 16,
+    flexDirection: "row",
+    gap: 16,
+  },
   statCard: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 8,
+    borderRadius: 12,
     padding: 10,
+    // minHeight: 100,
   },
-  statCardSpacer: { width: 20 },
-  statTitle: { fontSize: 10, fontWeight: 600, color: "#3b82f6" },
-  statValue: { fontSize: 16, fontWeight: 700, color: "#111827", marginTop: 6 },
-  statDescription: { fontSize: 9, color: "#6b7280", marginTop: 4 },
+  statCardPrimary: {
+    backgroundColor: "#f0f4ff", // primary-5 equivalent
+  },
+  statCardOrange: {
+    backgroundColor: "#fff7ed", // orange-5 equivalent
+  },
+  statCardLime: {
+    backgroundColor: "#f7fee7", // lime-5 equivalent
+  },
+  statCardHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  statCardContent: {
+    flex: 1,
+  },
+  statTitle: {
+    fontSize: 12,
+    fontWeight: 500,
+    color: "#6b7280",
+    marginBottom: 8,
+  },
+  statValueContainer: {
+    flexDirection: "column",
+    alignItems: "flex-start",
+    gap: 6,
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 600,
+    color: "#1f2937",
+  },
+  statDescription: {
+    fontSize: 10,
+    fontWeight: 500,
+    color: "#9ca3af",
+    marginTop: 2,
+  },
+  statIconText: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#000",
+  },
 
   // Badges
   badge: {
-    marginTop: 6,
     alignSelf: "flex-start",
     borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
-    backgroundColor: "#10b981",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    backgroundColor: "#65A30D",
   },
   badgeSecondary: {
-    marginTop: 6,
     alignSelf: "flex-start",
     borderRadius: 4,
-    paddingHorizontal: 6,
-    paddingVertical: 3,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     backgroundColor: "#6b7280",
   },
-  badgeText: { color: "#ffffff", fontSize: 9, fontWeight: 600 },
+  badgeText: {
+    color: "#ffffff",
+    fontSize: 10,
+    fontWeight: 600,
+  },
 
   // Table
   sectionTitle: {
@@ -77,6 +123,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
     borderBottomWidth: 1,
     borderBottomColor: "#e5e7eb",
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
   },
   th: {
     paddingVertical: 8,
@@ -89,7 +137,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderBottomWidth: 1,
     borderBottomColor: "#f3f4f6",
-    backgroundColor: "#ffffff",
+    // backgroundColor: "#ffffff",
+  },
+  trLast: {
+    borderBottomWidth: 0,
   },
   td: {
     paddingVertical: 8,
@@ -131,11 +182,11 @@ const styles = StyleSheet.create({
 });
 
 // Prevent row splitting
-const Row = ({ children, style }) => (
-  <View wrap={false} style={[styles.tr, style]}>
-    {children}
-  </View>
-);
+// const Row = ({ children, style }) => (
+//   <View wrap={false} style={[styles.tr, style]}>
+//     {children}
+//   </View>
+// );
 
 const formatNumber = (num) => {
   if (num === undefined || num === null || num === "") return "0";
@@ -187,6 +238,17 @@ const getLogoUrl = (outletName) => {
 };
 
 const PRReportPDF = ({ report, formatData }) => {
+  // Prevent row splitting
+  const Row = ({ children, style, idx }) => (
+    <View
+      idx={idx}
+      wrap={false}
+      style={[styles.tr, style, idx === outlets.length - 1 && styles.trLast]}
+    >
+      {children}
+    </View>
+  );
+
   const outlets = formatData || report.outlets || [];
   const colorPalette = [
     "#1d4ed8",
@@ -207,36 +269,66 @@ const PRReportPDF = ({ report, formatData }) => {
 
         {/* Stats */}
         <View style={styles.statsGrid}>
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Total Publications</Text>
-            <Text style={styles.statValue}>{report.total_outlets || 0}</Text>
-            <Text style={styles.statDescription}>Media outlets</Text>
-          </View>
-          <View style={styles.statCardSpacer} />
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Total Reach</Text>
-            <Text style={styles.statValue}>
-              {formatNumber(report?.total_semrush_traffic)}
-            </Text>
-            <Text style={styles.statDescription}>Potential audience</Text>
-          </View>
-          <View style={styles.statCardSpacer} />
-          <View style={styles.statCard}>
-            <Text style={styles.statTitle}>Report Status</Text>
-            <View
-              style={
-                report.status === "completed"
-                  ? styles.badge
-                  : styles.badgeSecondary
-              }
-            >
-              <Text style={styles.badgeText}>{report.status || "unknown"}</Text>
+          {/* Total Publications Card */}
+          <View style={[styles.statCard, styles.statCardPrimary]}>
+            <View style={styles.statCardHeader}>
+              <View style={styles.statCardContent}>
+                <Text style={styles.statTitle}>Total Publications</Text>
+                <View style={styles.statValueContainer}>
+                  <Text style={styles.statValue}>
+                    {report.total_outlets || 0}
+                  </Text>
+                  <Text style={styles.statDescription}>/ Media outlets</Text>
+                </View>
+              </View>
+              <PublicationsIcon />
             </View>
-            <Text style={styles.statDescription}>
-              {report?.date_created
-                ? `Created ${formatDate(report.date_created)}`
-                : "Distribution complete"}
-            </Text>
+          </View>
+
+          {/* Total Reach Card */}
+          <View style={[styles.statCard, styles.statCardOrange]}>
+            <View style={styles.statCardHeader}>
+              <View style={styles.statCardContent}>
+                <Text style={styles.statTitle}>Total Reach</Text>
+                <View style={styles.statValueContainer}>
+                  <Text style={styles.statValue}>
+                    {formatNumber(report?.total_semrush_traffic)}
+                  </Text>
+                  <Text style={styles.statDescription}>
+                    / Potential audience
+                  </Text>
+                </View>
+              </View>
+              <ReachIcon />
+            </View>
+          </View>
+
+          {/* Report Status Card */}
+          <View style={[styles.statCard, styles.statCardLime]}>
+            <View style={styles.statCardHeader}>
+              <View style={styles.statCardContent}>
+                <Text style={styles.statTitle}>Report Status</Text>
+                <View style={styles.statValueContainer}>
+                  <View
+                    style={
+                      report.status === "completed"
+                        ? styles.badge
+                        : styles.badgeSecondary
+                    }
+                  >
+                    <Text style={styles.badgeText}>
+                      {report.status || "unknown"}
+                    </Text>
+                  </View>
+                  <Text style={styles.statDescription}>
+                    {report?.date_created
+                      ? `Created ${formatDate(report.date_created)}`
+                      : "/ Distribution complete"}
+                  </Text>
+                </View>
+              </View>
+              <StatusPdfIcon />
+            </View>
           </View>
         </View>
 
@@ -248,7 +340,7 @@ const PRReportPDF = ({ report, formatData }) => {
         <View style={styles.tableOuter}>
           {/* Table Header (only first page, not repeated) */}
           <View style={styles.tableHeaderRow}>
-            <Text style={[styles.th, { flex: 1.5 }]}>Outlet</Text>
+            <Text style={[styles.th, { flex: 1 }]}>Outlet</Text>
             <Text style={[styles.th, { flex: 2 }]}>Website</Text>
             <Text style={[styles.th, { flex: 1, textAlign: "right" }]}>
               Potential Reach
@@ -266,9 +358,9 @@ const PRReportPDF = ({ report, formatData }) => {
             const fallbackColor = colorPalette[idx % colorPalette.length];
 
             return (
-              <Row key={`${outlet.website_name}-${idx}`}>
+              <Row key={`${outlet.website_name}-${idx}`} idx={idx}>
                 {/* Outlet */}
-                <View style={[styles.td, styles.outletCell, { flex: 1.5 }]}>
+                <View style={[styles.td, styles.outletCell, { flex: 1 }]}>
                   <View style={styles.logoContainer}>
                     {logoUrl ? (
                       <Image src={logoUrl} style={styles.logoImage} />
