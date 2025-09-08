@@ -597,7 +597,7 @@ const PRReportViewer = ({
 
       {/* Media Outlets Table */}
       <Card className="mt-4">
-        <CardHeader>
+        <CardHeader className="sticky top-0 z-10 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
               <p className={`${isPublic && "xl:inline-block"} hidden`}>
@@ -682,7 +682,7 @@ const PRReportViewer = ({
         <CardContent className="p-0">
           <div className="border-t overflow-hidden">
             <div className="overflow-x-auto">
-              <div className="max-h-[374px] lg:max-h-[calc(100dvh-282px)] overflow-y-auto scrollbar-custom">
+              <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
                 <Table>
                   <TableHeader>
                     <TableRow>
