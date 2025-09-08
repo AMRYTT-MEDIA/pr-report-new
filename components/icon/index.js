@@ -12,3 +12,5 @@ export { default as ImportIcon } from "./ImportIcon";
 export { default as HomeIcon } from "./HomeIcon";
 export { default as MenuIcon } from "./MenuIcon";
 export { default as NoDataFound } from "./NoDataFound";
+
+export * from "./pdf-icon";

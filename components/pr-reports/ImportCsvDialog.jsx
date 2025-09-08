@@ -145,6 +145,15 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
     onOpenChange(false);
   };
 
+  const handleSampleCsvDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/Sample CSV.csv";
+    link.download = "Sample CSV.csv";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
@@ -175,7 +184,10 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
               </p>
             </div>
             <div className="flex items-center gap-2 justify-end">
-              <button className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-scale-secondary font-semibold border border-border-gray rounded-md hover:bg-gray-100">
+              <button
+                onClick={handleSampleCsvDownload}
+                className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-scale-secondary font-semibold border border-border-gray rounded-md hover:bg-gray-100"
+              >
                 <Download className="w-4 h-4 font-semibold" />
                 Sample CSV
               </button>
