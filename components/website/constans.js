@@ -16,7 +16,10 @@ const WebsiteConstants = {
   websiteNameRequired: "Website name is required",
   websiteNameMinLength: "Website name must be at least 2 characters",
   websiteUrlRequired: "Website URL is required",
-  invalidUrl: "Please enter a valid URL",
+  invalidUrl: "Please enter a valid website URL (e.g., example.com)",
+  invalidUrlFormat: "URL format is invalid. Please enter a valid domain",
+  invalidUrlChars: "URL contains invalid characters",
+  invalidUrlExtension: "Please enter a valid domain with proper extension",
   
   // File upload messages
   invalidFileType: "Please upload a valid image file (JPEG, PNG, SVG, WebP, or GIF)",
