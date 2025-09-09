@@ -230,9 +230,7 @@ const WebsitePage = () => {
                 )}
               </div>
               <Button
-                onClick={() => {
-                  setReOrderWebsiteDialog(true);
-                }}
+                onClick={() => setReOrderWebsiteDialog(true)}
                 className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
               >
                 <ListRestart className="w-4 h-4 text-slate-600 mr-2" />
@@ -454,12 +452,10 @@ const WebsitePage = () => {
       />
 
       {/* Re Order Website Dialog */}
-      {/* <WebsiteReOrderDialog
+      <WebsiteReOrderDialog
         isOpen={reOrderWebsiteDialog}
-        onClose={() => {
-          setReOrderWebsiteDialog(false);
-        }}
-      /> */}
+        onClose={() => setReOrderWebsiteDialog(false)}
+      />
     </div>
   );
 };
