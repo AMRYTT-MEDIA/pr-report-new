@@ -192,7 +192,7 @@ const Sidebar = () => {
                       active
                         ? "bg-slate-100 border border-slate-200"
                         : "hover:bg-slate-100/50 border border-transparent",
-                      (item.href === "/website" || item.href === "/users") &&
+                      item.href === "/users" &&
                         "opacity-50 cursor-not-allowed pointer-events-none"
                     )}
                     aria-current={active ? "page" : undefined}
