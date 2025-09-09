@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { X, Plus, Save, Upload, CircleX, Pencil } from "lucide-react";
+import { X, Plus, Save, CircleX, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import WebsiteConstants from "./constans";
 import { websitesService } from "@/services/websites";
@@ -31,8 +31,8 @@ const AddNewWebsiteDialog = ({
         // Edit mode - populate form with existing data
         setFormData({
           websiteName: editWebsite.name || "",
-          websiteUrl: editWebsite.url
-            ? editWebsite.url.replace(/^https?:\/\//, "")
+          websiteUrl: editWebsite.domain
+            ? editWebsite.domain.replace(/^https?:\/\//, "")
             : "",
           websiteIcon: null,
         });
@@ -178,7 +178,7 @@ const AddNewWebsiteDialog = ({
 
       const websiteData = {
         name: formData.websiteName.trim(),
-        url: websiteUrl,
+        domain: websiteUrl,
         logo: formData.websiteIcon,
       };
 
@@ -193,7 +193,7 @@ const AddNewWebsiteDialog = ({
           ...editWebsite,
           ...(response.data || response),
           name: formData.websiteName.trim(),
-          url: websiteUrl,
+          domain: websiteUrl,
         };
 
         onEditWebsite(updatedWebsite);
@@ -257,7 +257,7 @@ const AddNewWebsiteDialog = ({
             <div className="flex items-start justify-between">
               <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
                 {editWebsite ? (
-                  <Pencil className="w-7 h-7 text-slate-700" />
+                  <PencilLine className="w-7 h-7 text-slate-700" />
                 ) : (
                   <Plus className="w-7 h-7 text-slate-700" />
                 )}
@@ -323,32 +323,29 @@ const AddNewWebsiteDialog = ({
                 </span>
               </Label>
               <div className="relative">
-                <div className="flex">
-                  <div className="bg-slate-50 border-r border-slate-200 px-3 py-2.5 rounded-l-full">
-                    <span className="text-sm font-medium text-slate-600">
-                      {WebsiteConstants.httpsPrefix}
-                    </span>
-                  </div>
-                  <Input
-                    type="text"
-                    placeholder={WebsiteConstants.urlPlaceholder}
-                    value={formData.websiteUrl}
-                    onChange={(e) =>
-                      handleInputChange("websiteUrl", e.target.value)
-                    }
-                    className={`flex-1 rounded-l-none rounded-r-full border-slate-200 text-slate-700 placeholder:text-slate-400 ${
+                <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[2px] bg-gray-scale-5 px-3 py-2.5 rounded-l-full">
+                  {WebsiteConstants.httpsPrefix}{" "}
+                </span>
+                <Input
+                  type="text"
+                  placeholder={WebsiteConstants.urlPlaceholder}
+                  value={formData.websiteUrl}
+                  onChange={(e) =>
+                    handleInputChange("websiteUrl", e.target.value)
+                  }
+                  disabled={editWebsite}
+                  className={`flex-1 rounded-full border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40 pl-[74px] 
+                    ${editWebsite ? "bg-gray-scale-5" : "bg-white"}
+                    ${
                       errors.websiteUrl
                         ? "border-red-300 focus:border-red-500"
                         : ""
                     }`}
-                  />
-                </div>
-                {errors.websiteUrl && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {errors.websiteUrl}
-                  </p>
-                )}
+                />
               </div>
+              {errors.websiteUrl && (
+                <p className="text-red-500 text-xs mt-1">{errors.websiteUrl}</p>
+              )}
             </div>
 
             {/* Website Icon Field */}
@@ -357,7 +354,7 @@ const AddNewWebsiteDialog = ({
                 {WebsiteConstants.websiteIconLabel}
               </Label>
               <div className="relative">
-                <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg h-20 flex items-center justify-between px-5 py-3 hover:border-slate-400 transition-colors gap-2.5">
+                <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-between p-3.5 hover:border-slate-400 transition-colors gap-2.5">
                   {iconPreview && (
                     <img
                       src={iconPreview}
@@ -366,15 +363,15 @@ const AddNewWebsiteDialog = ({
                     />
                   )}
                   <div className="flex-1">
-                    <p className="text-sm font-medium text-slate-600">
+                    <p className="text-sm text-slate-600 font-semibold">
                       {WebsiteConstants.chooseAFileOrDragAndDropItHere}
                     </p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      {WebsiteConstants.pngJpgSvgWebpUpTo5mb}
+                    <p className="text-[10px] text-slate-400 mt-1">
+                      Format: {WebsiteConstants.pngJpgSvgWebpUpTo10mb}
                     </p>
                   </div>
                   <div className="bg-indigo-50 px-3 py-2 rounded-md">
-                    <span className="text-xs font-semibold text-indigo-600">
+                    <span className="text-xs font-semibold text-gray-scale-60">
                       {WebsiteConstants.browseFile}
                     </span>
                   </div>

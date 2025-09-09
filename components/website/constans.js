@@ -8,7 +8,6 @@ const WebsiteConstants = {
   cancel: "Cancel",
   save: "Save",
   saving: "Saving...",
-  edit: "Edit",
   add: "Add",
   website: "Website",
   newWebsite: "New Website",
@@ -38,22 +37,37 @@ const WebsiteConstants = {
   // Form labels and placeholders
   websiteNameLabel: "Website Name",
   websiteUrlLabel: "Website URL",
-  websiteIconLabel: "Website Icon (Optional)",
+  websiteIconLabel: "Website Icon",
   enterWebsiteName: "Enter website name",
   urlPlaceholder: "example.com",
   httpsPrefix: "https://",
   
   // File upload area
-  pngJpgSvgWebpUpTo5mb: "PNG, JPG, SVG, WebP up to 5MB",
+  pngJpgSvgWebpUpTo10mb: "PNG, JPG, SVG, WebP up to 10MB",
   currentIcon: "Current icon",
   existingFile: "Existing file",
   
   // Buttons
   updateWebsite: "Update Website",
   addWebsite: "Add Website",
-  
+  actions: "Actions",
   // Required field indicator
-  required: "*"
-};
+  required: "*",
+
+  // Website
+  allWebsites: "All Websites",
+  reOrder: "Re Order",
+  addNew: "Add New",
+  no: "No.",
+  noWebsiteFound: "No websites found",
+  noWebsiteYetTitle: "No websites yet",
+  noDataFoundDescription: "No data found for this search",
+  noDataFoundButton: "Clear Search",
+  noDataFoundButtonDescription: "Clear the search and show all data",
+  addFirstWebsite: "Add First Website",
+  addFirstWebsiteDescription: "Get started by adding your new website.",
+  delete: "Delete",
+  edit: "Edit",
+  };
 
 export default WebsiteConstants;

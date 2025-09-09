@@ -46,7 +46,7 @@ const WebsiteDeleteDialog = ({
                 <Info className="w-5 h-5 text-warning-60" />
               </div>
               <p className="text-warning-60 text-sm font-semibold">
-                If you Delete, User is permanent Delete User.
+                If you Delete this Website, it will be permanently removed.
               </p>
             </div>
           </div>

@@ -4,25 +4,33 @@ import React, { useState, useEffect } from "react";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
+import {
+  ListRestart,
+  Plus,
+  Search,
+  Trash2,
+  X,
+  PencilLine,
+  ImageOff,
+} from "lucide-react";
+import {
+  Tooltip,
+  TooltipProvider,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
-import { AddNewWebsiteDialog, WebsiteDeleteDialog } from "@/components/website";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from "@/components/ui/alert-dialog";
+  AddNewWebsiteDialog,
+  WebsiteDeleteDialog,
+  WebsiteReOrderDialog,
+} from "@/components/website";
 import { toast } from "sonner";
-import WebsiteConstants from "@/components/website/constans";
 import { websitesService } from "@/services/websites";
 import Image from "next/image";
 import { NoDataFound } from "@/components/icon";
+import WebsiteConstants from "@/components/website/constans";
 
 const WebsitePage = () => {
   const [websites, setWebsites] = useState([]);
@@ -36,6 +44,7 @@ const WebsitePage = () => {
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [websiteToDelete, setWebsiteToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [reOrderWebsiteDialog, setReOrderWebsiteDialog] = useState(false);
   // Direct render - no useEffect needed
   useBreadcrumbDirect([{ name: "Website", href: "/website", current: true }]);
 
@@ -65,7 +74,7 @@ const WebsitePage = () => {
   const filteredWebsites = websites.filter(
     (website) =>
       website.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      website.url.toLowerCase().includes(searchQuery.toLowerCase())
+      website.domain.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   // Handle search
@@ -152,18 +161,6 @@ const WebsitePage = () => {
     setWebsiteToDelete(null);
   };
 
-  // Handle view website
-  const handleView = (website) => {
-    console.log("View website:", website);
-    // Implement view functionality
-  };
-
-  // Handle share website
-  const handleShare = (website) => {
-    console.log("Share website:", website);
-    // Implement share functionality
-  };
-
   if (loading) {
     return (
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
@@ -179,6 +176,29 @@ const WebsitePage = () => {
     );
   }
 
+  const formatTitle = (title, type) => {
+    let maxLength = 50;
+    if (type === "name") {
+      maxLength = 20;
+    } else if (type === "url") {
+      maxLength = 50;
+    }
+    if (!title) return "-";
+    if (title.length <= maxLength) return title;
+    return title.substring(0, maxLength) + "...";
+  };
+
+  // Check if title needs truncation
+  const needsTruncation = (title, type) => {
+    let maxLength = 50;
+    if (type === "name") {
+      maxLength = 20;
+    } else if (type === "url") {
+      maxLength = 50;
+    }
+    return title && title.length > maxLength;
+  };
+
   return (
     <div className="bg-gray-50">
       <div className="mx-auto">
@@ -187,7 +207,7 @@ const WebsitePage = () => {
           <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
-                All Websites
+                {WebsiteConstants.allWebsites}
               </h1>
             </div>
 
@@ -209,9 +229,16 @@ const WebsitePage = () => {
                   </div>
                 )}
               </div>
-              <Button className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50">
+              <Button
+                onClick={() => {
+                  setReOrderWebsiteDialog(true);
+                }}
+                className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
+              >
                 <ListRestart className="w-4 h-4 text-slate-600 mr-2" />
-                <span className="hidden sm:inline">Re Order</span>
+                <span className="hidden sm:inline">
+                  {WebsiteConstants.reOrder}
+                </span>
               </Button>
               <Button
                 onClick={() => {
@@ -221,7 +248,9 @@ const WebsitePage = () => {
                 className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 rounded-[39px]"
               >
                 <Plus className="w-4 h-4 text-white" />
-                <span className="hidden sm:inline">Add New</span>
+                <span className="hidden sm:inline">
+                  {WebsiteConstants.addNew}
+                </span>
               </Button>
             </div>
           </div>
@@ -233,19 +262,19 @@ const WebsitePage = () => {
                 <thead className="bg-slate-50 w-full">
                   <tr className="w-full">
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[68px]">
-                      No.
+                      {WebsiteConstants.no}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[241px] whitespace-nowrap">
-                      Website Icon
+                      {WebsiteConstants.websiteIcon}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
-                      Website Name
+                      {WebsiteConstants.websiteName}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
-                      Website URL
+                      {WebsiteConstants.websiteUrl}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[260px] whitespace-nowrap">
-                      Actions
+                      {WebsiteConstants.actions}
                     </th>
                   </tr>
                 </thead>
@@ -261,13 +290,13 @@ const WebsitePage = () => {
                           <div>
                             <h3 className="text-lg font-medium text-slate-900">
                               {searchQuery
-                                ? "No websites found"
-                                : "No websites yet"}
+                                ? WebsiteConstants.noWebsiteFound
+                                : WebsiteConstants.noWebsiteYetTitle}
                             </h3>
                             <p className="text-sm text-slate-500 mt-1">
                               {searchQuery
-                                ? `No websites match "${searchQuery}". Try a different search term.`
-                                : "Get started by adding your new website."}
+                                ? WebsiteConstants.noDataFoundDescription
+                                : WebsiteConstants.addFirstWebsiteDescription}
                             </p>
                           </div>
                           {!searchQuery && (
@@ -279,7 +308,7 @@ const WebsitePage = () => {
                               className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
                             >
                               <Plus className="w-4 h-4 mr-2" />
-                              Add First Website
+                              {WebsiteConstants.addFirstWebsite}
                             </Button>
                           )}
                         </div>
@@ -307,25 +336,63 @@ const WebsitePage = () => {
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
                             ) : (
-                              <Image
-                                src="/placeholder.svg"
-                                alt="Placeholder"
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
+                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
                             )}
                           </div>
                         </td>
                         <td className="px-6 py-3">
-                          <p className="text-sm font-medium text-slate-600">
-                            {website.name}
-                          </p>
+                          {needsTruncation(website.name, "name") ? (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
+                                    {formatTitle(website.name, "name")}
+                                  </p>
+                                </TooltipTrigger>
+                                <TooltipContent
+                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                  side="top"
+                                  align="start"
+                                >
+                                  <div className="break-words">
+                                    {website.name}
+                                  </div>
+                                </TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          ) : (
+                            <p className="text-sm font-medium text-gray-scale-60">
+                              {website.name || "-"}
+                            </p>
+                          )}
                         </td>
                         <td className="px-6 py-3">
-                          <p className="text-sm font-medium text-slate-600">
-                            {website.url}
-                          </p>
+                          <div className="flex-1 min-w-0">
+                            {needsTruncation(website.domain, "url") ? (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                      {formatTitle(website.domain, "url")}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    side="top"
+                                    align="start"
+                                  >
+                                    <div className="break-words">
+                                      {website.domain}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <p className="text-sm font-medium text-gray-scale-60">
+                                {website.domain || "-"}
+                              </p>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-3">
                           <div className="flex gap-2 items-center">
@@ -334,14 +401,14 @@ const WebsitePage = () => {
                               className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-[80px] flex items-center gap-2.5 text-sm font-medium"
                             >
                               <PencilLine className="w-4 h-4" />
-                              Edit
+                              {WebsiteConstants.edit}
                             </button>
                             <button
                               onClick={() => handleDelete(website)}
                               className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-[80px] flex items-center gap-2.5 text-sm font-medium"
                             >
                               <Trash2 className="w-4 h-4" />
-                              Delete
+                              {WebsiteConstants.delete}
                             </button>
                           </div>
                         </td>
@@ -385,6 +452,14 @@ const WebsitePage = () => {
         confirmDelete={confirmDelete}
         cancelDelete={cancelDelete}
       />
+
+      {/* Re Order Website Dialog */}
+      {/* <WebsiteReOrderDialog
+        isOpen={reOrderWebsiteDialog}
+        onClose={() => {
+          setReOrderWebsiteDialog(false);
+        }}
+      /> */}
     </div>
   );
 };
