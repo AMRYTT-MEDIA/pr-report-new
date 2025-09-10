@@ -237,22 +237,11 @@ const AddNewWebsiteDialog = ({
       <DialogContent
         className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
         showCloseButton={false}
-        style={{
-          position: "fixed",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          margin: 0,
-          pointerEvents: "auto",
-        }}
       >
         <form onSubmit={formik.handleSubmit} className="flex flex-col h-full">
           <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
             {/* Header */}
-            <div
-              className="pb-5"
-              style={{ borderBottom: "2px dashed #E2E8F0" }}
-            >
+            <div className="pb-5 border-b-2 border-dashed border-gray-200">
               <div className="flex items-start justify-between">
                 <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
                   {editWebsite ? (
@@ -301,7 +290,7 @@ const AddNewWebsiteDialog = ({
                   value={formik.values.websiteName}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  className={`h-10 rounded-full border-slate-200 text-slate-700 placeholder:text-slate-400 ${
+                  className={`h-10 rounded-lg border-slate-200 text-slate-700 placeholder:text-slate-400 ${
                     formik.errors.websiteName && formik.touched.websiteName
                       ? "border-red-300 focus:border-red-500"
                       : ""
@@ -323,7 +312,7 @@ const AddNewWebsiteDialog = ({
                   </span>
                 </Label>
                 <div className="relative">
-                  <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[2px] bg-gray-scale-5 px-3 py-2.5 rounded-l-full">
+                  <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[1px] bottom-[1px] bg-gray-scale-5 pl-3 pr-2 py-2.5 rounded-l-lg">
                     {WebsiteConstants.httpsPrefix}{" "}
                   </span>
                   <Input
@@ -331,10 +320,13 @@ const AddNewWebsiteDialog = ({
                     name="websiteUrl"
                     placeholder={WebsiteConstants.urlPlaceholder}
                     value={formik.values.websiteUrl}
-                    onChange={formik.handleChange}
+                    onChange={(e) => {
+                      const lowercaseValue = e.target.value.toLowerCase();
+                      formik.setFieldValue("websiteUrl", lowercaseValue);
+                    }}
                     onBlur={formik.handleBlur}
                     disabled={editWebsite}
-                    className={`flex-1 rounded-full border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40 pl-[74px] 
+                    className={`flex-1 rounded-lg border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40 pl-[74px] 
                           ${editWebsite ? "bg-gray-scale-5" : "bg-white"}
                           ${
                             formik.errors.websiteUrl &&

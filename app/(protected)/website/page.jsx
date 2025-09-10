@@ -305,7 +305,7 @@ const WebsitePage = () => {
                               }}
                               className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
                             >
-                              <Plus className="w-4 h-4 mr-2" />
+                              <Plus className="w-4 h-4" />
                               {WebsiteConstants.addFirstWebsite}
                             </Button>
                           )}

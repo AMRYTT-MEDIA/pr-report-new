@@ -7,6 +7,11 @@ export const websitesService = {
     return await apiGet("/websites");
   },
 
+  // Get all websites
+  getAllWebsites: async () => {
+    return await apiGet("/websites/all");
+  },
+
   // Get website by ID
   getWebsiteById: async (id) => {
     return await apiGet(`/websites/${id}`);
