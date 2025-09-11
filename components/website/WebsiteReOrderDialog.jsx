@@ -63,8 +63,14 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   // Save current state to history
   const saveToHistory = useCallback(
     (newWebsites) => {
+      // Update srno field for each website based on new position
+      const updatedWebsites = newWebsites.map((website, index) => ({
+        ...website,
+        srno: index + 1,
+      }));
+
       const newHistory = history.slice(0, historyIndex + 1);
-      newHistory.push([...newWebsites]);
+      newHistory.push([...updatedWebsites]);
 
       // Limit history to 50 entries to prevent memory issues
       if (newHistory.length > 50) {
@@ -76,6 +82,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
       setHistory(newHistory);
       setCanUndo(true);
       setCanRedo(false);
+
+      // Update the websites state with updated srno
+      setWebsites(updatedWebsites);
     },
     [history, historyIndex]
   );
@@ -84,7 +93,8 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   const handleUndo = useCallback(() => {
     if (historyIndex > 0) {
       const newIndex = historyIndex - 1;
-      setWebsites([...history[newIndex]]);
+      const restoredWebsites = [...history[newIndex]];
+      setWebsites(restoredWebsites);
       setHistoryIndex(newIndex);
       setCanUndo(newIndex > 0);
       setCanRedo(true);
@@ -95,7 +105,8 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   const handleRedo = useCallback(() => {
     if (historyIndex < history.length - 1) {
       const newIndex = historyIndex + 1;
-      setWebsites([...history[newIndex]]);
+      const restoredWebsites = [...history[newIndex]];
+      setWebsites(restoredWebsites);
       setHistoryIndex(newIndex);
       setCanUndo(true);
       setCanRedo(newIndex < history.length - 1);
@@ -154,11 +165,20 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   // Save initial state to history when websites are loaded
   useEffect(() => {
     if (websites.length > 0 && history.length === 0) {
-      const newHistory = [...websites];
+      // Update srno field for each website based on current position
+      const updatedWebsites = websites.map((website, index) => ({
+        ...website,
+        srno: index + 1,
+      }));
+
+      const newHistory = [...updatedWebsites];
       setHistory([newHistory]);
       setHistoryIndex(0);
       setCanUndo(false);
       setCanRedo(false);
+
+      // Update the websites state with updated srno
+      setWebsites(updatedWebsites);
     }
   }, [websites, history.length]);
 
@@ -194,14 +214,13 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
       .map((id) => newWebsites.find((website) => website._id === id))
       .filter(Boolean);
     // Remove selected websites from their current positions
-    const filteredWebsites = newWebsites.filter(
+    const websitesWithoutSelected = newWebsites.filter(
       (website) => !selectedWebsites.has(website._id)
     );
     // Insert selected websites at the specified position
-    filteredWebsites.splice(position, 0, ...selectedWebsitesData);
-    setWebsites(filteredWebsites);
-    // Save state to history for undo/redo
-    saveToHistory(filteredWebsites);
+    websitesWithoutSelected.splice(position, 0, ...selectedWebsitesData);
+    // Save state to history for undo/redo (this will also update srno and setWebsites)
+    saveToHistory(websitesWithoutSelected);
     // Clear selection and bulk move position
     setSelectedWebsites(new Set());
     setBulkMovePosition("");
@@ -304,16 +323,21 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   const handlePositionBlur = useCallback(
     (e, currentIndex) => {
       const value = e.target.value;
+      const website = filteredWebsites[currentIndex];
+      const currentDisplayPosition = searchTerm
+        ? website.srno
+        : currentIndex + 1;
+
       if (value === "") {
         // Reset to current position if empty
-        e.target.value = currentIndex + 1;
+        e.target.value = currentDisplayPosition;
         return;
       }
 
       const newPosition = parseInt(value);
       if (newPosition < 1 || newPosition > websites.length) {
         // Reset to current position if invalid
-        e.target.value = currentIndex + 1;
+        e.target.value = currentDisplayPosition;
         toast.error(
           `Invalid position. Please enter a number between 1 and ${websites.length}`
         );
@@ -321,17 +345,20 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
       }
 
       // Move website to new position
-      if (newPosition !== currentIndex + 1) {
+      if (newPosition !== currentDisplayPosition) {
         const newWebsites = [...websites];
-        const websiteToMove = newWebsites[currentIndex];
+
+        // Find the actual index in the main websites array
+        const actualIndex = websites.findIndex((w) => w._id === website._id);
+        const websiteToMove = newWebsites[actualIndex];
 
         // Remove website from current position
-        newWebsites.splice(currentIndex, 1);
+        newWebsites.splice(actualIndex, 1);
 
         // Insert at new position (convert to 0-based index)
         newWebsites.splice(newPosition - 1, 0, websiteToMove);
 
-        setWebsites(newWebsites);
+        // Save state to history for undo/redo (this will also update srno and setWebsites)
         saveToHistory(newWebsites);
 
         toast.success(
@@ -339,10 +366,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
         );
       } else {
         // If position is same, just reset the input value
-        e.target.value = currentIndex + 1;
+        e.target.value = currentDisplayPosition;
       }
     },
-    [websites, saveToHistory]
+    [websites, saveToHistory, filteredWebsites, searchTerm]
   );
 
   // Handle Enter key press
@@ -387,28 +414,42 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
       dragCounter.current = 0;
       if (draggedItem !== null && draggedItem !== dropIndex) {
         const newWebsites = [...websites];
-        const draggedWebsite = newWebsites[draggedItem];
+
+        // Find the actual indices in the main websites array
+        const draggedWebsite = filteredWebsites[draggedItem];
+        const dropWebsite = filteredWebsites[dropIndex];
+
+        const actualDraggedIndex = websites.findIndex(
+          (w) => w._id === draggedWebsite._id
+        );
+        const actualDropIndex = websites.findIndex(
+          (w) => w._id === dropWebsite._id
+        );
+
+        const websiteToMove = newWebsites[actualDraggedIndex];
+
         // Check if dragging to immediate upper neighbor (swap case)
-        if (draggedItem === dropIndex + 1) {
+        if (actualDraggedIndex === actualDropIndex + 1) {
           // Swap positions: dragged item goes up, target goes down
-          newWebsites[draggedItem] = newWebsites[dropIndex];
-          newWebsites[dropIndex] = draggedWebsite;
+          newWebsites[actualDraggedIndex] = newWebsites[actualDropIndex];
+          newWebsites[actualDropIndex] = websiteToMove;
         } else {
           // Remove the dragged item
-          newWebsites.splice(draggedItem, 1);
+          newWebsites.splice(actualDraggedIndex, 1);
           // Insert at new position - place below the target website
           const insertIndex =
-            draggedItem < dropIndex ? dropIndex : dropIndex + 1;
-          newWebsites.splice(insertIndex, 0, draggedWebsite);
+            actualDraggedIndex < actualDropIndex
+              ? actualDropIndex
+              : actualDropIndex + 1;
+          newWebsites.splice(insertIndex, 0, websiteToMove);
         }
-        setWebsites(newWebsites);
-        // Save state to history for undo/redo
+        // Save state to history for undo/redo (this will also update srno and setWebsites)
         saveToHistory(newWebsites);
       }
       setDraggedItem(null);
       setDragOverIndex(null);
     },
-    [draggedItem, websites, saveToHistory]
+    [draggedItem, websites, saveToHistory, filteredWebsites]
   );
 
   const handleDragEnd = useCallback(() => {
@@ -466,8 +507,16 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-gray-scale-80"
+                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-primary-50"
               />
+              {searchTerm && (
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <X
+                    className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                    onClick={() => setSearchTerm("")}
+                  />
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               {/* Action Buttons */}
@@ -617,13 +666,15 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                         </td>
                         <td className="px-6 py-[6px]">
                           <input
-                            key={`position-${website._id}-${index}`}
+                            key={`position-${website._id}-${index}-${
+                              searchTerm ? "search" : "all"
+                            }`}
                             type="number"
-                            defaultValue={index + 1}
+                            defaultValue={searchTerm ? website.srno : index + 1}
                             onChange={(e) => handlePositionChange(e, index)}
                             onBlur={(e) => handlePositionBlur(e, index)}
                             onKeyDown={(e) => handlePositionKeyDown(e, index)}
-                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[38px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-gray-scale-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[38px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-primary-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             min="1"
                             max={websites.length}
                           />
@@ -726,7 +777,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                   placeholder="#"
                   value={bulkMovePosition}
                   onChange={(e) => setBulkMovePosition(e.target.value)}
-                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-gray-scale-80 leading-4"
+                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-primary-50 leading-4"
                 />
                 <button
                   onClick={handleBulkMove}

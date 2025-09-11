@@ -19,6 +19,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import CustomTooltip from "@/components/ui/custom-tooltip";
 import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
 import {
@@ -190,21 +191,6 @@ const WebsitePage = () => {
     setWebsiteToDelete(null);
   };
 
-  if (loading) {
-    return (
-      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
-        <Loading
-          size="lg"
-          color="purple"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
-      </div>
-    );
-  }
-
   const formatTitle = (title, type) => {
     let maxLength = 50;
     if (type === "name") {
@@ -320,101 +306,91 @@ const WebsitePage = () => {
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
-                  {filteredWebsites?.length === 0 ? (
-                    <tr>
-                      <td
-                        colSpan={5}
-                        className=" text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
-                      >
-                        <div className="flex flex-col items-center justify-center space-y-3 h-full">
-                          <NoDataFound width={105} height={130} />
-                          <div>
-                            <h3 className="text-lg font-medium text-slate-900">
-                              {searchQuery
-                                ? WebsiteConstants.noWebsiteFound
-                                : WebsiteConstants.noWebsiteYetTitle}
-                            </h3>
-                            <p className="text-sm text-slate-500 mt-1">
-                              {searchQuery
-                                ? WebsiteConstants.noDataFoundDescription
-                                : WebsiteConstants.addFirstWebsiteDescription}
-                            </p>
-                          </div>
-                          {!searchQuery && (
-                            <Button
-                              onClick={() => {
-                                setEditWebsite(null);
-                                setAddEditWebsiteDialog(true);
-                              }}
-                              className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
-                            >
-                              <Plus className="w-4 h-4" />
-                              {WebsiteConstants.addFirstWebsite}
-                            </Button>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  ) : (
-                    filteredWebsites?.map((website, index) => (
-                      <tr
-                        key={website._id || website.id}
-                        className="hover:bg-gray-50"
-                      >
-                        <td className="px-6 py-3">
-                          <p className="text-sm font-medium text-slate-600">
-                            {index + 1}
-                          </p>
+                  {loading ? (
+                    <>
+                      {/* Loading */}
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className="text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
+                        >
+                          <Loading size="lg" color="fdf" showText={true} />
                         </td>
-                        <td className="px-6 py-3">
-                          <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {website.logo ? (
-                              <Image
-                                src={websitesService.getLogoUrl(website.logo)}
-                                alt={website.name}
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
-                            ) : (
-                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                      </tr>
+                    </>
+                  ) : filteredWebsites?.length === 0 ? (
+                    <>
+                      {/* No Data Found */}
+                      <tr>
+                        <td
+                          colSpan={5}
+                          className=" text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
+                        >
+                          <div className="flex flex-col items-center justify-center space-y-3 h-full">
+                            <NoDataFound width={105} height={130} />
+                            <div>
+                              <h3 className="text-lg font-medium text-slate-900">
+                                {searchQuery
+                                  ? WebsiteConstants.noWebsiteFound
+                                  : WebsiteConstants.noWebsiteYetTitle}
+                              </h3>
+                              <p className="text-sm text-slate-500 mt-1">
+                                {searchQuery
+                                  ? WebsiteConstants.noDataFoundDescription
+                                  : WebsiteConstants.addFirstWebsiteDescription}
+                              </p>
+                            </div>
+                            {!searchQuery && (
+                              <Button
+                                onClick={() => {
+                                  setEditWebsite(null);
+                                  setAddEditWebsiteDialog(true);
+                                }}
+                                className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
+                              >
+                                <Plus className="w-4 h-4" />
+                                {WebsiteConstants.addFirstWebsite}
+                              </Button>
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-3">
-                          {needsTruncation(website.name, "name") ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
-                                    {formatTitle(website.name, "name")}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                  side="top"
-                                  align="start"
-                                >
-                                  <div className="break-words">
-                                    {website.name}
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          ) : (
-                            <p className="text-sm font-medium text-gray-scale-60">
-                              {website.name || "-"}
+                      </tr>
+                    </>
+                  ) : (
+                    filteredWebsites?.map((website, index) => (
+                      <>
+                        {/* Table Data */}
+                        <tr
+                          key={website._id || website.id}
+                          className="hover:bg-gray-50"
+                        >
+                          <td className="px-6 py-3">
+                            <p className="text-sm font-medium text-slate-600">
+                              {index + 1}
                             </p>
-                          )}
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex-1 min-w-0">
-                            {needsTruncation(website.domain, "url") ? (
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                              {website.logo ? (
+                                <Image
+                                  src={websitesService.getLogoUrl(website.logo)}
+                                  alt={website.name}
+                                  width={138}
+                                  height={38}
+                                  className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
+                                />
+                              ) : (
+                                <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-3">
+                            {needsTruncation(website.name, "name") ? (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
-                                      {formatTitle(website.domain, "url")}
+                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
+                                      {formatTitle(website.name, "name")}
                                     </p>
                                   </TooltipTrigger>
                                   <TooltipContent
@@ -423,35 +399,67 @@ const WebsitePage = () => {
                                     align="start"
                                   >
                                     <div className="break-words">
-                                      {website.domain}
+                                      {website.name}
                                     </div>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             ) : (
                               <p className="text-sm font-medium text-gray-scale-60">
-                                {website.domain || "-"}
+                                {website.name || "-"}
                               </p>
                             )}
-                          </div>
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex gap-8 items-center">
-                            <button
-                              onClick={() => handleEdit(website)}
-                              className="text-slate-600 flex text-sm font-medium"
-                            >
-                              <PencilLine className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(website)}
-                              className="text-red-600 flex text-sm font-medium"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="flex-1 min-w-0">
+                              {needsTruncation(website.domain, "url") ? (
+                                <TooltipProvider>
+                                  <Tooltip>
+                                    <TooltipTrigger asChild>
+                                      <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                        {formatTitle(website.domain, "url")}
+                                      </p>
+                                    </TooltipTrigger>
+                                    <TooltipContent
+                                      className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                      side="top"
+                                      align="start"
+                                    >
+                                      <div className="break-words">
+                                        {website.domain}
+                                      </div>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                </TooltipProvider>
+                              ) : (
+                                <p className="text-sm font-medium text-gray-scale-60">
+                                  {website.domain || "-"}
+                                </p>
+                              )}
+                            </div>
+                          </td>
+                          <td className="px-6 py-3">
+                            <div className="flex gap-8 items-center">
+                              <CustomTooltip content="Edit" position="bottom">
+                                <button
+                                  onClick={() => handleEdit(website)}
+                                  className="text-slate-600 flex text-sm font-medium"
+                                >
+                                  <PencilLine className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                              <CustomTooltip content="Delete" position="bottom">
+                                <button
+                                  onClick={() => handleDelete(website)}
+                                  className="text-red-600 flex text-sm font-medium"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                            </div>
+                          </td>
+                        </tr>
+                      </>
                     ))
                   )}
                 </tbody>
@@ -460,7 +468,7 @@ const WebsitePage = () => {
           </div>
 
           {/* Pagination */}
-          {filteredWebsites?.length > 0 && (
+          {filteredWebsites?.length > 0 && !loading && (
             <Pagination
               totalItems={totalCount}
               currentPage={currentPage}
