@@ -23,7 +23,7 @@ const LayoutWrapper = ({ children }) => {
 
         {/* Page Content */}
         <main>
-          <div className="m-[15px]">{children}</div>
+          <div className="m-[10px] sm:m-[15px]">{children}</div>
         </main>
       </div>
     </div>

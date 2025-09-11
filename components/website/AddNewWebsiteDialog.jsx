@@ -312,7 +312,7 @@ const AddNewWebsiteDialog = ({
                   </span>
                 </Label>
                 <div className="relative">
-                  <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[1px] bottom-[1px] bg-gray-scale-5 pl-3 pr-2 py-2.5 rounded-l-lg">
+                  <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[1px] bottom-[1px] bg-gray-scale-5 pl-3 pr-2 py-2.5 rounded-l-lg border-r border-gray-scale-20">
                     {WebsiteConstants.httpsPrefix}{" "}
                   </span>
                   <Input
@@ -358,15 +358,15 @@ const AddNewWebsiteDialog = ({
                       />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm text-slate-600 font-semibold">
+                      <p className="text-sm text-slate-600 font-semibold truncate max-w-[122px] sm:max-w-ful">
                         {WebsiteConstants.chooseAFileOrDragAndDropItHere}
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">
+                      <p className="text-[10px] text-slate-400 mt-1 truncate max-w-[122px] sm:max-w-full">
                         Format: {WebsiteConstants.pngJpgSvgWebpUpTo10mb}
                       </p>
                     </div>
                     <div className="bg-indigo-50 px-3 py-2 rounded-md">
-                      <span className="text-xs font-semibold text-gray-scale-60">
+                      <span className="text-xs font-semibold text-gray-scale-60 whitespace-nowrap">
                         {WebsiteConstants.browseFile}
                       </span>
                     </div>

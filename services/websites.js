@@ -7,6 +7,20 @@ export const websitesService = {
     return await apiGet("/websites");
   },
 
+  // Get websites with pagination
+  getWebsitesPaginated: async (page = 1, pageSize = 25, search = null) => {
+    const params = new URLSearchParams({
+      page: page.toString(),
+      pageSize: pageSize.toString()
+    });
+    
+    if (search) {
+      params.append('search', search);
+    }
+    
+    return await apiGet(`/websites?${params.toString()}`);
+  },
+
   // Get all websites
   getAllWebsites: async () => {
     return await apiGet("/websites/all");
@@ -56,6 +70,11 @@ export const websitesService = {
   // Delete website
   deleteWebsite: async (id) => {
     return await apiDelete(`/websites/${id}`);
+  },
+
+  // Reorder websites
+  reorderWebsites: async (reorderData) => {
+    return await apiPut("/websites/reorder", reorderData);
   },
 
   // Get logo URL

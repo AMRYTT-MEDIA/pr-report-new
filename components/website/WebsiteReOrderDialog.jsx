@@ -58,6 +58,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
   // Warning dialog state
   const [showWarningDialog, setShowWarningDialog] = useState(false);
+  const [warningType, setWarningType] = useState("cancel"); // 'cancel' or 'save'
 
   // Save current state to history
   const saveToHistory = useCallback(
@@ -181,37 +182,29 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
   const handleBulkMove = useCallback(() => {
     if (selectedWebsites.size === 0 || !bulkMovePosition) return;
-
     const position = parseInt(bulkMovePosition) - 1; // Convert to 0-based index
     if (position < 0 || position >= websites.length) {
       toast.error("Invalid position. Please enter a valid position number.");
       return;
     }
-
     const newWebsites = [...websites];
     const selectedWebsiteIds = Array.from(selectedWebsites);
-
     // Get selected websites
     const selectedWebsitesData = selectedWebsiteIds
       .map((id) => newWebsites.find((website) => website._id === id))
       .filter(Boolean);
-
     // Remove selected websites from their current positions
     const filteredWebsites = newWebsites.filter(
       (website) => !selectedWebsites.has(website._id)
     );
-
     // Insert selected websites at the specified position
     filteredWebsites.splice(position, 0, ...selectedWebsitesData);
-
     setWebsites(filteredWebsites);
     // Save state to history for undo/redo
     saveToHistory(filteredWebsites);
-
     // Clear selection and bulk move position
     setSelectedWebsites(new Set());
     setBulkMovePosition("");
-
     toast.success(
       `Moved ${selectedWebsitesData.length} website(s) to position ${bulkMovePosition}`
     );
@@ -230,6 +223,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   // Handle cancel button click
   const handleCancelClick = useCallback(() => {
     if (hasChanges()) {
+      setWarningType("cancel");
       setShowWarningDialog(true);
     } else {
       onClose();
@@ -237,12 +231,24 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   }, [hasChanges, onClose]);
 
   // Handle save and close
-  const handleSaveAndClose = useCallback(() => {
-    console.log("Saving website order");
-    // Implementation for saving order
-    setShowWarningDialog(false);
-    onClose();
-  }, [onClose]);
+  const handleSaveAndClose = useCallback(async () => {
+    try {
+      // Prepare reorder data in the format you specified
+      const reorderData = websites.map((website, index) => ({
+        _id: website._id,
+        srno: index + 1,
+      }));
+
+      await websitesService.reorderWebsites(reorderData);
+
+      toast.success("Website order saved successfully!");
+      setShowWarningDialog(false);
+      onClose();
+    } catch (error) {
+      console.error("Error saving website order:", error);
+      toast.error("Failed to save website order. Please try again.");
+    }
+  }, [websites, onClose]);
 
   // Handle discard and close
   const handleDiscardAndClose = useCallback(() => {
@@ -250,11 +256,34 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
     onClose();
   }, [onClose]);
 
-  const handleSave = useCallback(() => {
-    console.log("Saving website order");
-    // Implementation for saving order
-    onClose();
-  }, [onClose]);
+  // Handle save button click
+  const handleSaveClick = useCallback(() => {
+    if (hasChanges()) {
+      setWarningType("save");
+      setShowWarningDialog(true);
+    } else {
+      onClose();
+    }
+  }, [hasChanges, onClose]);
+
+  const handleSave = useCallback(async () => {
+    try {
+      // Prepare reorder data in the format you specified
+      const reorderData = websites.map((website, index) => ({
+        _id: website._id,
+        srno: index + 1,
+      }));
+
+      await websitesService.reorderWebsites(reorderData);
+
+      toast.success("Website order saved successfully!");
+      setShowWarningDialog(false);
+      onClose();
+    } catch (error) {
+      console.error("Error saving website order:", error);
+      toast.error("Failed to save website order. Please try again.");
+    }
+  }, [websites, onClose]);
 
   // Handle position input change
   const handlePositionChange = useCallback(
@@ -356,23 +385,26 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
     (e, dropIndex) => {
       e.preventDefault();
       dragCounter.current = 0;
-
       if (draggedItem !== null && draggedItem !== dropIndex) {
         const newWebsites = [...websites];
         const draggedWebsite = newWebsites[draggedItem];
-
-        // Remove the dragged item
-        newWebsites.splice(draggedItem, 1);
-
-        // Insert at new position
-        const insertIndex = draggedItem < dropIndex ? dropIndex - 1 : dropIndex;
-        newWebsites.splice(insertIndex, 0, draggedWebsite);
-
+        // Check if dragging to immediate upper neighbor (swap case)
+        if (draggedItem === dropIndex + 1) {
+          // Swap positions: dragged item goes up, target goes down
+          newWebsites[draggedItem] = newWebsites[dropIndex];
+          newWebsites[dropIndex] = draggedWebsite;
+        } else {
+          // Remove the dragged item
+          newWebsites.splice(draggedItem, 1);
+          // Insert at new position - place below the target website
+          const insertIndex =
+            draggedItem < dropIndex ? dropIndex : dropIndex + 1;
+          newWebsites.splice(insertIndex, 0, draggedWebsite);
+        }
         setWebsites(newWebsites);
         // Save state to history for undo/redo
         saveToHistory(newWebsites);
       }
-
       setDraggedItem(null);
       setDragOverIndex(null);
     },
@@ -387,11 +419,11 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
   // Truncate title
   const formatTitle = (title, type) => {
-    let maxLength = 50;
+    let maxLength = 100;
     if (type === "name") {
       maxLength = 20;
     } else if (type === "url") {
-      maxLength = 50;
+      maxLength = 100;
     }
     if (!title) return "-";
     if (title.length <= maxLength) return title;
@@ -400,11 +432,11 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
   // Check if title needs truncation
   const needsTruncation = (title, type) => {
-    let maxLength = 50;
+    let maxLength = 100;
     if (type === "name") {
       maxLength = 20;
     } else if (type === "url") {
-      maxLength = 50;
+      maxLength = 100;
     }
     return title && title.length > maxLength;
   };
@@ -412,12 +444,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
       <DialogContent
-        className="max-w-[1570px] w-[95vw] max-h-[800px] p-0 bg-slate-100 border border-slate-200 shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)]"
+        className="max-w-[1570px] w-[95vw] max-h-[880px] bg-slate-100 border border-slate-200 shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)] p-[5px]"
         showCloseButton={false}
       >
-        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden">
+        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-gray-scale-30">
           {/* Header */}
-          <div className="flex items-center justify-between gap-2 px-6 py-4 border-b border-slate-200">
+          <div className="flex flex-col sm:flex-row sm:items-center items-start justify-between gap-2 sm:px-6 px-4 py-4 border-b border-slate-200">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-semibold text-[#344054] whitespace-nowrap mr-2">
                 Reorder Websites
@@ -449,7 +481,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                 disabled={!canUndo}
               >
                 <Undo className="h-5 w-5" />
-                Undo
+                <span className="hidden lg:inline">Undo</span>
               </button>
 
               <button
@@ -462,7 +494,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                 disabled={!canRedo}
               >
                 <Redo className="h-5 w-5" />
-                Redo
+                <span className="hidden lg:inline">Redo</span>
               </button>
 
               <button
@@ -470,44 +502,44 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                 className="flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-full text-sm font-semibold text-slate-600 hover:bg-slate-50"
               >
                 <X className="h-5 w-5" />
-                Cancel
+                <span className="hidden lg:inline">Cancel</span>
               </button>
 
               <button
-                onClick={handleSave}
+                onClick={handleSaveClick}
                 className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500 text-white rounded-full text-sm font-semibold hover:bg-indigo-600"
               >
                 <Save className="h-5 w-5" />
-                Save
+                <span className="hidden lg:inline">Save</span>
               </button>
             </div>
           </div>
 
           {/* Table */}
           <div className="flex-1 overflow-hidden">
-            <div className="overflow-auto lg:h-[calc(100dvh-290px)] h-[calc(100dvh-234px)] scrollbar-custom">
+            <div className="overflow-auto lg:h-[calc(100dvh-290px)] 4xl:h-[calc(100dvh-480px)] h-[calc(100dvh-334px)] scrollbar-custom">
               <table className="w-full">
                 {/* Table Header */}
                 <thead className="bg-slate-50 sticky top-0 z-10 border-b border-slate-200">
                   <tr>
                     <th className="w-[105px] px-6 py-3.5 text-left"></th>
                     <th className="w-[68px] px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800">
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
                         No.
                       </span>
                     </th>
                     <th className="w-[241px] px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800">
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
                         Web Portal Icon
                       </span>
                     </th>
                     <th className="px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800">
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
                         Website Name
                       </span>
                     </th>
                     <th className="px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800">
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
                         Website URL
                       </span>
                     </th>
@@ -583,7 +615,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                             />
                           </div>
                         </td>
-                        <td className="px-6 py-[15px]">
+                        <td className="px-6 py-[6px]">
                           <input
                             key={`position-${website._id}-${index}`}
                             type="number"
@@ -591,12 +623,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                             onChange={(e) => handlePositionChange(e, index)}
                             onBlur={(e) => handlePositionBlur(e, index)}
                             onKeyDown={(e) => handlePositionKeyDown(e, index)}
-                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[22px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-gray-scale-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[38px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-gray-scale-80 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             min="1"
                             max={websites.length}
                           />
                         </td>
-                        <td className="px-6 py-[15px]">
+                        <td className="px-6 py-[6px]">
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
                             {website.logo ? (
                               <Image
@@ -611,7 +643,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-[15px]">
+                        <td className="px-6 py-[6px]">
                           {needsTruncation(website.name, "name") ? (
                             <TooltipProvider>
                               <Tooltip>
@@ -632,15 +664,38 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                               </Tooltip>
                             </TooltipProvider>
                           ) : (
-                            <p className="text-sm font-medium text-gray-scale-60">
+                            <p className="text-sm font-medium text-gray-scale-60 truncate">
                               {website.name || "-"}
                             </p>
                           )}
                         </td>
-                        <td className="px-6 py-[15px]">
-                          <span className="text-sm font-medium text-slate-600">
-                            {website.url}
-                          </span>
+                        <td className="px-6 py-[6px]">
+                          <div className="flex-1 min-w-0">
+                            {needsTruncation(website.url, "url") ? (
+                              <TooltipProvider>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                      {formatTitle(website.url, "url")}
+                                    </p>
+                                  </TooltipTrigger>
+                                  <TooltipContent
+                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    side="top"
+                                    align="start"
+                                  >
+                                    <div className="break-words">
+                                      {website.url}
+                                    </div>
+                                  </TooltipContent>
+                                </Tooltip>
+                              </TooltipProvider>
+                            ) : (
+                              <p className="text-sm font-medium text-gray-scale-60">
+                                {website.url || "-"}
+                              </p>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))
@@ -652,7 +707,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
           {/* Footer */}
           <div className="border-t border-slate-200 px-6 py-4 bg-white">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-base font-bold text-indigo-500">
                   {selectedWebsites.size}
@@ -671,12 +726,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
                   placeholder="#"
                   value={bulkMovePosition}
                   onChange={(e) => setBulkMovePosition(e.target.value)}
-                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-gray-scale-80"
+                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-gray-scale-80 leading-4"
                 />
                 <button
                   onClick={handleBulkMove}
                   disabled={selectedWebsites.size === 0}
-                  className="px-4 py-2.5 bg-indigo-500 text-white rounded-full text-sm font-semibold hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="px-4 py-2.5 bg-indigo-500 text-white rounded-full text-sm font-semibold hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed leading-4"
                 >
                   Move
                 </button>
@@ -709,10 +764,14 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
 
               <div className="flex flex-col gap-1">
                 <h2 className="text-lg font-semibold text-font-h2">
-                  Unsaved Changes
+                  {warningType === "cancel"
+                    ? "Unsaved Changes"
+                    : "Save Changes"}
                 </h2>
                 <p className="text-font-h2-5 text-sm font-medium">
-                  Website order changed. Save or discard changes?
+                  {warningType === "cancel"
+                    ? "Website order changed. Save or discard changes?"
+                    : "Website order has been modified. Do you want to save these changes?"}
                 </p>
               </div>
             </div>
@@ -722,15 +781,21 @@ const WebsiteReOrderDialog = ({ isOpen, onClose }) => {
             <Button
               type="button"
               variant="outline"
-              onClick={handleDiscardAndClose}
+              onClick={
+                warningType === "cancel"
+                  ? handleDiscardAndClose
+                  : () => setShowWarningDialog(false)
+              }
               className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
             >
               <X className="w-5 h-5" />
-              Discard
+              {warningType === "cancel" ? "Discard" : "Cancel"}
             </Button>
             <Button
               type="button"
-              onClick={handleSaveAndClose}
+              onClick={
+                warningType === "cancel" ? handleSaveAndClose : handleSave
+              }
               className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />

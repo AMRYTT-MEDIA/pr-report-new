@@ -48,56 +48,88 @@ const WebsitePage = () => {
   // Direct render - no useEffect needed
   useBreadcrumbDirect([{ name: "Website", href: "/website", current: true }]);
 
-  // Load websites data
-  useEffect(() => {
-    const loadWebsites = async () => {
-      setLoading(true);
-      try {
-        const response = await websitesService.getWebsites();
-        setWebsites(response.data || response);
-        setTotalCount(response.data?.length || response.length || 0);
-      } catch (error) {
-        console.error("Error loading websites:", error);
-        toast.error("Failed to load websites. Please try again.");
-        // Fallback to empty array
-        setWebsites([]);
-        setTotalCount(0);
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Load websites data with pagination
+  const loadWebsites = async (
+    page = currentPage,
+    size = pageSize,
+    search = null
+  ) => {
+    setLoading(true);
+    try {
+      const response = await websitesService.getWebsitesPaginated(
+        page,
+        size,
+        search
+      );
+      setWebsites(response.data || response.websites || []);
+      setTotalCount(response.totalCount || response.total || 0);
+    } catch (error) {
+      console.error("Error loading websites:", error);
+      toast.error("Failed to load websites. Please try again.");
+      // Fallback to empty array
+      setWebsites([]);
+      setTotalCount(0);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Load websites on component mount
+  useEffect(() => {
     loadWebsites();
   }, []);
 
-  // Filter websites based on search query
-  const filteredWebsites = websites.filter(
-    (website) =>
-      website.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      website.domain.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  // Use websites directly since filtering is now done on backend
+  const filteredWebsites = websites;
 
-  // Handle search
+  // Handle search input change
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
     setCurrentPage(1);
   };
 
+  // Debounced search effect
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (searchQuery.trim()) {
+        loadWebsites(1, pageSize, searchQuery.trim());
+      } else {
+        loadWebsites(1, pageSize);
+      }
+    }, 500);
+
+    return () => clearTimeout(timeoutId);
+  }, [searchQuery]);
+
   // Handle pagination
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+    if (searchQuery.trim()) {
+      loadWebsites(newPage, pageSize, searchQuery.trim());
+    } else {
+      loadWebsites(newPage, pageSize);
+    }
   };
 
   // Handle page size change
   const handlePageSizeChange = (newSize) => {
     setPageSize(newSize);
     setCurrentPage(1);
+    if (searchQuery.trim()) {
+      loadWebsites(1, newSize, searchQuery.trim());
+    } else {
+      loadWebsites(1, newSize);
+    }
   };
 
   // Handle add new website
   const handleAddWebsite = (newWebsite) => {
-    setWebsites((prev) => [newWebsite, ...prev]);
-    setTotalCount((prev) => prev + 1);
+    // Reload the current page to get updated data
+    if (searchQuery.trim()) {
+      loadWebsites(currentPage, pageSize, searchQuery.trim());
+    } else {
+      loadWebsites(currentPage, pageSize);
+    }
     setEditWebsite(null);
   };
 
@@ -109,14 +141,12 @@ const WebsitePage = () => {
 
   // Handle update website after edit
   const handleUpdateWebsite = (updatedWebsite) => {
-    setWebsites((prev) =>
-      prev.map((website) =>
-        (website._id || website.id) ===
-        (updatedWebsite._id || updatedWebsite.id)
-          ? updatedWebsite
-          : website
-      )
-    );
+    // Reload the current page to get updated data
+    if (searchQuery.trim()) {
+      loadWebsites(currentPage, pageSize, searchQuery.trim());
+    } else {
+      loadWebsites(currentPage, pageSize);
+    }
     setEditWebsite(null);
   };
 
@@ -136,13 +166,12 @@ const WebsitePage = () => {
         websiteToDelete._id || websiteToDelete.id
       );
 
-      // Remove website from list
-      setWebsites((prev) =>
-        prev.filter(
-          (w) => (w._id || w.id) !== (websiteToDelete._id || websiteToDelete.id)
-        )
-      );
-      setTotalCount((prev) => prev - 1);
+      // Reload the current page to get updated data
+      if (searchQuery.trim()) {
+        loadWebsites(currentPage, pageSize, searchQuery.trim());
+      } else {
+        loadWebsites(currentPage, pageSize);
+      }
 
       toast.success("Website deleted successfully!");
     } catch (error) {
@@ -204,15 +233,15 @@ const WebsitePage = () => {
       <div className="mx-auto">
         <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
-            <div className="flex items-center gap-2">
+          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center border-b border-gray-200">
+            <div className="items-center gap-2 hidden sm:flex">
               <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                 {WebsiteConstants.allWebsites}
               </h1>
             </div>
 
-            <div className="flex items-center gap-2">
-              <div className="flex items-center gap-2 w-full relative max-w-[400px]">
+            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
+              <div className="flex order-2 sm:order-1 items-center gap-2 w-full relative max-w-full sm:max-w-[400px]">
                 <Search className="w-4 h-4 absolute left-3 text-slate-600" />
                 <Input
                   placeholder="Search..."
@@ -224,40 +253,54 @@ const WebsitePage = () => {
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                     <X
                       className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
-                      onClick={() => setSearchQuery("")}
+                      onClick={() => {
+                        setSearchQuery("");
+                        setCurrentPage(1);
+                        loadWebsites(1, pageSize);
+                      }}
                     />
                   </div>
                 )}
               </div>
-              <Button
-                onClick={() => setReOrderWebsiteDialog(true)}
-                className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
-              >
-                <ListRestart className="w-4 h-4 text-slate-600 mr-2" />
-                <span className="hidden sm:inline">
-                  {WebsiteConstants.reOrder}
-                </span>
-              </Button>
-              <Button
-                onClick={() => {
-                  setEditWebsite(null);
-                  setAddEditWebsiteDialog(true);
-                }}
-                className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 rounded-[39px]"
-              >
-                <Plus className="w-4 h-4 text-white" />
-                <span className="hidden sm:inline">
-                  {WebsiteConstants.addNew}
-                </span>
-              </Button>
+              <div className="flex order-1 sm:order-2 justify-between w-full sm:w-auto">
+                <div className="items-center gap-2 flex sm:hidden">
+                  <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+                    {WebsiteConstants.allWebsites}
+                  </h1>
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <Button
+                    onClick={() => setReOrderWebsiteDialog(true)}
+                    className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
+                  >
+                    <ListRestart className="w-4 h-4 text-slate-600 mr-2" />
+                    <span className="hidden sm:inline">
+                      {WebsiteConstants.reOrder}
+                    </span>
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      setEditWebsite(null);
+                      setAddEditWebsiteDialog(true);
+                    }}
+                    className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 rounded-[39px]"
+                  >
+                    <Plus className="w-4 h-4 text-white" />
+                    <span className="hidden sm:inline">
+                      {WebsiteConstants.addNew}
+                    </span>
+                  </Button>
+                </div>
+              </div>
             </div>
           </div>
 
           {/* Table Section */}
           <div className="overflow-x-auto">
-            <div className="max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom">
+            <div className="max-h-[calc(100dvh-340px)] sm:max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom">
               <table className="w-full divide-y divide-slate-200 table-auto">
-                <thead className="bg-slate-50 w-full">
+                <thead className="bg-slate-50 w-full sticky top-0 z-10">
                   <tr className="w-full">
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[68px]">
                       {WebsiteConstants.no}
@@ -271,7 +314,7 @@ const WebsitePage = () => {
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
                       {WebsiteConstants.websiteUrl}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[260px] whitespace-nowrap">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[140px] whitespace-nowrap">
                       {WebsiteConstants.actions}
                     </th>
                   </tr>
@@ -393,20 +436,18 @@ const WebsitePage = () => {
                           </div>
                         </td>
                         <td className="px-6 py-3">
-                          <div className="flex gap-2 items-center">
+                          <div className="flex gap-8 items-center">
                             <button
                               onClick={() => handleEdit(website)}
-                              className="bg-slate-100 hover:bg-slate-200 text-slate-600 px-4 py-2.5 rounded-[80px] flex items-center gap-2.5 text-sm font-medium"
+                              className="text-slate-600 flex text-sm font-medium"
                             >
                               <PencilLine className="w-4 h-4" />
-                              {WebsiteConstants.edit}
                             </button>
                             <button
                               onClick={() => handleDelete(website)}
-                              className="bg-red-50 hover:bg-red-100 text-red-600 px-4 py-2.5 rounded-[80px] flex items-center gap-2.5 text-sm font-medium"
+                              className="text-red-600 flex text-sm font-medium"
                             >
                               <Trash2 className="w-4 h-4" />
-                              {WebsiteConstants.delete}
                             </button>
                           </div>
                         </td>
