@@ -427,7 +427,6 @@
 /* Input field text styling */
 .input-text {
   color: var(--Gray-60, #475569);
-  font-family: 'Inter', system-ui, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -502,6 +501,7 @@
   .text-gray-secondary { color: var(--color-gray-secondary) !important; }
   
   .border-gray-scale-20 { border-color: var(--color-gray-20) !important; }
+  .border-gray-scale-30 { border-color: var(--color-gray-30) !important; }
   .border-gray-scale-50 { border-color: var(--color-gray-50) !important; }
   .border-gray-scale-80 { border-color: var(--color-gray-80) !important; }
 
@@ -539,7 +539,10 @@
   .bg-danger-scale-90 { background-color: var(--color-danger-90) !important; }
   
   .text-danger-scale { color: var(--color-danger) !important; }
+  .text-danger-scale-60 { color: var(--color-danger-60) !important; }
   .text-danger-scale-90 { color: var(--color-danger-90) !important; }
+  
+  .border-danger-scale-60 { border-color: var(--color-danger-60) !important; }
 
   /* Input text styling */
   .text-input-field { 

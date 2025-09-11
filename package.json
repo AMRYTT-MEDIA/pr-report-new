@@ -13,6 +13,12 @@
     "trigger-build": "curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_2nbdM2HzUpejSxttHjrN2nyrzgkO/T7pWSGKwc5"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.1",
+    "@radix-ui/react-form": "^0.1.8",
+    "@radix-ui/react-label": "^2.1.7",
+    "@radix-ui/react-select": "^2.2.6",
+    "@radix-ui/react-slot": "^1.2.3",
+    "@radix-ui/react-switch": "^1.2.6",
     "@radix-ui/react-tooltip": "^1.2.8",
     "@react-pdf/renderer": "^4.3.0",
     "axios": "^1.11.0",
@@ -31,6 +37,7 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-google-recaptcha": "^3.1.0",
+    "react-hook-form": "^7.62.0",
     "sonner": "^1.5.0",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",

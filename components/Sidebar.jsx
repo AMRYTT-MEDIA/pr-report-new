@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import {
   Users,
@@ -66,17 +66,23 @@ const Sidebar = () => {
     },
   ];
 
-  const isActiveRoute = (href) => {
-    const normalizedHref = normalizePath(href);
-    const normalizedPathname = normalizePath(pathname);
+  const isActiveRoute = useCallback(
+    (href) => {
+      const normalizedHref = normalizePath(href);
+      const normalizedPathname = normalizePath(pathname);
 
-    // Special handling for PR Reports - check if current path starts with pr-reports
-    if (normalizedHref === "/pr-reports-list") {
-      return normalizedPathname.startsWith("/view-pr");
-    }
+      // Special handling for PR Reports
+      if (normalizedHref === "/pr-reports-list") {
+        return (
+          normalizedPathname === "/pr-reports-list" ||
+          normalizedPathname.startsWith("/view-pr")
+        );
+      }
 
-    return normalizedHref === normalizedPathname;
-  };
+      return normalizedHref === normalizedPathname;
+    },
+    [pathname, router]
+  );
 
   const handleNavigation = (href) => {
     router.push(href);
@@ -155,7 +161,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full border-r bg-white lg:bg-[#F8FAFC] border-slate-200 lg:border-[#E2E8F0] z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed left-0 top-0 h-full border-r bg-white lg:bg-gray-scale-10 border-slate-200 lg:border-[#E2E8F0] z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         id="app-sidebar"
@@ -190,9 +196,9 @@ const Sidebar = () => {
                     className={cn(
                       "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",
                       active
-                        ? "bg-slate-100 border border-slate-200"
+                        ? "bg-gray-scale-20 border border-slate-200"
                         : "hover:bg-slate-100/50 border border-transparent",
-                      (item.href === "/website" || item.href === "/users") &&
+                      item.href === "/website" &&
                         "opacity-50 cursor-not-allowed pointer-events-none"
                     )}
                     aria-current={active ? "page" : undefined}
@@ -200,7 +206,11 @@ const Sidebar = () => {
                     <div className="flex-1 flex justify-start items-center gap-2">
                       {/* Icon Container */}
                       <div className="w-5 h-5 relative flex items-center justify-center">
-                        <Icon className=" text-slate-500" />
+                        <Icon
+                          className={
+                            active ? "text-gray-scale-80" : "text-gray-scale-50"
+                          }
+                        />
                       </div>
 
                       {/* Text */}

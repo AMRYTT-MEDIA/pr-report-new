@@ -88,7 +88,10 @@ const LoginForm = ({ searchParams }) => {
   // Backend API error mapping
   const getApiErrorMessage = (error) => {
     if (error.response?.status === 401) {
-      return "User not found. Please check your email and try again.";
+      return (
+        error.response?.data?.message ||
+        "User not found. Please check your email and try again."
+      );
     } else if (error.response?.status === 404) {
       return "Please try again.";
     } else if (error.response?.status === 403) {
@@ -124,7 +127,7 @@ const LoginForm = ({ searchParams }) => {
         .min(8, "Password should be a minimum of 8 characters"),
     }),
     onSubmit: async (values) => {
-      if (!isVerified) return;
+      // if (!isVerified) return;
       setLoading(true);
 
       try {
@@ -218,7 +221,7 @@ const LoginForm = ({ searchParams }) => {
               priority={true}
             />
           </div>
-          <CardTitle className="text-center text-[#1E293B] font-inter text-2xl font-semibold leading-[24.2px] pt-10 card-title">
+          <CardTitle className="text-center text-[#1E293B]  text-2xl font-semibold leading-[24.2px] pt-10 card-title">
             Welcome Back
           </CardTitle>
           <CardDescription className="text-center pt-[10px] text-[#475569] text-base font-medium card-description">
@@ -330,9 +333,7 @@ const LoginForm = ({ searchParams }) => {
             <Button
               type="submit"
               className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={
-                loading || !isVerified || !formik.isValid || !formik.dirty
-              }
+              disabled={loading || !formik.isValid || !formik.dirty}
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
