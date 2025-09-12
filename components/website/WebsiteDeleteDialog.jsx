@@ -1,7 +1,7 @@
 import React from "react";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { CircleX, X, Trash2, Info } from "lucide-react";
+import { X, Trash2, Info } from "lucide-react";
 
 const WebsiteDeleteDialog = ({
   isOpen,
@@ -59,7 +59,7 @@ const WebsiteDeleteDialog = ({
             onClick={cancelDelete}
             className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
           >
-            <CircleX className="w-5 h-5" />
+            <X className="w-5 h-5" />
             Cancel
           </Button>
           <Button

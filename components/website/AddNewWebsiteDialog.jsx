@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { X, Plus, Save, CircleX, PencilLine } from "lucide-react";
+import { X, Plus, Save, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import { useFormik } from "formik";
 import validator from "validator";
@@ -307,9 +307,11 @@ const AddNewWebsiteDialog = ({
               <div className="space-y-2">
                 <Label className="text-sm font-semibold text-slate-700">
                   {WebsiteConstants.websiteUrlLabel}{" "}
-                  <span className="text-red-500">
-                    {WebsiteConstants.required}
-                  </span>
+                  {!editWebsite && (
+                    <span className="text-red-500">
+                      {WebsiteConstants.required}
+                    </span>
+                  )}
                 </Label>
                 <div className="relative">
                   <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[1px] bottom-[1px] bg-gray-scale-5 pl-3 pr-2 py-2.5 rounded-l-lg border-r border-gray-scale-20">
@@ -325,9 +327,12 @@ const AddNewWebsiteDialog = ({
                       formik.setFieldValue("websiteUrl", lowercaseValue);
                     }}
                     onBlur={formik.handleBlur}
-                    disabled={editWebsite}
                     className={`flex-1 rounded-lg border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40 pl-[74px] 
-                          ${editWebsite ? "bg-gray-scale-5" : "bg-white"}
+                          ${
+                            editWebsite
+                              ? "bg-gray-scale-5 pointer-events-none cursor-not-allowed"
+                              : "bg-white"
+                          }
                           ${
                             formik.errors.websiteUrl &&
                             formik.touched.websiteUrl
@@ -358,7 +363,7 @@ const AddNewWebsiteDialog = ({
                       />
                     )}
                     <div className="flex-1">
-                      <p className="text-sm text-slate-600 font-semibold truncate max-w-[122px] sm:max-w-ful">
+                      <p className="text-sm text-slate-600 font-semibold truncate max-w-[122px] sm:max-w-full">
                         {WebsiteConstants.chooseAFileOrDragAndDropItHere}
                       </p>
                       <p className="text-[10px] text-slate-400 mt-1 truncate max-w-[122px] sm:max-w-full">
@@ -366,7 +371,7 @@ const AddNewWebsiteDialog = ({
                       </p>
                     </div>
                     <div className="bg-indigo-50 px-3 py-2 rounded-md">
-                      <span className="text-xs font-semibold text-gray-scale-60 whitespace-nowrap">
+                      <span className="text-sm font-semibold text-gray-scale-60 whitespace-nowrap">
                         {WebsiteConstants.browseFile}
                       </span>
                     </div>
@@ -390,7 +395,7 @@ const AddNewWebsiteDialog = ({
               onClick={handleClose}
               className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
             >
-              <CircleX className="w-5 h-5" />
+              <X className="w-5 h-5" />
               {WebsiteConstants.cancel}
             </Button>
             <Button
@@ -406,9 +411,7 @@ const AddNewWebsiteDialog = ({
               <Save className="w-5 h-5" />
               {formik.isSubmitting
                 ? WebsiteConstants.saving
-                : editWebsite
-                ? WebsiteConstants.updateWebsite
-                : WebsiteConstants.addWebsite}
+                : WebsiteConstants.save}
             </Button>
           </div>
         </form>

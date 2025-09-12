@@ -151,6 +151,15 @@ const WebsitePage = () => {
     setEditWebsite(null);
   };
 
+  // Handle data change from reorder dialog
+  const handleDataChanged = () => {
+    if (searchQuery.trim()) {
+      loadWebsites(currentPage, pageSize, searchQuery.trim());
+    } else {
+      loadWebsites(currentPage, pageSize);
+    }
+  };
+
   // Handle delete website
   const handleDelete = (website) => {
     setWebsiteToDelete(website);
@@ -219,7 +228,7 @@ const WebsitePage = () => {
       <div className="mx-auto">
         <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center">
             <div className="items-center gap-2 hidden sm:flex">
               <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                 {WebsiteConstants.allWebsites}
@@ -228,12 +237,12 @@ const WebsitePage = () => {
 
             <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
               <div className="flex order-2 sm:order-1 items-center gap-2 w-full relative max-w-full sm:max-w-[400px]">
-                <Search className="w-4 h-4 absolute left-3 text-slate-600" />
+                <Search className="w-4 h-4 absolute left-4 text-slate-600" />
                 <Input
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-primary-50 placeholder:text-gray-scale-60 placeholder:opacity-50"
                 />
                 {searchQuery && (
                   <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
@@ -260,8 +269,8 @@ const WebsitePage = () => {
                     onClick={() => setReOrderWebsiteDialog(true)}
                     className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
                   >
-                    <ListRestart className="w-4 h-4 text-slate-600 mr-2" />
-                    <span className="hidden sm:inline">
+                    <ListRestart className="w-4 h-4 text-slate-600" />
+                    <span className="hidden md:inline">
                       {WebsiteConstants.reOrder}
                     </span>
                   </Button>
@@ -270,10 +279,10 @@ const WebsitePage = () => {
                       setEditWebsite(null);
                       setAddEditWebsiteDialog(true);
                     }}
-                    className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 rounded-[39px]"
+                    className="text-white px-4 py-2.5 flex items-center gap-2 bg-primary-50 hover:bg-primary-60 rounded-[39px]"
                   >
                     <Plus className="w-4 h-4 text-white" />
-                    <span className="hidden sm:inline">
+                    <span className="hidden md:inline">
                       {WebsiteConstants.addNew}
                     </span>
                   </Button>
@@ -283,10 +292,10 @@ const WebsitePage = () => {
           </div>
 
           {/* Table Section */}
-          <div className="overflow-x-auto">
-            <div className="max-h-[calc(100dvh-340px)] sm:max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom">
-              <table className="w-full divide-y divide-slate-200 table-auto">
-                <thead className="bg-slate-50 w-full sticky top-0 z-10">
+          <div className="overflow-x-auto relative">
+            <div className="sticky top-0 z-20 bg-slate-50 border-t border-b border-slate-200">
+              <table className="w-full table-auto">
+                <thead>
                   <tr className="w-full">
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[68px]">
                       {WebsiteConstants.no}
@@ -305,6 +314,11 @@ const WebsitePage = () => {
                     </th>
                   </tr>
                 </thead>
+              </table>
+            </div>
+
+            <div className="max-h-[calc(100dvh-390px)] sm:max-h-[calc(100dvh-350px)] lg:max-h-[calc(100dvh-340px)] xl:max-h-[calc(100dvh-284px)] overflow-y-auto scrollbar-custom">
+              <table className="w-full divide-y divide-slate-200 table-auto">
                 <tbody className="bg-white divide-y divide-slate-200">
                   {loading ? (
                     <>
@@ -504,6 +518,7 @@ const WebsitePage = () => {
       <WebsiteReOrderDialog
         isOpen={reOrderWebsiteDialog}
         onClose={() => setReOrderWebsiteDialog(false)}
+        onDataChanged={handleDataChanged}
       />
     </div>
   );
