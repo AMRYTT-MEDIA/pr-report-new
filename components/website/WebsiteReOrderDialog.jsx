@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useCallback, useRef, useEffect } from "react";
 import {
   Search,
@@ -498,7 +500,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       >
         <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-gray-scale-30">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row sm:items-center items-start justify-between gap-2 sm:px-6 px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center items-start justify-between gap-2 sm:px-6 px-4 py-4 border-b border-slate-200">
             <div className="flex items-center gap-4">
               <h2 className="text-xl font-semibold text-[#344054] whitespace-nowrap mr-2">
                 Reorder Websites
@@ -573,10 +575,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
           </div>
 
           {/* Table */}
-          <div className="flex-1 overflow-hidden relative">
-            <div className="sticky top-0 z-20 bg-slate-50 border-t border-b border-slate-200">
+          <div className="flex-1 overflow-hidden">
+            <div className="overflow-auto lg:h-[calc(100dvh-290px)] 4xl:h-[calc(100dvh-480px)] h-[calc(100dvh-334px)] scrollbar-custom">
               <table className="w-full">
-                <thead>
+                <thead className="bg-slate-50 sticky top-0 z-10 border-b border-slate-200">
                   <tr>
                     <th className="w-[105px] px-6 py-3.5 text-left"></th>
                     <th className="w-[68px] px-6 py-3.5 text-left">
@@ -601,11 +603,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                     </th>
                   </tr>
                 </thead>
-              </table>
-            </div>
 
-            <div className="overflow-auto h-[calc(100dvh-400px)] sm:h-[calc(100dvh-320px)] lg:h-[calc(100dvh-290px)] 4xl:h-[calc(100dvh-480px)]  scrollbar-custom">
-              <table className="w-full">
                 {/* Table Body */}
                 <tbody className="bg-white">
                   {loading ? (

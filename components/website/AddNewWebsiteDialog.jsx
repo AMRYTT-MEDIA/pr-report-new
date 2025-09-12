@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
@@ -190,8 +192,8 @@ const AddNewWebsiteDialog = ({
         return;
       }
 
-      // Validate file size (max 5MB)
-      if (file.size > 5 * 1024 * 1024) {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
         toast.error(WebsiteConstants.fileSizeError);
         return;
       }
@@ -360,6 +362,8 @@ const AddNewWebsiteDialog = ({
                         src={iconPreview}
                         alt="Preview"
                         className="w-10 h-10 object-contain rounded"
+                        width={40}
+                        height={40}
                       />
                     )}
                     <div className="flex-1">
