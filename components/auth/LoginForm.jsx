@@ -127,7 +127,7 @@ const LoginForm = ({ searchParams }) => {
         .min(8, "Password should be a minimum of 8 characters"),
     }),
     onSubmit: async (values) => {
-      // if (!isVerified) return;
+      if (!isVerified) return;
       setLoading(true);
 
       try {
@@ -209,7 +209,7 @@ const LoginForm = ({ searchParams }) => {
   }
 
   return (
-    <div className="bg-slate-50 content-stretch flex items-center justify-center relative size-full min-h-screen">
+    <div className="bg-slate-50 content-stretch flex items-center justify-center relative size-full  min-h-dvh">
       {/* Mobile Design */}
       <div className="md:hidden basis-0 bg-[rgba(255,255,255,0.99)] grow h-[777px] min-h-px min-w-px relative shrink-0">
         <div className="content-stretch flex flex-col h-[777px] items-center justify-center overflow-clip relative w-full">
@@ -593,7 +593,9 @@ const LoginForm = ({ searchParams }) => {
               <Button
                 type="submit"
                 className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                disabled={loading || !formik.isValid || !formik.dirty}
+                disabled={
+                  loading || !isVerified || !formik.isValid || !formik.dirty
+                }
               >
                 {loading ? (
                   <div className="flex items-center justify-center gap-2">
