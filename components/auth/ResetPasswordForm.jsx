@@ -307,7 +307,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                   <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
                     <div className="reset-password-success-title">
                       <p className="leading-[24.2px]">
-                        Password Reset Complete!
+                        Password Reset Successfully!
                       </p>
                     </div>
                     <div className="reset-password-state-description success-description-animation">
@@ -366,7 +366,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                   <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
                     <div className="reset-password-success-title">
                       <p className="leading-[24.2px]">
-                        Password Reset Complete!
+                        Password Reset Successfully!
                       </p>
                     </div>
                     <div className="reset-password-state-description success-description-animation">

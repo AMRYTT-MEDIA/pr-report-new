@@ -2,13 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import {
-  Download,
-  ExternalLink,
-  Eye,
-  TrendingUp,
-  BarChart3,
-} from "lucide-react";
+
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 

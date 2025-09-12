@@ -22,14 +22,12 @@ import {
   FileSpreadsheetIcon,
 } from "lucide-react";
 import { toast } from "sonner";
-import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
-import { pdf } from "@react-pdf/renderer";
+// Dynamic import will be used in handleDownload function
 import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import PRReportPDF from "./PRReportPDF";
-import Pagination from "./Pagination";
 import URLTableCell from "./URLTableCell";
 import Loading from "./ui/loading";
 import ShareDialog from "./ShareDialog";
@@ -222,6 +220,7 @@ const PRReportViewer = ({
         });
 
         // Generate PDF using the new PRReportPDF component with base64 logos
+        const { pdf } = await import("@react-pdf/renderer");
         const pdfBlob = await pdf(
           <PRReportPDF report={report} formatData={processedOutlets} />
         ).toBlob();
