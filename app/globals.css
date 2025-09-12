@@ -597,3 +597,81 @@
     display: none;
   }
 }
+
+/* Reset Password Form States - Tailwind Custom Classes */
+@layer components {
+  /* Reset Password Container */
+  .reset-password-container {
+    @apply bg-slate-50 min-h-dvh flex items-center justify-center relative;
+  }
+
+  /* Reset Password Card */
+  .reset-password-card {
+    @apply bg-white relative rounded-[24px] w-[607px] max-w-full mx-4;
+  }
+
+  /* Reset Password State Container */
+  .reset-password-state-container {
+    @apply flex flex-col items-center justify-center p-8;
+  }
+
+  /* Reset Password State Content */
+  .reset-password-state-content {
+    @apply text-center;
+  }
+
+  /* Reset Password Spinner */
+  .reset-password-spinner {
+    @apply animate-spin rounded-full h-12 w-12 border-b-2 border-primary-60 mx-auto mb-4;
+  }
+
+  /* Reset Password State Title */
+  .reset-password-state-title {
+    @apply text-2xl font-bold text-slate-800 mb-4;
+  }
+
+  /* Reset Password Success Title */
+  .reset-password-success-title {
+    @apply text-2xl font-bold text-green-600 mb-4;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  /* Reset Password State Description */
+  .reset-password-state-description {
+    @apply text-slate-600 text-base mb-6 opacity-75;
+  }
+
+  /* Reset Password State Link */
+  .reset-password-state-link {
+    @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors;
+  }
+
+  /* Reset Password Card Shadow */
+  .reset-password-card-shadow {
+    @apply absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[24px] shadow-[0px_0px_0px_8px_rgba(255,255,255,0.25),0px_990px_277px_0px_rgba(0,0,0,0),0px_634px_253px_0px_rgba(0,0,0,0.01),0px_356px_214px_0px_rgba(0,0,0,0.05),0px_158px_158px_0px_rgba(0,0,0,0.09),0px_40px_87px_0px_rgba(0,0,0,0.1)];
+  }
+
+  /* Success Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .success-icon-animation {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  .success-description-animation {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  .success-button-animation {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
+  }
+}

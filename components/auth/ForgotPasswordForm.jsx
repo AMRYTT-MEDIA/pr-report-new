@@ -80,6 +80,7 @@ const ForgotPasswordForm = () => {
   });
 
   const handleBackToLogin = () => {
+    setEmailSent(false);
     router.push("/login");
   };
 
@@ -97,7 +98,7 @@ const ForgotPasswordForm = () => {
       alt: "outlook",
     },
   ];
-  if (!emailSent) {
+  if (emailSent) {
     return (
       <div className="bg-slate-50 content-stretch flex items-center justify-center relative size-full min-h-screen">
         <div className="bg-white relative rounded-[24px] shrink-0 w-[607px] max-w-[607px]">
@@ -197,7 +198,7 @@ const ForgotPasswordForm = () => {
                   <div className="content-stretch flex  gap-3 items-start justify-start relative shrink-0 w-full">
                     <Button
                       variant="outline"
-                      className="w-full text-primary-50 hover:text-primary-50 border-primary-50 hover:border-primary-50 box-border content-stretch flex gap-2.5 items-center justify-center min-h-12 overflow-clip px-5 py-3 relative rounded-[1234px] hover:bg-primary-5"
+                      className="w-full text-primary-50 hover:text-primary-50 border-primary-50 hover:border-primary-50 text-base box-border content-stretch flex gap-2.5 items-center justify-center min-h-12 overflow-clip px-5 py-3 relative rounded-[1234px] hover:bg-primary-5"
                       onClick={() => {
                         handleBackToLogin();
                       }}

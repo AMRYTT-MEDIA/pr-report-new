@@ -1,59 +1,33 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAuth } from "@/lib/auth";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { toast } from "sonner";
 import Image from "next/image";
 import Loading from "@/components/ui/loading";
 import Link from "next/link";
-import {
-  LockIcon,
-  EyeCloseIcon,
-  EyeOpenIcon,
-  LeftArrow,
-} from "@/components/icon";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import ErrorMessage from "@/components/ui/error-message";
+import { Eye, EyeClosed, LockKeyhole, LogOut, CheckCircle } from "lucide-react";
 import {
-  ArrowRightIcon,
-  Eye,
-  EyeClosed,
-  LockKeyhole,
-  LogOut,
-} from "lucide-react";
+  verifyResetCode,
+  confirmPasswordResetWithCode,
+} from "@/lib/firebaseHelperfunction";
 
-const ResetPasswordForm = () => {
-  const [loading, setLoading] = useState(false);
+const ResetPasswordForm = ({ oobCode }) => {
+  const [message, setMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [isValidCode, setIsValidCode] = useState(false);
+  const [resetComplete, setResetComplete] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [passwordReset, setPasswordReset] = useState(false);
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const { user } = useAuth();
-
-  // Get token from URL params
-  const token = searchParams?.get("token");
-
-  useEffect(() => {
-    if (user) {
-      router.push("/pr-reports");
-    }
-  }, [user, router]);
 
   const validationSchema = Yup.object({
     password: Yup.string()
-      .min(8, "Password must be at least 8 characters")
+      .min(6, "Password must be at least 6 characters")
       .matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
         "Password must contain at least one uppercase letter, one lowercase letter, and one number"
@@ -70,25 +44,25 @@ const ResetPasswordForm = () => {
       confirmPassword: "",
     },
     validationSchema,
+    enableReinitialize: true,
+    validateOnChange: true,
+    validateOnBlur: true,
     onSubmit: async (values) => {
-      if (!token) {
-        toast.error("Invalid reset token");
-        return;
+      setIsLoading(true);
+      setMessage("");
+
+      const result = await confirmPasswordResetWithCode(
+        oobCode,
+        values.password
+      );
+
+      if (result.success) {
+        setResetComplete(true);
+      } else {
+        setMessage(result.message);
       }
 
-      setLoading(true);
-      try {
-        // Here you would implement the actual password reset API call
-        // For now, we'll simulate the process
-        await new Promise((resolve) => setTimeout(resolve, 2000));
-
-        toast.success("Password reset successfully!");
-        setPasswordReset(true);
-      } catch (error) {
-        toast.error("Failed to reset password. Please try again.");
-      } finally {
-        setLoading(false);
-      }
+      setIsLoading(false);
     },
   });
 
@@ -96,52 +70,332 @@ const ResetPasswordForm = () => {
     router.push("/login");
   };
 
-  if (passwordReset) {
+  useEffect(() => {
+    if (oobCode) {
+      verifyCode();
+    } else {
+      setIsVerifying(false);
+      setMessage(
+        "Invalid or missing reset link. Please request a new password reset link."
+      );
+    }
+  }, [oobCode]);
+
+  const verifyCode = async () => {
+    setIsVerifying(true);
+    const result = await verifyResetCode(oobCode);
+
+    if (result.success) {
+      setIsValidCode(true);
+    } else {
+      setMessage(result.message);
+      setIsValidCode(false);
+    }
+
+    setIsVerifying(false);
+  };
+
+  if (isVerifying) {
     return (
-      <div
-        className="min-h-dvh flex items-center justify-center relative"
-        style={{
-          background:
-            "radial-gradient(40.82% 42.04% at 78.69% 74.73%, #EBECFF 0%, #F8FAFC 100%)",
-        }}
-      >
-        <div className="w-full max-w-md px-5">
-          <Card className="bg-white/80 backdrop-blur-sm border-0 shadow-login-card">
-            <CardContent className="p-8">
-              <div className="flex flex-col gap-6 items-center text-center">
-                {/* Success Icon */}
-                <div className="bg-center bg-contain bg-no-repeat h-[45px] shrink-0 w-[223px]">
+      <div className="bg-slate-50 min-h-dvh flex items-center justify-center relative">
+        {/* Desktop Design */}
+        <div className="hidden md:block bg-white relative rounded-[24px] w-[607px] max-w-full mx-4">
+          <div className="flex flex-col items-center justify-end overflow-clip relative">
+            <div className="box-border flex gap-2.5 items-center justify-center p-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
                   <Image
                     src="/guestpost-link.webp"
-                    alt="PR Reports"
+                    alt="PR Report Logo"
                     width={223}
                     height={45}
                     priority={true}
-                    className="w-full h-full object-contain"
+                    className="object-contain"
                   />
                 </div>
 
-                {/* Success Message */}
-                <div className="flex flex-col gap-3">
-                  <h2 className="text-2xl font-bold text-font-h2">
-                    Password Reset Successfully!
-                  </h2>
-                  <p className="text-gray-60 text-base">
-                    Your password has been reset successfully. You can now log
-                    in with your new password.
-                  </p>
+                {/* Loading State */}
+                <div className="flex flex-col gap-6 items-center justify-center relative w-full">
+                  <div className="reset-password-spinner" />
+                  <div className="flex flex-col gap-2.5 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="font-['Inter',_sans-serif] font-semibold relative text-[24px] text-slate-800 w-full">
+                      <p className="leading-[24.2px]">Verifying Reset Link</p>
+                    </div>
+                    <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
+                      <p className="leading-[normal]">
+                        Please wait while we verify your reset link...
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[24px] shadow-[0px_0px_0px_8px_rgba(255,255,255,0.25),0px_990px_277px_0px_rgba(0,0,0,0),0px_634px_253px_0px_rgba(0,0,0,0.01),0px_356px_214px_0px_rgba(0,0,0,0.05),0px_158px_158px_0px_rgba(0,0,0,0.09),0px_40px_87px_0px_rgba(0,0,0,0.1)]"
+          />
+        </div>
+
+        {/* Mobile Design */}
+        <div className="md:hidden basis-0 bg-[rgba(255,255,255,0.99)] grow h-[777px] min-h-px min-w-px relative shrink-0">
+          <div className="flex flex-col h-[777px] items-center justify-center overflow-clip relative w-full">
+            <div className="box-border flex gap-2.5 items-center justify-center px-5 py-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
+                  <Image
+                    src="/guestpost-link.webp"
+                    alt="PR Report Logo"
+                    width={223}
+                    height={45}
+                    priority={true}
+                    className="object-contain"
+                  />
                 </div>
 
-                {/* Action Button */}
-                <Button
-                  onClick={handleBackToLogin}
-                  className="w-full bg-primary-50 hover:bg-primary-60 text-white font-semibold py-3 px-6 rounded-full transition-colors"
-                >
-                  Back to Login
-                </Button>
+                {/* Loading State */}
+                <div className="flex flex-col gap-6 items-center justify-center relative w-full">
+                  <div className="reset-password-spinner" />
+                  <div className="flex flex-col gap-2.5 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="font-['Inter',_sans-serif] font-semibold relative text-[24px] text-slate-800 w-full">
+                      <p className="leading-[24.2px]">Verifying Reset Link</p>
+                    </div>
+                    <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
+                      <p className="leading-[normal]">
+                        Please wait while we verify your reset link...
+                      </p>
+                    </div>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (!isValidCode) {
+    return (
+      <div className="bg-slate-50 min-h-dvh flex items-center justify-center relative">
+        {/* Desktop Design */}
+        <div className="hidden md:block bg-white relative rounded-[24px] w-[607px] max-w-full mx-4">
+          <div className="flex flex-col items-center justify-end overflow-clip relative">
+            <div className="box-border flex gap-2.5 items-center justify-center p-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
+                  <Image
+                    src="/guestpost-link.webp"
+                    alt="PR Report Logo"
+                    width={223}
+                    height={45}
+                    priority={true}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Error State */}
+                <div className="flex flex-col gap-6 items-center justify-center relative w-full">
+                  <div className="flex flex-col gap-2.5 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="font-['Inter',_sans-serif] font-semibold relative text-[24px] text-red-600 w-full">
+                      <p className="leading-[24.2px]">Invalid Reset Link</p>
+                    </div>
+                    <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
+                      <p className="leading-[normal]">{message}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/forgot-password"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors"
+                    tabIndex={0}
+                    aria-label="Request a new password reset link"
+                  >
+                    Request New Reset Link
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[24px] shadow-[0px_0px_0px_8px_rgba(255,255,255,0.25),0px_990px_277px_0px_rgba(0,0,0,0),0px_634px_253px_0px_rgba(0,0,0,0.01),0px_356px_214px_0px_rgba(0,0,0,0.05),0px_158px_158px_0px_rgba(0,0,0,0.09),0px_40px_87px_0px_rgba(0,0,0,0.1)]"
+          />
+        </div>
+
+        {/* Mobile Design */}
+        <div className="md:hidden basis-0 bg-[rgba(255,255,255,0.99)] grow h-[777px] min-h-px min-w-px relative shrink-0">
+          <div className="flex flex-col h-[777px] items-center justify-center overflow-clip relative w-full">
+            <div className="box-border flex gap-2.5 items-center justify-center px-5 py-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
+                  <Image
+                    src="/guestpost-link.webp"
+                    alt="PR Report Logo"
+                    width={223}
+                    height={45}
+                    priority={true}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Error State */}
+                <div className="flex flex-col gap-6 items-center justify-center relative w-full">
+                  <div className="flex flex-col gap-2.5 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="font-['Inter',_sans-serif] font-semibold relative text-[24px] text-red-600 w-full">
+                      <p className="leading-[24.2px]">Invalid Reset Link</p>
+                    </div>
+                    <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
+                      <p className="leading-[normal]">{message}</p>
+                    </div>
+                  </div>
+                  <Link
+                    href="/forgot-password"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors"
+                    tabIndex={0}
+                    aria-label="Request a new password reset link"
+                  >
+                    Request New Reset Link
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none"
+          />
+        </div>
+      </div>
+    );
+  }
+
+  if (resetComplete) {
+    return (
+      <div className="bg-slate-50 min-h-dvh flex items-center justify-center relative">
+        {/* Desktop Design */}
+        <div className="hidden md:block bg-white relative rounded-[24px] w-[607px] max-w-full mx-4">
+          <div className="flex flex-col items-center justify-end overflow-clip relative">
+            <div className="box-border flex gap-2.5 items-center justify-center p-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
+                  <Image
+                    src="/guestpost-link.webp"
+                    alt="PR Report Logo"
+                    width={223}
+                    height={45}
+                    priority={true}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Success State */}
+                <div className="flex flex-col gap-8 items-center justify-center relative w-full">
+                  {/* Success Icon */}
+                  <div className="flex items-center justify-center w-20 h-20 bg-green-100 rounded-full success-icon-animation">
+                    <CheckCircle className="w-12 h-12 text-green-600" />
+                  </div>
+
+                  <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="reset-password-success-title">
+                      <p className="leading-[24.2px]">
+                        Password Reset Complete!
+                      </p>
+                    </div>
+                    <div className="reset-password-state-description success-description-animation">
+                      <p className="leading-[normal]">
+                        Your password has been successfully updated. You can now
+                        log in with your new password.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 items-center w-full success-button-animation">
+                    <Link
+                      href="/login"
+                      className="reset-password-state-link w-full justify-center"
+                    >
+                      Go to Login
+                    </Link>
+                    <p className="text-sm text-slate-500">
+                      You will be redirected to the login page
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[24px] shadow-[0px_0px_0px_8px_rgba(255,255,255,0.25),0px_990px_277px_0px_rgba(0,0,0,0),0px_634px_253px_0px_rgba(0,0,0,0.01),0px_356px_214px_0px_rgba(0,0,0,0.05),0px_158px_158px_0px_rgba(0,0,0,0.09),0px_40px_87px_0px_rgba(0,0,0,0.1)]"
+          />
+        </div>
+
+        {/* Mobile Design */}
+        <div className="md:hidden basis-0 bg-[rgba(255,255,255,0.99)] grow h-[777px] min-h-px min-w-px relative shrink-0">
+          <div className="flex flex-col h-[777px] items-center justify-center overflow-clip relative w-full">
+            <div className="box-border flex gap-2.5 items-center justify-center px-5 py-[45px] relative w-full">
+              <div className="basis-0 flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative w-full">
+                {/* Logo */}
+                <div className="bg-center bg-contain bg-no-repeat h-[45px] w-[223px]">
+                  <Image
+                    src="/guestpost-link.webp"
+                    alt="PR Report Logo"
+                    width={223}
+                    height={45}
+                    priority={true}
+                    className="object-contain"
+                  />
+                </div>
+
+                {/* Success State */}
+                <div className="flex flex-col gap-8 items-center justify-center relative w-full">
+                  {/* Success Icon */}
+                  <div className="flex items-center justify-center w-20 h-20 bg-green-100 rounded-full success-icon-animation">
+                    <CheckCircle className="w-12 h-12 text-green-600" />
+                  </div>
+
+                  <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
+                    <div className="reset-password-success-title">
+                      <p className="leading-[24.2px]">
+                        Password Reset Complete!
+                      </p>
+                    </div>
+                    <div className="reset-password-state-description success-description-animation">
+                      <p className="leading-[normal]">
+                        Your password has been successfully updated. You can now
+                        log in with your new password.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col gap-3 items-center w-full success-button-animation">
+                    <Link
+                      href="/login"
+                      className="reset-password-state-link w-full justify-center"
+                    >
+                      Go to Login
+                    </Link>
+                    <p className="text-sm text-slate-500">
+                      You will be redirected to the login page
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            aria-hidden="true"
+            className="absolute border border-slate-200 border-solid inset-0 pointer-events-none"
+          />
         </div>
       </div>
     );
@@ -292,9 +546,9 @@ const ResetPasswordForm = () => {
                     <Button
                       type="submit"
                       className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={loading || !formik.isValid || !formik.dirty}
+                      disabled={isLoading || !formik.isValid || !formik.dirty}
                     >
-                      {loading ? (
+                      {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <Loading
                             size="sm"
@@ -466,9 +720,9 @@ const ResetPasswordForm = () => {
                     <Button
                       type="submit"
                       className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                      disabled={loading || !formik.isValid || !formik.dirty}
+                      disabled={isLoading || !formik.isValid || !formik.dirty}
                     >
-                      {loading ? (
+                      {isLoading ? (
                         <div className="flex items-center justify-center gap-2">
                           <Loading
                             size="sm"
@@ -500,13 +754,4 @@ const ResetPasswordForm = () => {
   );
 };
 
-// Wrapper component to handle Suspense
-const ResetPasswordFormWithSuspense = () => {
-  return (
-    <Suspense fallback={<Loading />}>
-      <ResetPasswordForm />
-    </Suspense>
-  );
-};
-
-export default ResetPasswordFormWithSuspense;
+export default ResetPasswordForm;
