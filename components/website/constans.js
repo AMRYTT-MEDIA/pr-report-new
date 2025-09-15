@@ -23,7 +23,7 @@ const WebsiteConstants = {
   
   // File upload messages
   invalidFileType: "Please upload a valid image file (JPEG, PNG, SVG, WebP, or GIF)",
-  fileSizeError: "File size must be less than 5MB",
+  fileSizeError: "File size must be less than 10MB",
   
   // Toast messages
   websiteAddedSuccess: "Website added successfully!",

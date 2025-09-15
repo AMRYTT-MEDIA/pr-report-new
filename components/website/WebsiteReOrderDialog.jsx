@@ -152,7 +152,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
           setOriginalWebsites([...websitesData]); // Store original data for reset
         } catch (error) {
           console.error("Error loading websites:", error);
-          toast.error("Failed to load websites. Please try again.");
+          toast.error(
+            error.message || "Failed to load websites. Please try again."
+          );
           setWebsites([]);
           setOriginalWebsites([]);
         } finally {
@@ -271,7 +273,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       }
     } catch (error) {
       console.error("Error saving website order:", error);
-      toast.error("Failed to save website order. Please try again.");
+      toast.error(
+        error.message || "Failed to save website order. Please try again."
+      );
     }
   }, [websites, onClose, onDataChanged]);
 
@@ -310,7 +314,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       }
     } catch (error) {
       console.error("Error saving website order:", error);
-      toast.error("Failed to save website order. Please try again.");
+      toast.error(
+        error.message || "Failed to save website order. Please try again."
+      );
     }
   }, [websites, onClose, onDataChanged]);
 
@@ -566,7 +572,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
 
               <button
                 onClick={handleSaveClick}
-                className="flex items-center gap-2 px-4 py-2.5 bg-indigo-500 text-white rounded-full text-sm font-semibold hover:bg-indigo-600"
+                disabled={!hasChanges()}
+                className={`flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold bg-indigo-500 text-white hover:bg-indigo-600 ${
+                  hasChanges() ? "" : "opacity-50 cursor-not-allowed"
+                }`}
               >
                 <Save className="h-5 w-5" />
                 <span className="hidden lg:inline">Save</span>

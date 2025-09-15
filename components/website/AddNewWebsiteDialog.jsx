@@ -147,11 +147,12 @@ const AddNewWebsiteDialog = ({
         handleClose();
       } catch (error) {
         console.error("Error saving website:", error);
-        toast.error(
-          editWebsite
+        const errorMessage =
+          error?.message ||
+          (editWebsite
             ? WebsiteConstants.updateWebsiteError
-            : WebsiteConstants.addWebsiteError
-        );
+            : WebsiteConstants.addWebsiteError);
+        toast.error(errorMessage);
       }
     },
     enableReinitialize: true,

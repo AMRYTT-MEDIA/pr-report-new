@@ -171,7 +171,9 @@ const WebsiteTableClient = ({
       toast.success("Website deleted successfully!");
     } catch (error) {
       console.error("Error deleting website:", error);
-      toast.error("Failed to delete website. Please try again.");
+      toast.error(
+        error.message || "Failed to delete website. Please try again."
+      );
     } finally {
       setIsDeleting(false);
       setDeleteDialog(false);
