@@ -99,7 +99,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
             showProfile={true}
             profileData={{
               name: user?.fullName || "Main Text",
-              role: "Admin",
+              role: user?.role?.name || "Test",
               avatar: user?.avatar,
               showStatus: true,
             }}
@@ -150,7 +150,9 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                       ? `${user.fullName.substring(0, 10)}...`
                       : "Publish rt..."}
                   </div>
-                  <div className="text-xss text-gray-500">Admin</div>
+                  <div className="text-xss text-gray-500">
+                    {user?.role?.name || "Test"}
+                  </div>
                 </div>
 
                 {/* Dropdown Button */}
