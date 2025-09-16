@@ -11,6 +11,7 @@ import {
   X,
   LayoutList,
   FileSpreadsheet,
+  Ban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
@@ -63,6 +64,12 @@ const Sidebar = () => {
       href: "/pr-reports-list",
       icon: FileSpreadsheet,
       badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
+    },
+    {
+      name: "Block URLs",
+      href: "/block-urls",
+      icon: Ban,
+      badge: null,
     },
   ];
 
