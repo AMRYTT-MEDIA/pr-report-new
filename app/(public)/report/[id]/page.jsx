@@ -308,7 +308,11 @@ export default function ReportPage() {
           )}
 
           {/* Report Content */}
-          {showFullReport && report && <PRReportViewer report={report} />}
+          {showFullReport && report && (
+            <div className="max-w-[1270px] mx-auto">
+              <PRReportViewer report={report} />
+            </div>
+          )}
         </div>
       </div>
     </>

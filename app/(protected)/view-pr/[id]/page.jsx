@@ -125,11 +125,13 @@ export default function ViewPR() {
   return (
     <div>
       {report && (
-        <PRReportViewer
-          report={report}
-          isPublic={false}
-          fetchReportData={() => fetchReportData(true)}
-        />
+        <div className="max-w-[1270px] mx-auto">
+          <PRReportViewer
+            report={report}
+            isPublic={false}
+            fetchReportData={() => fetchReportData(true)}
+          />
+        </div>
       )}
     </div>
   );
