@@ -1,12 +1,45 @@
-import { redirect } from "next/navigation";
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/lib/auth";
+import { getDefaultLandingPage } from "@/lib/rbac";
+import Loading from "@/components/ui/loading";
 
 export default function HomePage() {
-  // This ensures proper routing in production
-  redirect("/login");
-}
+  const { user, loading, initialized } = useAuth();
+  const router = useRouter();
 
-// Add metadata for better SEO
-export const metadata = {
-  title: "GuestPostLinks PR Boost - Redirecting to Login",
-  description: "Redirecting to login page",
-};
+  useEffect(() => {
+    // Wait for auth to initialize
+    if (!initialized) return;
+
+    // If user is logged in, redirect to role-based landing page
+    if (user) {
+      const landingPage = getDefaultLandingPage(user);
+      router.replace(landingPage);
+    } else {
+      // If no user, redirect to login
+      router.replace("/login");
+    }
+  }, [user, initialized, router]);
+
+  // Show minimal loading while determining redirect
+  if (!initialized || loading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loading
+          size="lg"
+          color="purple"
+          showText={true}
+          text="Loading..."
+          textColor="black"
+          textPosition="bottom"
+        />
+      </div>
+    );
+  }
+
+  // Don't render anything while redirecting
+  return null;
+}

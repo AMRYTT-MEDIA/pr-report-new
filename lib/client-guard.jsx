@@ -5,7 +5,7 @@ import { useAuth } from "./auth";
 import Loading from "@/components/ui/loading";
 
 export function Guard({ mode, children }) {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const router = useRouter();
   const path = usePathname();
   const hasRedirected = useRef(false);
@@ -14,14 +14,15 @@ export function Guard({ mode, children }) {
     // Prevent infinite loops
     if (hasRedirected.current) return;
 
-    if (loading) return; // Wait for auth to load
+    // Wait for auth to be fully initialized
+    if (!initialized || loading) return;
     if (mode === "public") return;
 
     if (!user) {
       hasRedirected.current = true;
       router.replace(`/login?next=${encodeURIComponent(path)}`);
     }
-  }, [mode, user, loading, path, router]);
+  }, [mode, user, loading, initialized, path, router]);
 
   // Reset redirect flag when user changes
   useEffect(() => {
@@ -30,8 +31,8 @@ export function Guard({ mode, children }) {
     }
   }, [user]);
 
-  // Show loading state while auth is initializing
-  if (loading) {
+  // Show loading state while auth is initializing or not yet initialized
+  if (!initialized || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loading
@@ -46,8 +47,8 @@ export function Guard({ mode, children }) {
     );
   }
 
-  // Don't render protected/private content if no user
-  if (mode !== "public" && !user) return null;
+  // Don't render protected/private content if no user and auth is initialized
+  if (mode !== "public" && !user && initialized) return null;
 
   return <>{children}</>;
 }

@@ -427,7 +427,6 @@
 /* Input field text styling */
 .input-text {
   color: var(--Gray-60, #475569);
-  font-family: 'Inter', system-ui, sans-serif;
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -502,6 +501,7 @@
   .text-gray-secondary { color: var(--color-gray-secondary) !important; }
   
   .border-gray-scale-20 { border-color: var(--color-gray-20) !important; }
+  .border-gray-scale-30 { border-color: var(--color-gray-30) !important; }
   .border-gray-scale-50 { border-color: var(--color-gray-50) !important; }
   .border-gray-scale-80 { border-color: var(--color-gray-80) !important; }
 
@@ -539,7 +539,10 @@
   .bg-danger-scale-90 { background-color: var(--color-danger-90) !important; }
   
   .text-danger-scale { color: var(--color-danger) !important; }
+  .text-danger-scale-60 { color: var(--color-danger-60) !important; }
   .text-danger-scale-90 { color: var(--color-danger-90) !important; }
+  
+  .border-danger-scale-60 { border-color: var(--color-danger-60) !important; }
 
   /* Input text styling */
   .text-input-field { 
@@ -567,7 +570,7 @@
   
   .scrollbar-custom {
     scrollbar-width: thin;
-    scrollbar-color: var(--color-primary-60) var(--color-gray-10);
+    scrollbar-color: var(--color-primary-50) var(--color-gray-10);
   }
   
   .scrollbar-custom::-webkit-scrollbar {
@@ -581,7 +584,7 @@
   }
   
   .scrollbar-custom::-webkit-scrollbar-thumb {
-    background: var(--color-primary-60);
+    background: var(--color-primary-50);
     border-radius: 3px;
     transition: background-color 0.2s ease;
   }
@@ -592,5 +595,83 @@
   
   .scrollbar-custom::-webkit-scrollbar-corner {
     display: none;
+  }
+}
+
+/* Reset Password Form States - Tailwind Custom Classes */
+@layer components {
+  /* Reset Password Container */
+  .reset-password-container {
+    @apply bg-slate-50 min-h-dvh flex items-center justify-center relative;
+  }
+
+  /* Reset Password Card */
+  .reset-password-card {
+    @apply bg-white relative rounded-[24px] w-[607px] max-w-full mx-4;
+  }
+
+  /* Reset Password State Container */
+  .reset-password-state-container {
+    @apply flex flex-col items-center justify-center p-8;
+  }
+
+  /* Reset Password State Content */
+  .reset-password-state-content {
+    @apply text-center;
+  }
+
+  /* Reset Password Spinner */
+  .reset-password-spinner {
+    @apply animate-spin rounded-full h-12 w-12 border-b-2 border-primary-60 mx-auto mb-4;
+  }
+
+  /* Reset Password State Title */
+  .reset-password-state-title {
+    @apply text-2xl font-bold text-slate-800 mb-4;
+  }
+
+  /* Reset Password Success Title */
+  .reset-password-success-title {
+    @apply text-2xl font-bold text-green-600 mb-4;
+    animation: fadeInUp 0.6s ease-out;
+  }
+
+  /* Reset Password State Description */
+  .reset-password-state-description {
+    @apply text-slate-600 text-base mb-6 opacity-75;
+  }
+
+  /* Reset Password State Link */
+  .reset-password-state-link {
+    @apply inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors;
+  }
+
+  /* Reset Password Card Shadow */
+  .reset-password-card-shadow {
+    @apply absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[24px] shadow-[0px_0px_0px_8px_rgba(255,255,255,0.25),0px_990px_277px_0px_rgba(0,0,0,0),0px_634px_253px_0px_rgba(0,0,0,0.01),0px_356px_214px_0px_rgba(0,0,0,0.05),0px_158px_158px_0px_rgba(0,0,0,0.09),0px_40px_87px_0px_rgba(0,0,0,0.1)];
+  }
+
+  /* Success Animation */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .success-icon-animation {
+    animation: fadeInUp 0.8s ease-out 0.2s both;
+  }
+
+  .success-description-animation {
+    animation: fadeInUp 0.8s ease-out 0.4s both;
+  }
+
+  .success-button-animation {
+    animation: fadeInUp 0.8s ease-out 0.6s both;
   }
 }

@@ -1,14 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import {
-  Download,
-  ExternalLink,
-  Eye,
-  TrendingUp,
-  BarChart3,
-} from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 
@@ -25,6 +18,7 @@ export default function ViewPR() {
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const hasFetched = useRef(false);
 
   // Set breadcrumb - direct render, no useEffect needed
   useBreadcrumbDirect([
@@ -33,15 +27,21 @@ export default function ViewPR() {
   ]);
 
   // Single optimized function to fetch report data
-  const fetchReportData = async () => {
+  const fetchReportData = async (forceRefresh = false) => {
     if (!reportId) {
       setError("Invalid report ID");
       setLoading(false);
       return;
     }
 
+    // Prevent multiple calls on page refresh
+    if (!forceRefresh && hasFetched.current) {
+      return;
+    }
+
     setLoading(true);
     setError(null);
+    hasFetched.current = true;
 
     try {
       if (user) {
@@ -49,7 +49,6 @@ export default function ViewPR() {
         const response = await prReportsService.getReportGroup(reportId);
 
         if (response) {
-          // Transform the API response to match the expected format for PRReportViewer
           const transformedData = {
             id: response.grid_id || reportId,
             title: response.report_title || "PR Report",
@@ -64,6 +63,7 @@ export default function ViewPR() {
               published_url: item.url || "",
               potential_reach: item.potential_reach || 0,
               semrush_traffic: item?.semrush_traffic || 0,
+              _id: item._id || null,
             })),
             sharedEmails: response.sharedEmails || [],
           };
@@ -75,55 +75,24 @@ export default function ViewPR() {
       console.error("Error fetching report:", error);
       setError("Failed to load report. Please try again.");
       toast.error("Failed to load report");
+      hasFetched.current = false;
     } finally {
       setLoading(false);
     }
   };
 
-  // Export CSV
-  const handleExportCSV = async () => {
-    try {
-      // Export CSV (global token management handles auth)
-      const response = await prReportsService.exportCSV(reportId);
-
-      // Create and download the CSV file
-      const blob = new Blob([response.csv], { type: "text/csv" });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = response.filename || `pr-report-${reportId}.csv`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-
-      toast.success("CSV exported successfully!");
-    } catch (error) {
-      console.error("Error exporting CSV:", error);
-      toast.error("Failed to export CSV");
-    }
-  };
-
-  // Format date
-  const formatDate = (dateString) => {
-    if (!dateString) return "N/A";
-    try {
-      return new Date(dateString).toISOString().split("T")[0];
-    } catch {
-      return "N/A";
-    }
-  };
-
-  // Format number with commas
-  const formatNumber = (num) => {
-    if (num === null || num === undefined) return "0";
-    return num.toLocaleString();
-  };
-
   // Fetch report on mount - only once
   useEffect(() => {
-    fetchReportData();
-  }, [reportId, user]);
+    if (reportId && user && !hasFetched.current) {
+      fetchReportData();
+    }
+  }, [reportId]);
+
+  useEffect(() => {
+    if (user && reportId && !hasFetched.current) {
+      fetchReportData();
+    }
+  }, [user]);
 
   if (loading) {
     return (
@@ -159,7 +128,7 @@ export default function ViewPR() {
         <PRReportViewer
           report={report}
           isPublic={false}
-          fetchReportData={fetchReportData}
+          fetchReportData={() => fetchReportData(true)}
         />
       )}
     </div>

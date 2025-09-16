@@ -225,7 +225,7 @@ export default function ReportPage() {
                   </div>
 
                   {/* Title and Description */}
-                  <div className="content-stretch flex flex-col font-['Inter:Semi_Bold',_sans-serif] font-semibold gap-[5px] items-start justify-start leading-[0] not-italic relative shrink-0 text-[#263145] text-nowrap">
+                  <div className="content-stretch flex flex-col  font-semibold gap-[5px] items-start justify-start leading-[0] not-italic relative shrink-0 text-[#263145] text-nowrap">
                     <div className="relative shrink-0 text-[18px]">
                       <p className="leading-[normal] text-nowrap whitespace-pre flex items-center">
                         🔓 Access Your PR Report
@@ -295,7 +295,7 @@ export default function ReportPage() {
                           <CircleCheckBig className="w-5 h-5 text-white" />
                         )}
                       </div>
-                      <div className="css-u7wei flex flex-col font-['Inter:Semi_Bold',_sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-center text-nowrap text-white">
+                      <div className="css-u7wei flex flex-col  font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-center text-nowrap text-white">
                         <p className="leading-[20px] whitespace-pre">
                           {verifying ? "Verifying..." : "Unlock Report"}
                         </p>

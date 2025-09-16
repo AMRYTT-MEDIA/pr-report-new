@@ -21,6 +21,7 @@ const Loading = ({
     white: "border-white",
     gray: "border-gray-400",
     purple: "border-purple-600",
+    danger: "border-danger-60",
   };
 
   // Special case for purple to match the original design
@@ -30,6 +31,9 @@ const Loading = ({
     }
     if (color === "white") {
       return "border-b-2 border-white";
+    }
+    if (color === "danger") {
+      return "border-b-2 border-danger-60";
     }
     return `border-2 border-gray-200 ${colorClasses[color]} border-t-transparent`;
   };

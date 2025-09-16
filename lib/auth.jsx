@@ -53,6 +53,7 @@ const AuthProvider = ({ children }) => {
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      // Set loading only if not already initialized
       if (!initialized) {
         setLoading(true);
       }
@@ -60,7 +61,9 @@ const AuthProvider = ({ children }) => {
       if (currentUser) {
         try {
           const res = await getuserdatabyfirebaseid(currentUser.uid);
-          setUser(res);
+          if (res) {
+            setUser(res);
+          }
         } catch (error) {
           if (error.response?.status === 401) {
             await logout();

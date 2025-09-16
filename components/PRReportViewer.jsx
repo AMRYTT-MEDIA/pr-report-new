@@ -20,27 +20,24 @@ import {
   FileArchive,
   X,
   FileSpreadsheetIcon,
+  Plus,
+  PencilLine,
+  Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
-import { pdf } from "@react-pdf/renderer";
+// Dynamic import will be used in handleDownload function
 import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
+import { viewReportsService } from "@/services/viewReports";
 import PRReportPDF from "./PRReportPDF";
-import Pagination from "./Pagination";
 import URLTableCell from "./URLTableCell";
 import Loading from "./ui/loading";
 import ShareDialog from "./ShareDialog";
-
-// PDF Loading Component
-// const PDFLoadingComponent = () => (
-//   <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-lg  border-blue-200">
-//     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600"></div>
-//     Pdf
-//   </div>
-// );
+import AddUpdateWebsite from "./view-reports/AddUpdateWebsite";
+import CustomTooltip from "./ui/custom-tooltip";
+import { DeleteDialog } from "./view-reports";
 
 const PRReportViewer = ({
   report,
@@ -54,6 +51,12 @@ const PRReportViewer = ({
   const [imageLoading, setImageLoading] = useState(new Set());
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [isGeneratingPDF, setIsGeneratingPDF] = useState(false);
+  const [showAddWebsiteDialog, setShowAddWebsiteDialog] = useState(false);
+  const [editWebsiteInitialUrls, setEditWebsiteInitialUrls] = useState("");
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [outletToDelete, setOutletToDelete] = useState(null);
+  const [outletToEdit, setOutletToEdit] = useState(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
@@ -103,14 +106,14 @@ const PRReportViewer = ({
   };
 
   // Pagination handlers
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-  };
+  // const handlePageChange = (newPage) => {
+  //   setCurrentPage(newPage);
+  // };
 
-  const handleRowsPerPageChange = (newRowsPerPage) => {
-    setRowsPerPage(newRowsPerPage);
-    setCurrentPage(1); // Reset to first page when changing rows per page
-  };
+  // const handleRowsPerPageChange = (newRowsPerPage) => {
+  //   setRowsPerPage(newRowsPerPage);
+  //   setCurrentPage(1); // Reset to first page when changing rows per page
+  // };
 
   // Optimized logo lookup to prevent lag
   const getLogoUrl = (outletName) => {
@@ -222,6 +225,7 @@ const PRReportViewer = ({
         });
 
         // Generate PDF using the new PRReportPDF component with base64 logos
+        const { pdf } = await import("@react-pdf/renderer");
         const pdfBlob = await pdf(
           <PRReportPDF report={report} formatData={processedOutlets} />
         ).toBlob();
@@ -471,6 +475,97 @@ const PRReportViewer = ({
     }
   };
 
+  const handleAddOutlet = () => {
+    setEditWebsiteInitialUrls("");
+    setShowAddWebsiteDialog(true);
+  };
+
+  const handleWebsiteAdded = async (result) => {
+    // Handle website(s) added/updated - result can be single website or bulk result
+    try {
+      // Check if this is an update operation (when editWebsiteInitialUrls is set)
+      const isUpdateOperation =
+        editWebsiteInitialUrls && editWebsiteInitialUrls.trim() !== "";
+
+      if (isUpdateOperation && outletToEdit) {
+        // This is an update operation - call the update API
+        const recordId = outletToEdit._id || outletToEdit.id;
+        const updateData = {
+          id: recordId,
+          urls: result.websites
+            ? result.websites.map((w) => w.url)
+            : result.urls || [],
+        };
+
+        await viewReportsService.updatePR(recordId, updateData);
+        toast.success("Record updated successfully");
+      } else {
+        // This is a create operation - already handled by AddUpdateWebsite component
+        if (result.websites && Array.isArray(result.websites)) {
+          // Bulk creation result
+        } else {
+          // Single website result (for backward compatibility)
+        }
+      }
+
+      // Refresh the report data to reflect changes
+      if (fetchReportData) {
+        fetchReportData();
+      }
+
+      // Clear edit state
+      setEditWebsiteInitialUrls("");
+      setOutletToEdit(null);
+    } catch (error) {
+      console.error("Error in handleWebsiteAdded:", error);
+      toast.error("Failed to process request. Please try again.");
+    }
+  };
+
+  // Edit outlet -> open same dialog prefilled with the outlet URL
+  const handleEdit = (outlet) => {
+    const url = outlet?.published_url || "";
+    setEditWebsiteInitialUrls(url);
+    setOutletToEdit(outlet); // Store the outlet being edited
+    setShowAddWebsiteDialog(true);
+  };
+
+  // Open delete confirmation for an outlet
+  const handleDelete = (outlet) => {
+    setOutletToDelete(outlet);
+    setShowDeleteDialog(true);
+  };
+
+  // Confirm delete action
+  const handleConfirmDelete = async () => {
+    if (!outletToDelete) return;
+    setDeleteLoading(true);
+    try {
+      // Call the delete API
+      const id = outletToDelete._id || outletToDelete.id;
+
+      await viewReportsService.deletePR(id);
+
+      // Refresh the report data to reflect changes
+      if (fetchReportData) fetchReportData();
+
+      toast.success("Record deleted successfully");
+      setShowDeleteDialog(false);
+      setOutletToDelete(null);
+    } catch (error) {
+      console.error("Error deleting record:", error);
+      toast.error(
+        error.message || "Failed to delete record. Please try again."
+      );
+    } finally {
+      setDeleteLoading(false);
+    }
+  };
+
+  const handleCloseWebsiteDialog = () => {
+    setShowAddWebsiteDialog(false);
+  };
+
   if (loading) {
     return (
       <div className="space-y-6">
@@ -615,7 +710,7 @@ const PRReportViewer = ({
                     placeholder="Search outlets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-full focus:border-gray-300 rounded-3xl min-w-[100%] md:min-w-[300px]"
+                    className="pl-10 w-full rounded-3xl min-w-[100%] md:min-w-[300px] border-gray-scale-30 focus:border-primary-50"
                   />
                   {searchTerm && (
                     <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
@@ -635,6 +730,15 @@ const PRReportViewer = ({
                   <Plus className="h-4 w-4" />
                   <span className="hidden xl:inline-block">Create badge</span>
                 </button> */}
+                {!isPublic && (
+                  <button
+                    onClick={handleAddOutlet}
+                    className="px-4 py-2.5 text-sm border font-semibold border-Gray-30 rounded-3xl flex items-center gap-2 transition-colors text-gray-scale-60 hover:bg-gray-scale-10 hover:text-gray-scale-80"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden xl:inline-block">Add</span>
+                  </button>
+                )}
                 <button
                   onClick={() => handleDownload("csv")}
                   className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
@@ -680,178 +784,210 @@ const PRReportViewer = ({
           </div>
         </CardHeader>
         <CardContent className="p-0">
-          <div className="border-t overflow-hidden">
-            <div className="overflow-x-auto">
-              <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="min-w-[200px]">Outlet</TableHead>
-                      <TableHead className="min-w-[400px]">Website</TableHead>
-                      <TableHead className="min-w-[200px]">
-                        Potential Reach
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
+          <div className="overflow-x-auto">
+            <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
+              <Table containerClassName="contents">
+                <TableHeader className="sticky top-0 z-10">
+                  <TableRow className="w-full">
+                    <TableHead className="min-w-[200px]">Outlet</TableHead>
+                    <TableHead className="min-w-[400px]">Website</TableHead>
+                    <TableHead className="min-w-[160px]">
+                      Potential Reach
+                    </TableHead>
+                    {!isPublic && (
+                      <TableHead className="w-[140px]">Actions</TableHead>
+                    )}
+                  </TableRow>
+                </TableHeader>
 
-                  {/* Table Body */}
-                  <TableBody>
-                    {filteredOutlets?.map((outlet, index) => {
-                      // Add unique ID for trust badge selection
-                      const outletWithId = {
-                        ...outlet,
-                        id:
-                          outlet.id ||
-                          `outlet_${
-                            (currentPage - 1) * rowsPerPage + index + 1
-                          }_${outlet.website_name?.replace(/\s+/g, "_")}`,
-                      };
+                {/* Table Body */}
+                <TableBody>
+                  {filteredOutlets?.map((outlet, index) => {
+                    // Add unique ID for trust badge selection
+                    const outletWithId = {
+                      ...outlet,
+                      id:
+                        outlet.id ||
+                        `outlet_${
+                          (currentPage - 1) * rowsPerPage + index + 1
+                        }_${outlet.website_name?.replace(/\s+/g, "_")}`,
+                    };
+                    const tooltipPosition =
+                      index === filteredOutlets.length - 1 ? "top" : "bottom";
 
-                      return (
-                        <TableRow key={index}>
-                          <TableCell className="flex items-center gap-3 min-w-[200px]">
-                            {/* Logo Display Logic */}
-                            {(() => {
-                              const logoUrl = getLogoUrl(
+                    return (
+                      <TableRow key={index}>
+                        <TableCell className="flex items-center gap-3 min-w-[200px]">
+                          {/* Logo Display Logic */}
+                          {(() => {
+                            const logoUrl = getLogoUrl(
+                              outletWithId.original_website_name ||
+                                outletWithId.website_name
+                            );
+                            const hasValidLogo =
+                              logoUrl &&
+                              isValidLogoUrl(logoUrl) &&
+                              !isImageError(
                                 outletWithId.original_website_name ||
                                   outletWithId.website_name
                               );
-                              const hasValidLogo =
-                                logoUrl &&
-                                isValidLogoUrl(logoUrl) &&
-                                !isImageError(
-                                  outletWithId.original_website_name ||
-                                    outletWithId.website_name
-                                );
-                              const isLoading = isImageLoading(
-                                outletWithId.original_website_name ||
-                                  outletWithId.website_name
-                              );
+                            const isLoading = isImageLoading(
+                              outletWithId.original_website_name ||
+                                outletWithId.website_name
+                            );
 
-                              if (isLoading) {
-                                // Show skeleton while loading
-                                return (
-                                  <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                    <Skeleton className="w-full h-full" />
-                                  </div>
-                                );
-                              }
-
-                              if (hasValidLogo) {
-                                // Show logo image with error handling
-                                return (
-                                  <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                    <Image
-                                      src={logoUrl}
-                                      alt={outletWithId.website_name}
-                                      title={outletWithId.website_name}
-                                      className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                                      onLoadStart={() =>
-                                        handleImageStartLoad(
-                                          outletWithId.original_website_name ||
-                                            outletWithId.website_name
-                                        )
-                                      }
-                                      onLoad={() =>
-                                        handleImageLoad(
-                                          outletWithId.original_website_name ||
-                                            outletWithId.website_name
-                                        )
-                                      }
-                                      onError={() =>
-                                        handleImageError(
-                                          outletWithId.original_website_name ||
-                                            outletWithId.website_name
-                                        )
-                                      }
-                                      loading="lazy"
-                                      height={38}
-                                      width={137}
-                                      // Add error handling for missing images
-                                      onErrorCapture={() =>
-                                        handleImageError(
-                                          outletWithId.original_website_name ||
-                                            outletWithId.website_name
-                                        )
-                                      }
-                                    />
-                                  </div>
-                                );
-                              }
-
-                              // Show circular first character fallback (always available)
-                              const firstChar = outletWithId.website_name
-                                .charAt(0)
-                                .toUpperCase();
-                              const colorClasses = [
-                                "text-blue-700 border-blue-300 bg-blue-50",
-                                "text-green-700 border-green-300 bg-green-50",
-                                "text-purple-700 border-purple-300 bg-purple-10",
-                                "text-orange-700 border-orange-300 bg-orange-10",
-                                "text-red-700 border-red-300 bg-red-50",
-                                "text-indigo-700 border-indigo-300 bg-indigo-50",
-                              ];
-                              const colorClass =
-                                colorClasses[index % colorClasses.length];
-
+                            if (isLoading) {
+                              // Show skeleton while loading
                               return (
                                 <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                  <div
-                                    className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
-                                    style={{
-                                      borderRadius: "50%",
-                                      aspectRatio: "1 / 1",
-                                      textAlign: "center",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      border: "1px solid currentColor",
-                                    }}
-                                  >
-                                    {firstChar}
-                                  </div>
+                                  <Skeleton className="w-full h-full" />
                                 </div>
                               );
-                            })()}
-                          </TableCell>
+                            }
 
-                          <TableCell className="text-muted-foreground min-w-[400px]">
-                            <div>
-                              <div
-                                className="truncate max-w-[380px]"
-                                title={outlet.website_name}
-                              >
-                                {outlet.website_name}
+                            if (hasValidLogo) {
+                              // Show logo image with error handling
+                              return (
+                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                  <Image
+                                    src={logoUrl}
+                                    alt={outletWithId.website_name}
+                                    title={outletWithId.website_name}
+                                    className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
+                                    onLoadStart={() =>
+                                      handleImageStartLoad(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    onLoad={() =>
+                                      handleImageLoad(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    onError={() =>
+                                      handleImageError(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                    loading="lazy"
+                                    height={38}
+                                    width={137}
+                                    // Add error handling for missing images
+                                    onErrorCapture={() =>
+                                      handleImageError(
+                                        outletWithId.original_website_name ||
+                                          outletWithId.website_name
+                                      )
+                                    }
+                                  />
+                                </div>
+                              );
+                            }
+
+                            // Show circular first character fallback (always available)
+                            const firstChar = outletWithId.website_name
+                              .charAt(0)
+                              .toUpperCase();
+                            const colorClasses = [
+                              "text-blue-700 border-blue-300 bg-blue-50",
+                              "text-green-700 border-green-300 bg-green-50",
+                              "text-purple-700 border-purple-300 bg-purple-10",
+                              "text-orange-700 border-orange-300 bg-orange-10",
+                              "text-red-700 border-red-300 bg-red-50",
+                              "text-indigo-700 border-indigo-300 bg-indigo-50",
+                            ];
+                            const colorClass =
+                              colorClasses[index % colorClasses.length];
+
+                            return (
+                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                                <div
+                                  className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
+                                  style={{
+                                    borderRadius: "50%",
+                                    aspectRatio: "1 / 1",
+                                    textAlign: "center",
+                                    display: "flex",
+                                    alignItems: "center",
+                                    justifyContent: "center",
+                                    border: "1px solid currentColor",
+                                  }}
+                                >
+                                  {firstChar}
+                                </div>
                               </div>
-                              <URLTableCell
-                                url={outlet.published_url}
-                                textMaxWidth="max-w-[300px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[650px] 2xl:max-w-[900px]"
-                                textColor="text-primary-50"
-                                iconSize="h-4 w-4"
-                                iconColor="text-primary-50"
-                              />
+                            );
+                          })()}
+                        </TableCell>
+
+                        <TableCell className="text-muted-foreground min-w-[400px]">
+                          <div>
+                            <div
+                              className="truncate max-w-[380px]"
+                              title={outlet.website_name}
+                            >
+                              {outlet.website_name}
+                            </div>
+                            <URLTableCell
+                              url={outlet.published_url}
+                              textMaxWidth="max-w-[300px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[650px] 2xl:max-w-[900px]"
+                              textColor="text-primary-50"
+                              iconSize="h-4 w-4"
+                              iconColor="text-primary-50"
+                            />
+                          </div>
+                        </TableCell>
+
+                        <TableCell className="font-medium min-w-[160px]">
+                          {formatNumber(outlet?.semrush_traffic)}
+                        </TableCell>
+
+                        {!isPublic && (
+                          <TableCell className="font-medium w-[140px]">
+                            <div className="pl-2 flex gap-8 items-center">
+                              <CustomTooltip
+                                content="Edit"
+                                position={tooltipPosition}
+                              >
+                                <button
+                                  onClick={() => handleEdit(outlet)}
+                                  className="text-slate-600 flex text-sm font-medium"
+                                >
+                                  <PencilLine className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                              <CustomTooltip
+                                content="Delete"
+                                position={tooltipPosition}
+                              >
+                                <button
+                                  onClick={() => handleDelete(outlet)}
+                                  className="text-red-600 flex text-sm font-medium"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
                             </div>
                           </TableCell>
+                        )}
+                      </TableRow>
+                    );
+                  })}
+                </TableBody>
+              </Table>
+            </div>
 
-                          <TableCell className="font-medium min-w-[200px]">
-                            {formatNumber(outlet?.semrush_traffic)}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </div>
-
-              {/* Pagination */}
-              {/* <Pagination
+            {/* Pagination */}
+            {/* <Pagination
                 totalItems={filteredOutlets.length}
                 currentPage={currentPage}
                 rowsPerPage={rowsPerPage}
                 onPageChange={handlePageChange}
                 onRowsPerPageChange={handleRowsPerPageChange}
               /> */}
-            </div>
           </div>
 
           {filteredOutlets.length === 0 && searchTerm && (
@@ -881,6 +1017,34 @@ const PRReportViewer = ({
           }}
           report={report}
           onShare={handleShareReport}
+        />
+      )}
+
+      {/* Add / Edit Website URLs Dialog */}
+      <AddUpdateWebsite
+        isOpen={showAddWebsiteDialog}
+        onClose={handleCloseWebsiteDialog}
+        onWebsiteAdded={handleWebsiteAdded}
+        initialUrls={editWebsiteInitialUrls}
+        report={report}
+      />
+
+      {/* Delete Dialog */}
+      {showDeleteDialog && (
+        <DeleteDialog
+          open={showDeleteDialog}
+          onClose={() => {
+            setShowDeleteDialog(false);
+            setOutletToDelete(null);
+          }}
+          onConfirm={handleConfirmDelete}
+          loading={deleteLoading}
+          itemName={
+            outletToDelete?.website_name ||
+            outletToDelete?.published_url ||
+            "this outlet"
+          }
+          warningText="If you Delete this outlet, it will be permanently removed."
         />
       )}
     </div>

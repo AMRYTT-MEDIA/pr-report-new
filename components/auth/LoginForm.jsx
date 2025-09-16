@@ -3,6 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
+import { getDefaultLandingPage } from "@/lib/rbac";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -52,10 +53,8 @@ const LoginForm = ({ searchParams }) => {
   useEffect(() => {
     if (initialized && user) {
       setIsRedirecting(true);
-      const next = searchParams.next || "/pr-reports-list";
-      setTimeout(() => {
-        router.push(next);
-      }, 100);
+      const next = searchParams.next || getDefaultLandingPage(user);
+      router.push(next);
     }
   }, [user, initialized, router, searchParams]);
 
@@ -136,32 +135,33 @@ const LoginForm = ({ searchParams }) => {
         );
 
         if (result.user) {
-          // Step 2: Check if user exists in backend database
-          try {
-            const userData = await getuserdatabyfirebaseid(result.user.uid);
-            if (userData) {
-              // User exists in backend - set user data in auth context
-              setUser(userData);
-              toast.success("Sign in successful!");
+          toast.success("Sign in successful!");
 
-              // Redirect to the intended page or default to pr-reports
-              const next = searchParams.next || "/pr-reports-list";
-              router.replace(next);
-            } else {
-              logout();
-              // User doesn't exist in backend
-              setLoading(false);
-              toast.error(
-                "User not found. Please check your email and try again."
-              );
-            }
-          } catch (apiError) {
-            // Backend API error
-            setLoading(false);
-            logout();
-            const apiErrorMessage = getApiErrorMessage(apiError);
-            toast.error(apiErrorMessage);
-          }
+          // const next = searchParams.next || "/pr-reports-list";
+          // router.replace(next);
+          // // Step 2: Check if user exists in backend database
+          // try {
+          //   const userData = await getuserdatabyfirebaseid(result.user.uid);
+          //   if (userData) {
+          //     // User exists in backend - set user data in auth context
+          //     setUser(userData);
+
+          //     // Redirect to the intended page or default to pr-reports
+          //   } else {
+          //     logout();
+          //     // User doesn't exist in backend
+          //     setLoading(false);
+          //     toast.error(
+          //       "User not found. Please check your email and try again."
+          //     );
+          //   }
+          // } catch (apiError) {
+          //   // Backend API error
+          //   setLoading(false);
+          //   logout();
+          //   const apiErrorMessage = getApiErrorMessage(apiError);
+          //   toast.error(apiErrorMessage);
+          // }
         }
       } catch (error) {
         setLoading(false);

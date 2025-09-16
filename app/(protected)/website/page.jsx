@@ -1,13 +1,8 @@
-"use client";
-
 import React from "react";
-import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import { WebsiteTableClient } from "@/components/website";
 
 const WebsitePage = () => {
-  // Direct render - no useEffect needed
-  useBreadcrumbDirect([{ name: "Website", href: "/website", current: true }]);
-
-  return <div>WebsitePage</div>;
+  return <WebsiteTableClient />;
 };
 
 export default WebsitePage;
