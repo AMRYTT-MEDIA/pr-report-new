@@ -25,15 +25,13 @@ import {
   Trash2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { HoverCard, HoverCardTrigger } from "@/components/ui/hover-card.jsx";
-import { pdf } from "@react-pdf/renderer";
+// Dynamic import will be used in handleDownload function
 import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import { viewReportsService } from "@/services/viewReports";
 import PRReportPDF from "./PRReportPDF";
-import Pagination from "./Pagination";
 import URLTableCell from "./URLTableCell";
 import Loading from "./ui/loading";
 import ShareDialog from "./ShareDialog";
@@ -227,6 +225,7 @@ const PRReportViewer = ({
         });
 
         // Generate PDF using the new PRReportPDF component with base64 logos
+        const { pdf } = await import("@react-pdf/renderer");
         const pdfBlob = await pdf(
           <PRReportPDF report={report} formatData={processedOutlets} />
         ).toBlob();
@@ -504,11 +503,8 @@ const PRReportViewer = ({
         // This is a create operation - already handled by AddUpdateWebsite component
         if (result.websites && Array.isArray(result.websites)) {
           // Bulk creation result
-          console.log("Websites added:", result.websites);
-          console.log("URLs processed:", result.urls);
         } else {
           // Single website result (for backward compatibility)
-          console.log("Website added:", result);
         }
       }
 
@@ -734,13 +730,15 @@ const PRReportViewer = ({
                   <Plus className="h-4 w-4" />
                   <span className="hidden xl:inline-block">Create badge</span>
                 </button> */}
-                <button
-                  onClick={handleAddOutlet}
-                  className="px-4 py-2.5 text-sm border font-semibold border-Gray-30 rounded-3xl flex items-center gap-2 transition-colors text-gray-scale-60 hover:bg-gray-scale-10 hover:text-gray-scale-80"
-                >
-                  <Plus className="h-4 w-4" />
-                  <span className="hidden xl:inline-block">Add</span>
-                </button>
+                {!isPublic && (
+                  <button
+                    onClick={handleAddOutlet}
+                    className="px-4 py-2.5 text-sm border font-semibold border-Gray-30 rounded-3xl flex items-center gap-2 transition-colors text-gray-scale-60 hover:bg-gray-scale-10 hover:text-gray-scale-80"
+                  >
+                    <Plus className="h-4 w-4" />
+                    <span className="hidden xl:inline-block">Add</span>
+                  </button>
+                )}
                 <button
                   onClick={() => handleDownload("csv")}
                   className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
@@ -796,7 +794,9 @@ const PRReportViewer = ({
                     <TableHead className="min-w-[160px]">
                       Potential Reach
                     </TableHead>
-                    <TableHead className="w-[140px]">Actions</TableHead>
+                    {!isPublic && (
+                      <TableHead className="w-[140px]">Actions</TableHead>
+                    )}
                   </TableRow>
                 </TableHeader>
 
@@ -945,32 +945,34 @@ const PRReportViewer = ({
                           {formatNumber(outlet?.semrush_traffic)}
                         </TableCell>
 
-                        <TableCell className="font-medium w-[140px]">
-                          <div className="pl-2 flex gap-8 items-center">
-                            <CustomTooltip
-                              content="Edit"
-                              position={tooltipPosition}
-                            >
-                              <button
-                                onClick={() => handleEdit(outlet)}
-                                className="text-slate-600 flex text-sm font-medium"
+                        {!isPublic && (
+                          <TableCell className="font-medium w-[140px]">
+                            <div className="pl-2 flex gap-8 items-center">
+                              <CustomTooltip
+                                content="Edit"
+                                position={tooltipPosition}
                               >
-                                <PencilLine className="w-4 h-4" />
-                              </button>
-                            </CustomTooltip>
-                            <CustomTooltip
-                              content="Delete"
-                              position={tooltipPosition}
-                            >
-                              <button
-                                onClick={() => handleDelete(outlet)}
-                                className="text-red-600 flex text-sm font-medium"
+                                <button
+                                  onClick={() => handleEdit(outlet)}
+                                  className="text-slate-600 flex text-sm font-medium"
+                                >
+                                  <PencilLine className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                              <CustomTooltip
+                                content="Delete"
+                                position={tooltipPosition}
                               >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </CustomTooltip>
-                          </div>
-                        </TableCell>
+                                <button
+                                  onClick={() => handleDelete(outlet)}
+                                  className="text-red-600 flex text-sm font-medium"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                            </div>
+                          </TableCell>
+                        )}
                       </TableRow>
                     );
                   })}

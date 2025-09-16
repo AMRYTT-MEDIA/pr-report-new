@@ -3,18 +3,16 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const Table = React.forwardRef(
-  (
-    {
-      className,
-      containerClassName = "relative w-full overflow-auto",
-      ...props
-    },
-    ref
-  ) => (
-    <div className={containerClassName}>
+  ({ className, stickyHeader = false, ...props }, ref) => (
+    <div
+      className={cn(
+        "relative w-full",
+        stickyHeader ? "overflow-y-auto h-full" : ""
+      )}
+    >
       <table
         ref={ref}
-        className={cn("w-full caption-bottom text-sm", className)}
+        className={cn("w-full caption-bottom text-sm ", className)}
         {...props}
       />
     </div>
@@ -22,9 +20,19 @@ const Table = React.forwardRef(
 );
 Table.displayName = "Table";
 
-const TableHeader = React.forwardRef(({ className, ...props }, ref) => (
-  <thead ref={ref} className={cn("[&_tr]:border-b", className)} {...props} />
-));
+const TableHeader = React.forwardRef(
+  ({ className, sticky = false, ...props }, ref) => (
+    <thead
+      ref={ref}
+      className={cn(
+        "[&_tr]:border-b",
+        sticky && "sticky top-0 z-20 bg-white shadow-sm",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 TableHeader.displayName = "TableHeader";
 
 const TableBody = React.forwardRef(({ className, ...props }, ref) => (
@@ -52,7 +60,7 @@ const TableRow = React.forwardRef(({ className, ...props }, ref) => (
   <tr
     ref={ref}
     className={cn(
-      "border-b  transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted",
+      "border-b  transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted bg-white",
       className
     )}
     {...props}
@@ -60,16 +68,19 @@ const TableRow = React.forwardRef(({ className, ...props }, ref) => (
 ));
 TableRow.displayName = "TableRow";
 
-const TableHead = React.forwardRef(({ className, ...props }, ref) => (
-  <th
-    ref={ref}
-    className={cn(
-      "py-3.5 px-6 text-left align-middle text-foreground [&:has([role=checkbox])]:pr-0 bg-gray-scale-5 text-gray-scale-80 font-semibold",
-      className
-    )}
-    {...props}
-  />
-));
+const TableHead = React.forwardRef(
+  ({ className, sticky = false, ...props }, ref) => (
+    <th
+      ref={ref}
+      className={cn(
+        "py-3.5 px-6 text-left align-middle text-foreground [&:has([role=checkbox])]:pr-0 bg-gray-scale-5 text-gray-scale-80 font-semibold",
+        sticky && "bg-white",
+        className
+      )}
+      {...props}
+    />
+  )
+);
 TableHead.displayName = "TableHead";
 
 const TableCell = React.forwardRef(({ className, ...props }, ref) => (

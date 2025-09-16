@@ -4,7 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "./auth";
 import Loading from "@/components/ui/loading";
 
-export function Guard({ mode, children }) {
+export function PublicGuard({ children }) {
   const { user, loading, initialized } = useAuth();
   const router = useRouter();
   const path = usePathname();
@@ -15,24 +15,24 @@ export function Guard({ mode, children }) {
     if (hasRedirected.current) return;
 
     // Wait for auth to be fully initialized
-    if (!initialized || loading) return;
-    if (mode === "public") return;
+    if (!initialized) return;
 
-    if (!user) {
+    // If user is already logged in and on login page, redirect to dashboard
+    if (user && (path === "/login" || path === "/")) {
       hasRedirected.current = true;
-      router.replace(`/login?next=${encodeURIComponent(path)}`);
+      router.replace("/pr-reports-list");
     }
-  }, [mode, user, loading, initialized, path, router]);
+  }, [user, initialized, path, router]);
 
   // Reset redirect flag when user changes
   useEffect(() => {
-    if (user) {
+    if (!user) {
       hasRedirected.current = false;
     }
   }, [user]);
 
-  // Show loading state while auth is initializing or not yet initialized
-  if (!initialized || loading) {
+  // Show minimal loading only if not initialized
+  if (!initialized) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loading
@@ -47,8 +47,8 @@ export function Guard({ mode, children }) {
     );
   }
 
-  // Don't render protected/private content if no user and auth is initialized
-  if (mode !== "public" && !user && initialized) return null;
+  // Don't render login page if user is already logged in
+  if (user && (path === "/login" || path === "/")) return null;
 
   return <>{children}</>;
 }

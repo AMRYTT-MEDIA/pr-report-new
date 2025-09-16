@@ -1,13 +1,14 @@
 "use client";
 
 import React from "react";
-import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import UserTable from "@/components/users/UserTable";
 
 const UsersPage = () => {
-  // Direct render - no useEffect needed
-  useBreadcrumbDirect([{ name: "Users", href: "/users", current: true }]);
+  const handleRefresh = () => {
+    // This will be called when users are created, updated, or deleted
+  };
 
-  return <div>UsersPage</div>;
+  return <UserTable onRefresh={handleRefresh} />;
 };
 
 export default UsersPage;

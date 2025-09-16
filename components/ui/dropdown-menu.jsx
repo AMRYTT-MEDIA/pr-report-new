@@ -122,7 +122,7 @@ export default function DropdownMenu({
                     {profileData.name || "Main Text"}
                   </div>
                   <div className="text-sm text-gray-500">
-                    {profileData.role || "Admin"}
+                    {profileData.role || "Test"}
                   </div>
                 </div>
               </div>
