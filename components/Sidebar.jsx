@@ -206,9 +206,7 @@ const Sidebar = () => {
                       "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",
                       active
                         ? "bg-gray-scale-20 border border-slate-200"
-                        : "hover:bg-slate-100/50 border border-transparent",
-                      item.href === "/website" &&
-                        "opacity-50 cursor-not-allowed pointer-events-none"
+                        : "hover:bg-slate-100/50 border border-transparent"
                     )}
                     aria-current={active ? "page" : undefined}
                   >
