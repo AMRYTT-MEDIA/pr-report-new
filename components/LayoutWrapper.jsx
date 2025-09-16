@@ -22,7 +22,7 @@ const LayoutWrapper = ({ children }) => {
         <NavBar isViewPRPage={isPRPage} breadcrumbItems={breadcrumbItems} />
 
         {/* Page Content */}
-        <main>
+        <main className="max-w-[1360px] mx-auto">
           <div className="m-[10px] sm:m-[15px]">{children}</div>
         </main>
       </div>
