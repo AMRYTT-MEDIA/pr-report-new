@@ -1,12 +1,19 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { Search, CheckCircle, XCircle, Trash2, Plus } from "lucide-react";
+import {
+  Search,
+  CheckCircle,
+  XCircle,
+  Trash2,
+  Plus,
+  ImageOff,
+  X,
+} from "lucide-react";
 import { toast } from "sonner";
-// Removed Button and Input imports as we're using custom styled buttons to match Figma design
-import { Checkbox } from "@/components/ui/checkbox";
-import { Switch } from "@/components/ui/switch";
+import { Input } from "@/components/ui/input";
+import { CustomSwitch } from "@/components/ui/custom-switch";
+import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 import {
   Table,
   TableBody,
@@ -23,7 +30,11 @@ import { NoDataFound } from "@/components/icon";
 import CustomTooltip from "@/components/ui/custom-tooltip";
 import Image from "next/image";
 import { blockUrlsService } from "@/services/blockUrls";
-import { BlockUrlDialog, StatusToggleDialog } from "@/components/block-urls";
+import {
+  BlockUrlDialog,
+  StatusToggleDialog,
+  BlockUrlDeleteDialog,
+} from "@/components/block-urls";
 
 export default function BlockURLsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -34,68 +45,19 @@ export default function BlockURLsPage() {
   const [selectedUrls, setSelectedUrls] = useState(new Set());
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(25);
 
   // Dialog states
   const [blockUrlDialogOpen, setBlockUrlDialogOpen] = useState(false);
   const [statusToggleDialogOpen, setStatusToggleDialogOpen] = useState(false);
   const [statusToggleData, setStatusToggleData] = useState(null);
-
-  const router = useRouter();
-  const searchParams = useSearchParams();
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [urlToDelete, setUrlToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Add refs to prevent duplicate API calls
   const isFetching = useRef(false);
   const hasInitialFetch = useRef(false);
-
-  // URL state
-  const q = searchParams.get("q") || "";
-  const page = parseInt(searchParams.get("page")) || 1;
-  const limit = parseInt(searchParams.get("limit")) || 10;
-
-  // Mock data for now - will be replaced with API calls
-  const mockData = [
-    {
-      id: 1,
-      websiteName: "TechCrunch",
-      websiteUrl: "https://techcrunch.com",
-      logoUrl: "/logos/techcrunch.png",
-      isBlocked: false,
-      createdAt: "2024-01-15",
-    },
-    {
-      id: 2,
-      websiteName: "Forbes",
-      websiteUrl: "https://forbes.com",
-      logoUrl: "/logos/forbes.png",
-      isBlocked: true,
-      createdAt: "2024-01-14",
-    },
-    {
-      id: 3,
-      websiteName: "CNN",
-      websiteUrl: "https://cnn.com",
-      logoUrl: "/logos/cnn.png",
-      isBlocked: false,
-      createdAt: "2024-01-13",
-    },
-    {
-      id: 4,
-      websiteName: "BBC News",
-      websiteUrl: "https://bbc.com/news",
-      logoUrl: "/logos/bbc.png",
-      isBlocked: true,
-      createdAt: "2024-01-12",
-    },
-    {
-      id: 5,
-      websiteName: "The Guardian",
-      websiteUrl: "https://theguardian.com",
-      logoUrl: "/logos/guardian.png",
-      isBlocked: false,
-      createdAt: "2024-01-11",
-    },
-  ];
 
   // Fetch block URLs
   const fetchBlockUrls = async () => {
@@ -121,10 +83,6 @@ export default function BlockURLsPage() {
       if (response) {
         setBlockUrls(response.data || response || []);
         setTotalCount(response.totalCount || response.length || 0);
-      } else {
-        // Fallback to mock data if API is not available
-        setBlockUrls(mockData);
-        setTotalCount(mockData.length);
       }
     } catch (error) {
       setError("Failed to load blocked URLs. Please try again.");
@@ -136,9 +94,15 @@ export default function BlockURLsPage() {
   };
 
   // Handle search
-  const handleSearch = () => {
+  const handleSearch = (e) => {
+    setSearchQuery(e.target.value);
     setCurrentPage(1);
-    fetchBlockUrls();
+  };
+
+  // Handle clear search
+  const handleClearSearch = () => {
+    setSearchQuery("");
+    setCurrentPage(1);
   };
 
   // Handle pagination
@@ -155,7 +119,7 @@ export default function BlockURLsPage() {
   // Handle select all
   const handleSelectAll = (checked) => {
     if (checked) {
-      setSelectedUrls(new Set(blockUrls.map((url) => url.id)));
+      setSelectedUrls(new Set(blockUrls.map((url) => url._id)));
     } else {
       setSelectedUrls(new Set());
     }
@@ -180,10 +144,10 @@ export default function BlockURLsPage() {
     }
 
     try {
-      // Bulk update blocks: set isBlocked=false for selected
+      // Bulk update: set isActive=true for selected
       await blockUrlsService.bulkUpdateBlocks({
         ids: Array.from(selectedUrls),
-        update: { isBlocked: false },
+        update: { isActive: true },
       });
       toast.success(`Enabled ${selectedUrls.size} URL(s)`);
       setSelectedUrls(new Set());
@@ -201,10 +165,10 @@ export default function BlockURLsPage() {
     }
 
     try {
-      // Bulk update blocks: set isBlocked=true for selected
+      // Bulk update: set isActive=false for selected
       await blockUrlsService.bulkUpdateBlocks({
         ids: Array.from(selectedUrls),
-        update: { isBlocked: true },
+        update: { isActive: false },
       });
       toast.success(`Disabled ${selectedUrls.size} URL(s)`);
       setSelectedUrls(new Set());
@@ -216,7 +180,7 @@ export default function BlockURLsPage() {
 
   // Handle toggle status - opens confirmation dialog
   const handleToggleStatus = (urlId, newStatus) => {
-    const url = blockUrls.find((u) => u.id === urlId);
+    const url = blockUrls.find((u) => u._id === urlId);
     if (url) {
       setStatusToggleData({ ...url, newStatus });
       setStatusToggleDialogOpen(true);
@@ -226,22 +190,39 @@ export default function BlockURLsPage() {
   // Handle status toggle success from dialog
   const handleStatusToggleSuccess = (urlId, newStatus) => {
     const updatedUrls = blockUrls.map((url) =>
-      url.id === urlId ? { ...url, isBlocked: newStatus } : url
+      url._id === urlId ? { ...url, isActive: newStatus } : url
     );
     setBlockUrls(updatedUrls);
   };
 
-  // Handle delete
-  const handleDelete = async (urlId) => {
+  // Handle delete click - opens confirmation dialog
+  const handleDeleteClick = (url) => {
+    setUrlToDelete(url);
+    setDeleteDialogOpen(true);
+  };
+
+  // Handle delete confirmation
+  const handleDeleteConfirm = async (urlId) => {
+    setIsDeleting(true);
     try {
       await blockUrlsService.deleteBlock(urlId);
-      const updatedUrls = blockUrls.filter((url) => url.id !== urlId);
+      const updatedUrls = blockUrls.filter((url) => url._id !== urlId);
       setBlockUrls(updatedUrls);
       setTotalCount(updatedUrls.length);
       toast.success("URL deleted successfully");
+      setDeleteDialogOpen(false);
+      setUrlToDelete(null);
     } catch (error) {
       toast.error("Failed to delete URL");
+    } finally {
+      setIsDeleting(false);
     }
+  };
+
+  // Handle delete dialog close
+  const handleDeleteDialogClose = () => {
+    setDeleteDialogOpen(false);
+    setUrlToDelete(null);
   };
 
   // Set breadcrumb
@@ -258,10 +239,17 @@ export default function BlockURLsPage() {
   }, [authLoading, user]);
 
   useEffect(() => {
-    if (!authLoading && user && hasInitialFetch.current) {
-      fetchBlockUrls();
-    }
-  }, [currentPage, pageSize]);
+    const timeoutId = setTimeout(
+      () => {
+        if (!authLoading && user && hasInitialFetch.current) {
+          fetchBlockUrls();
+        }
+      },
+      searchQuery ? 500 : 0
+    ); // Immediate load for page changes, debounced for search
+
+    return () => clearTimeout(timeoutId);
+  }, [currentPage, pageSize, searchQuery]);
 
   // Cleanup function
   useEffect(() => {
@@ -312,19 +300,22 @@ export default function BlockURLsPage() {
             {/* Action Buttons */}
             <div className="flex items-center gap-2">
               {/* Search Input */}
-              <div className="bg-white h-10 relative rounded-full w-96 border border-slate-300">
-                <div className="flex gap-3 h-full items-center px-4 py-1.5">
-                  <div className="flex gap-2 items-center flex-1">
-                    <Search className="w-5 h-5 text-slate-600 opacity-50" />
-                    <input
-                      placeholder="Search..."
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyPress={(e) => e.key === "Enter" && handleSearch()}
-                      className="flex-1 font-inter font-semibold text-sm text-slate-600 opacity-50 bg-transparent border-none outline-none placeholder:text-slate-600 placeholder:opacity-50"
+              <div className="flex items-center gap-2 w-full relative max-w-full sm:max-w-[400px]">
+                <Search className="w-4 h-4 absolute left-4 text-slate-600" />
+                <Input
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={handleSearch}
+                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-primary-50 placeholder:text-gray-scale-60 placeholder:opacity-50"
+                />
+                {searchQuery && (
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <X
+                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                      onClick={handleClearSearch}
                     />
                   </div>
-                </div>
+                )}
               </div>
 
               {/* Enable Button */}
@@ -372,18 +363,19 @@ export default function BlockURLsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead className="w-16 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
-                      <Checkbox
+                      <SimpleCheckbox
                         checked={isAllSelected}
-                        onCheckedChange={handleSelectAll}
+                        indeterminate={isPartiallySelected}
+                        onChange={handleSelectAll}
                         aria-label="Select all URLs"
                       />
                     </TableHead>
                     <TableHead className="w-60 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
                       Website Icon
                     </TableHead>
-                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    {/* <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
                       Website Name
-                    </TableHead>
+                    </TableHead> */}
                     <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
                       Website URL
                     </TableHead>
@@ -398,55 +390,55 @@ export default function BlockURLsPage() {
                 {blockUrls?.length > 0 && (
                   <TableBody>
                     {blockUrls.map((url, index) => (
-                      <TableRow key={url.id} className="hover:bg-gray-50">
+                      <TableRow key={url._id} className="hover:bg-gray-50">
                         <TableCell>
-                          <Checkbox
-                            checked={selectedUrls.has(url.id)}
-                            onCheckedChange={(checked) =>
-                              handleSelect(url.id, checked)
+                          <SimpleCheckbox
+                            checked={selectedUrls.has(url._id)}
+                            onChange={(checked) =>
+                              handleSelect(url._id, checked)
                             }
                             aria-label={`Select ${url.websiteName}`}
                           />
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 relative">
+                          <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                            {url?.logo ? (
                               <Image
-                                src={url.logoUrl}
-                                alt={`${url.websiteName} logo`}
-                                width={40}
-                                height={40}
-                                className="rounded object-cover"
-                                onError={(e) => {
-                                  e.target.src = "/placeholder.svg";
-                                }}
+                                src={url.logo}
+                                alt={url.logo}
+                                width={138}
+                                height={38}
+                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
-                            </div>
+                            ) : (
+                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                            )}
                           </div>
                         </TableCell>
-                        <TableCell>
+                        {/* <TableCell>
                           <div className="font-medium text-gray-900">
                             {url.websiteName}
                           </div>
-                        </TableCell>
+                        </TableCell> */}
                         <TableCell>
                           <div className="text-gray-600 truncate max-w-xs">
-                            {url.websiteUrl}
+                            {url.domain}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <Switch
-                            checked={url.isBlocked}
-                            onCheckedChange={(checked) =>
-                              handleToggleStatus(url.id, checked)
+                          <CustomSwitch
+                            checked={url.isActive}
+                            onChange={(checked) =>
+                              handleToggleStatus(url._id, checked)
                             }
+                            size="default"
                           />
                         </TableCell>
                         <TableCell>
                           <div className="flex items-center gap-2">
                             <CustomTooltip content="Delete" position="top">
                               <button
-                                onClick={() => handleDelete(url.id)}
+                                onClick={() => handleDeleteClick(url)}
                                 className="text-red-600 hover:text-red-800 p-1"
                               >
                                 <Trash2 className="w-4 h-4" />
@@ -500,6 +492,15 @@ export default function BlockURLsPage() {
           onSuccess={handleStatusToggleSuccess}
           urlData={statusToggleData}
           newStatus={statusToggleData?.newStatus}
+        />
+
+        {/* Delete Confirmation Dialog */}
+        <BlockUrlDeleteDialog
+          open={deleteDialogOpen}
+          onClose={handleDeleteDialogClose}
+          onConfirm={handleDeleteConfirm}
+          loading={isDeleting}
+          urlData={urlToDelete}
         />
       </div>
     </div>
