@@ -4,6 +4,7 @@ import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import NavBar from "./NavBar";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
+import GlobalRouteGuard from "./GlobalRouteGuard";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
@@ -12,21 +13,23 @@ const LayoutWrapper = ({ children }) => {
   const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (
-    <div className="min-h-dvh">
-      {/* Sidebar */}
-      <Sidebar />
+    <GlobalRouteGuard>
+      <div className="min-h-dvh">
+        {/* Sidebar */}
+        <Sidebar />
 
-      {/* Main Content Area */}
-      <div className="lg:ml-[250px]">
-        {/* Header Navigation */}
-        <NavBar isViewPRPage={isPRPage} breadcrumbItems={breadcrumbItems} />
+        {/* Main Content Area */}
+        <div className="lg:ml-[250px]">
+          {/* Header Navigation */}
+          <NavBar isViewPRPage={isPRPage} breadcrumbItems={breadcrumbItems} />
 
-        {/* Page Content */}
-        <main>
-          <div className="m-[15px]">{children}</div>
-        </main>
+          {/* Page Content */}
+          <main>
+            <div className="m-[15px]">{children}</div>
+          </main>
+        </div>
       </div>
-    </div>
+    </GlobalRouteGuard>
   );
 };
 

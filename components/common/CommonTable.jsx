@@ -335,7 +335,6 @@ const CommonTable = ({
                               </Button>
                             )}
                             {customActions.map((action, actionIndex) => {
-                              console.log(action);
                               const buttonElement = (
                                 <Button
                                   key={actionIndex}

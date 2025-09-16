@@ -14,7 +14,6 @@ export const useUserForm = (
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  console.log("user", user);
   // Get initial values
   const getInitialValues = () => ({
     fullName: user?.fullName || "",

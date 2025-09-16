@@ -16,7 +16,6 @@ const UserForm = ({
   const [roleTouched, setRoleTouched] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
 
-  console.log("roles", formik?.values?.role);
   // Reset roleTouched when dialog opens
   useEffect(() => {
     if (open) {

@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
+import { filterNavigationByPermissions } from "@/lib/rbac";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 
@@ -44,8 +45,8 @@ const Sidebar = () => {
     }
   };
 
-  // Navigation items with proper PR Reports routing
-  const navigationItems = [
+  // All navigation items (will be filtered based on user permissions)
+  const allNavigationItems = [
     {
       name: "Users",
       href: "/users",
@@ -65,6 +66,14 @@ const Sidebar = () => {
       badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
     },
   ];
+
+  // Filter navigation items based on user permissions
+  const navigationItems = filterNavigationByPermissions(
+    allNavigationItems,
+    user
+  );
+
+  // Navigation filtering is handled by filterNavigationByPermissions
 
   const isActiveRoute = useCallback(
     (href) => {
@@ -178,13 +187,13 @@ const Sidebar = () => {
                 alt="GUESTPOSTLINKS"
                 width={202}
                 height={41}
-                className=" object-contain"
+                className="object-contain"
               />
             </div>
 
             {/* Navigation Items */}
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
-              {navigationItems.map((item) => {
+              {navigationItems?.map((item) => {
                 const Icon = item.icon;
                 const active = isActiveRoute(item.href);
 
