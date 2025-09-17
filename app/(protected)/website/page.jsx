@@ -1,8 +1,8 @@
-import React from "react";
 import { WebsiteTableClient } from "@/components/website";
 
-const WebsitePage = () => {
-  return <WebsiteTableClient />;
-};
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
 
-export default WebsitePage;
+export default function WebsitePage() {
+  return <WebsiteTableClient />;
+}

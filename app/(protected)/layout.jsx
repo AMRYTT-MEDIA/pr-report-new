@@ -1,13 +1,8 @@
-import { Guard } from "@/lib/client-guard";
-import LayoutWrapper from "@/components/LayoutWrapper";
-import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
+import { ProtectedLayoutClient } from "@/components/ProtectedLayoutClient";
+
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
 
 export default function ProtectedLayout({ children }) {
-  return (
-    <Guard mode="protected">
-      <BreadcrumbProvider>
-        <LayoutWrapper>{children}</LayoutWrapper>
-      </BreadcrumbProvider>
-    </Guard>
-  );
+  return <ProtectedLayoutClient>{children}</ProtectedLayoutClient>;
 }

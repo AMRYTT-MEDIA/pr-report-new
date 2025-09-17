@@ -7,14 +7,26 @@ dotenv.config({
 });
 
 const nextConfig = {
-  output: "standalone", // Back to standalone for client components
-  trailingSlash: true, // Better for hosting
-  basePath: "", // Ensure no base path issues
-  assetPrefix: "", // Ensure assets load correctly
+  // Output configuration for deployment
+  output: "standalone",
 
-  // Firebase compatibility
+  // Server-side rendering optimizations
+  poweredByHeader: false,
+  trailingSlash: false,
+
+  // Experimental features
   experimental: {
     esmExternals: false,
+  },
+
+  // Compiler optimizations
+  compiler: {
+    removeConsole: process.env.NODE_ENV === "production",
+  },
+
+  // Disable static optimization for problematic routes
+  async generateBuildId() {
+    return "build-" + Date.now();
   },
 
   env: {

@@ -1,26 +1,19 @@
 import "./globals.css";
 import { Inter } from "next/font/google";
-import { Toaster } from "@/components/ui/sonner";
-import { AuthProvider } from "@/lib/auth";
+import { ClientProviders } from "@/components/ClientProviders";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
-  title: "GuestPostLinks PR Boost",
-  description: "Professional PR distribution and reporting platform",
-  robots: {
-    index: false,
-    follow: false,
-  },
+  title: "PR Reports",
+  description: "Professional PR distribution platform",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <AuthProvider>
-          {children}
-          <Toaster />
-        </AuthProvider>
+        <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
   );

@@ -116,37 +116,37 @@ const PRReportViewer = ({
   // };
 
   // Optimized logo lookup to prevent lag
-  const getLogoUrl = (outletName) => {
-    if (!outletName) return null;
+  // const getLogoUrl = (outletName) => {
+  //   if (!outletName) return null;
 
-    // Helper function to normalize strings for matching
-    const normalizeString = (str) => {
-      if (!str) return "";
-      return str.toLowerCase().trim();
-    };
+  //   // Helper function to normalize strings for matching
+  //   const normalizeString = (str) => {
+  //     if (!str) return "";
+  //     return str.toLowerCase().trim();
+  //   };
 
-    // First try exact match
-    let logoPath = logoMapping[outletName];
-    if (logoPath) {
-      // Only return the path if it's a valid format and likely exists
-      if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
-        return logoPath;
-      }
-    }
+  //   // First try exact match
+  //   let logoPath = logoMapping[outletName];
+  //   if (logoPath) {
+  //     // Only return the path if it's a valid format and likely exists
+  //     if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
+  //       return logoPath;
+  //     }
+  //   }
 
-    // Try normalized match
-    const normalizedName = normalizeString(outletName);
-    for (const [key, value] of Object.entries(logoMapping)) {
-      if (normalizeString(key) === normalizedName) {
-        if (value && value.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
-          return value;
-        }
-      }
-    }
+  //   // Try normalized match
+  //   const normalizedName = normalizeString(outletName);
+  //   for (const [key, value] of Object.entries(logoMapping)) {
+  //     if (normalizeString(key) === normalizedName) {
+  //       if (value && value.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
+  //         return value;
+  //       }
+  //     }
+  //   }
 
-    // Return null for unknown outlets to trigger fallback (no console output)
-    return null;
-  };
+  //   // Return null for unknown outlets to trigger fallback (no console output)
+  //   return null;
+  // };
 
   // Validate if a logo URL is likely to exist
   const isValidLogoUrl = (url) => {
@@ -517,7 +517,7 @@ const PRReportViewer = ({
       setEditWebsiteInitialUrls("");
       setOutletToEdit(null);
     } catch (error) {
-      console.error("Error in handleWebsiteAdded:", error);
+      //empty catch
     }
   };
 
@@ -605,6 +605,15 @@ const PRReportViewer = ({
       </div>
     );
   }
+
+  // Get logo URL
+  const getLogoUrl = (filename) => {
+    if (filename.startsWith("logo/")) {
+      return `${process.env.NEXT_PUBLIC_API_URL}/${filename}`;
+    }
+    // If filename doesn't have logo/ prefix, add it
+    return `${process.env.NEXT_PUBLIC_API_URL}/logo/${filename}`;
+  };
 
   return (
     <div className="">
@@ -817,109 +826,59 @@ const PRReportViewer = ({
                     return (
                       <TableRow key={index}>
                         <TableCell className="flex items-center gap-3 min-w-[200px]">
-                          {/* Logo Display Logic */}
-                          {(() => {
-                            const logoUrl = getLogoUrl(
-                              outletWithId.original_website_name ||
-                                outletWithId.website_name
-                            );
-                            const hasValidLogo =
-                              logoUrl &&
-                              isValidLogoUrl(logoUrl) &&
-                              !isImageError(
-                                outletWithId.original_website_name ||
-                                  outletWithId.website_name
-                              );
-                            const isLoading = isImageLoading(
-                              outletWithId.original_website_name ||
-                                outletWithId.website_name
-                            );
+                          <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+                            {outlet.logo ? (
+                              <Image
+                                src={getLogoUrl(outlet.logo)}
+                                alt={outlet.name}
+                                width={138}
+                                height={38}
+                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
+                              />
+                            ) : (
+                              (() => {
+                                const isLoading = isImageLoading(
+                                  outletWithId.original_website_name ||
+                                    outletWithId.website_name
+                                );
 
-                            if (isLoading) {
-                              // Show skeleton while loading
-                              return (
-                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                  <Skeleton className="w-full h-full" />
-                                </div>
-                              );
-                            }
+                                if (isLoading) {
+                                  return <Skeleton className="w-full h-full" />;
+                                }
 
-                            if (hasValidLogo) {
-                              // Show logo image with error handling
-                              return (
-                                <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                  <Image
-                                    src={logoUrl}
-                                    alt={outletWithId.website_name}
-                                    title={outletWithId.website_name}
-                                    className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                                    onLoadStart={() =>
-                                      handleImageStartLoad(
-                                        outletWithId.original_website_name ||
-                                          outletWithId.website_name
-                                      )
-                                    }
-                                    onLoad={() =>
-                                      handleImageLoad(
-                                        outletWithId.original_website_name ||
-                                          outletWithId.website_name
-                                      )
-                                    }
-                                    onError={() =>
-                                      handleImageError(
-                                        outletWithId.original_website_name ||
-                                          outletWithId.website_name
-                                      )
-                                    }
-                                    loading="lazy"
-                                    height={38}
-                                    width={137}
-                                    // Add error handling for missing images
-                                    onErrorCapture={() =>
-                                      handleImageError(
-                                        outletWithId.original_website_name ||
-                                          outletWithId.website_name
-                                      )
-                                    }
-                                  />
-                                </div>
-                              );
-                            }
+                                const firstChar = outletWithId.website_name
+                                  .charAt(0)
+                                  .toUpperCase();
+                                const colorClasses = [
+                                  "text-blue-700 border-blue-300 bg-blue-50",
+                                  "text-green-700 border-green-300 bg-green-50",
+                                  "text-purple-700 border-purple-300 bg-purple-10",
+                                  "text-orange-700 border-orange-300 bg-orange-10",
+                                  "text-red-700 border-red-300 bg-red-50",
+                                  "text-indigo-700 border-indigo-300 bg-indigo-50",
+                                ];
+                                const colorClass =
+                                  colorClasses[index % colorClasses.length];
 
-                            // Show circular first character fallback (always available)
-                            const firstChar = outletWithId.website_name
-                              .charAt(0)
-                              .toUpperCase();
-                            const colorClasses = [
-                              "text-blue-700 border-blue-300 bg-blue-50",
-                              "text-green-700 border-green-300 bg-green-50",
-                              "text-purple-700 border-purple-300 bg-purple-10",
-                              "text-orange-700 border-orange-300 bg-orange-10",
-                              "text-red-700 border-red-300 bg-red-50",
-                              "text-indigo-700 border-indigo-300 bg-indigo-50",
-                            ];
-                            const colorClass =
-                              colorClasses[index % colorClasses.length];
-
-                            return (
-                              <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                                <div
-                                  className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
-                                  style={{
-                                    borderRadius: "50%",
-                                    aspectRatio: "1 / 1",
-                                    textAlign: "center",
-                                    display: "flex",
-                                    alignItems: "center",
-                                    justifyContent: "center",
-                                    border: "1px solid currentColor",
-                                  }}
-                                >
-                                  {firstChar}
-                                </div>
-                              </div>
-                            );
-                          })()}
+                                return (
+                                  <div
+                                    className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
+                                    style={{
+                                      borderRadius: "50%",
+                                      aspectRatio: "1 / 1",
+                                      textAlign: "center",
+                                      display: "flex",
+                                      alignItems: "center",
+                                      justifyContent: "center",
+                                      border: "1px solid currentColor",
+                                    }}
+                                  >
+                                    {firstChar}
+                                  </div>
+                                );
+                              })()
+                            )}
+                          </div>
                         </TableCell>
 
                         <TableCell className="text-muted-foreground min-w-[400px]">

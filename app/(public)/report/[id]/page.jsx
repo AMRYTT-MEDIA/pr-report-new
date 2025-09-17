@@ -73,10 +73,11 @@ export default function ReportPage() {
           total_semrush_traffic: response?.data?.total_semrush_traffic || 0,
           // Transform distribution_data to outlets format
           outlets: (response.data.distribution_data || []).map((item) => ({
-            website_name: item.recipient || "Unknown Outlet",
+            website_name: item.recipient || item?.name || "Unknown Outlet",
             published_url: item.url || "",
             potential_reach: item.potential_reach || 0,
             semrush_traffic: item?.semrush_traffic || 0,
+            logo: item?.exchange_symbol || item?.logo || null,
           })),
         };
 

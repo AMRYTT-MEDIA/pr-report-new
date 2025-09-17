@@ -136,7 +136,7 @@ const AddUpdateWebsite = ({
           const message = isEditMode
             ? "Website URL updated successfully!"
             : `Successfully created ${createdWebsites.length} website(s)!`;
-          toast.success(message);
+          // toast.success(message);
 
           // Call the callback with the created websites
           if (onWebsiteAdded) {
