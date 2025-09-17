@@ -14,6 +14,9 @@ export default function HomePage() {
   const router = useRouter();
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") return;
+
     // Wait for auth to initialize
     if (!initialized) return;
 

@@ -43,6 +43,9 @@ export const useBreadcrumbDirect = (items) => {
   const itemsRef = useRef(null);
 
   useLayoutEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") return;
+
     const itemsString = JSON.stringify(items);
     if (itemsRef.current !== itemsString) {
       itemsRef.current = itemsString;
