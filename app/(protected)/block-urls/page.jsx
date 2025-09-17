@@ -1,15 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import {
-  Search,
-  CheckCircle,
-  XCircle,
-  Trash2,
-  Plus,
-  ImageOff,
-  X,
-} from "lucide-react";
+import { Search, CheckCircle, XCircle, Trash2, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { CustomSwitch } from "@/components/ui/custom-switch";
@@ -56,6 +48,15 @@ export default function BlockURLsPage() {
   const [urlToDelete, setUrlToDelete] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
+  // Bulk delete dialog states
+  const [bulkDeleteDialogOpen, setBulkDeleteDialogOpen] = useState(false);
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+
+  // Bulk status toggle dialog states
+  const [bulkStatusToggleDialogOpen, setBulkStatusToggleDialogOpen] =
+    useState(false);
+  const [bulkStatusToggleData, setBulkStatusToggleData] = useState(null);
+
   // Add refs to prevent duplicate API calls
   const isFetching = useRef(false);
   const hasInitialFetch = useRef(false);
@@ -87,7 +88,11 @@ export default function BlockURLsPage() {
       }
     } catch (error) {
       setError(error.message || "Failed to load blocked URLs");
-      toast.error(error.message || "Failed to load blocked URLs");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to load blocked URLs"
+      );
     } finally {
       setLoading(false);
       isFetching.current = false;
@@ -140,66 +145,53 @@ export default function BlockURLsPage() {
   // Handle bulk activate
   const handleBulkActivate = async () => {
     if (selectedUrls.size === 0) {
-      toast.error(error.message || "Please select URLs to approve");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Please select URLs to approve"
+      );
       return;
     }
 
-    try {
-      const response = await blockUrlsService.bulkActivateBlocks(
-        Array.from(selectedUrls)
-      );
-      toast.success(response.message || `Enabled ${selectedUrls.size} URL(s)`);
-      setSelectedUrls(new Set());
-      fetchBlockUrls();
-    } catch (error) {
-      toast.error(error.message || "Failed to enable URLs");
-    }
+    setBulkStatusToggleData({
+      action: "activate",
+      selectedCount: selectedUrls.size,
+      newStatus: true,
+    });
+    setBulkStatusToggleDialogOpen(true);
   };
 
   // Handle bulk deactivate
   const handleBulkDeactivate = async () => {
     if (selectedUrls.size === 0) {
-      toast.error(error.message || "Please select URLs to reject");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Please select URLs to reject"
+      );
       return;
     }
 
-    try {
-      const response = await blockUrlsService.bulkDeactivateBlocks(
-        Array.from(selectedUrls)
-      );
-      toast.success(response.message || `Disabled ${selectedUrls.size} URL(s)`);
-      setSelectedUrls(new Set());
-      fetchBlockUrls();
-    } catch (error) {
-      toast.error(error.message || "Failed to deactivate URLs");
-    }
+    setBulkStatusToggleData({
+      action: "deactivate",
+      selectedCount: selectedUrls.size,
+      newStatus: false,
+    });
+    setBulkStatusToggleDialogOpen(true);
   };
 
   // Handle bulk delete
   const handleBulkDelete = async () => {
     if (selectedUrls.size === 0) {
-      toast.error(error.message || "Please select URLs to delete");
-      return;
-    }
-
-    if (
-      !confirm(
-        `Are you sure you want to delete ${selectedUrls.size} URL(s)? This action cannot be undone.`
-      )
-    ) {
-      return;
-    }
-
-    try {
-      const response = await blockUrlsService.bulkDeleteBlocks(
-        Array.from(selectedUrls)
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Please select URLs to delete"
       );
-      toast.success(response.message || `Deleted ${selectedUrls.size} URL(s)`);
-      setSelectedUrls(new Set());
-      fetchBlockUrls();
-    } catch (error) {
-      toast.error(error.message || "Failed to delete URLs");
+      return;
     }
+
+    setBulkDeleteDialogOpen(true);
   };
 
   // Handle toggle status - opens confirmation dialog
@@ -237,7 +229,11 @@ export default function BlockURLsPage() {
       setDeleteDialogOpen(false);
       setUrlToDelete(null);
     } catch (error) {
-      toast.error(error.message || "Failed to delete URL");
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to delete URL"
+      );
     } finally {
       setIsDeleting(false);
     }
@@ -247,6 +243,76 @@ export default function BlockURLsPage() {
   const handleDeleteDialogClose = () => {
     setDeleteDialogOpen(false);
     setUrlToDelete(null);
+  };
+
+  // Handle bulk delete confirmation
+  const handleBulkDeleteConfirm = async () => {
+    setIsBulkDeleting(true);
+    try {
+      const response = await blockUrlsService.bulkDeleteBlocks(
+        Array.from(selectedUrls)
+      );
+      toast.success(response.message || `Deleted ${selectedUrls.size} URL(s)`);
+      setSelectedUrls(new Set());
+      setBulkDeleteDialogOpen(false);
+      fetchBlockUrls();
+    } catch (error) {
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          "Failed to delete URLs"
+      );
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  // Handle bulk delete dialog close
+  const handleBulkDeleteDialogClose = () => {
+    setBulkDeleteDialogOpen(false);
+  };
+
+  // Handle bulk status toggle confirmation
+  const handleBulkStatusToggleConfirm = async (newStatus) => {
+    const action = bulkStatusToggleData?.action;
+
+    try {
+      let response;
+      if (action === "activate") {
+        response = await blockUrlsService.bulkActivateBlocks(
+          Array.from(selectedUrls)
+        );
+        toast.success(
+          response.message || `Enabled ${selectedUrls.size} URL(s)`
+        );
+      } else if (action === "deactivate") {
+        response = await blockUrlsService.bulkDeactivateBlocks(
+          Array.from(selectedUrls)
+        );
+        toast.success(
+          response.message || `Disabled ${selectedUrls.size} URL(s)`
+        );
+      }
+
+      setSelectedUrls(new Set());
+      setBulkStatusToggleDialogOpen(false);
+      setBulkStatusToggleData(null);
+      fetchBlockUrls();
+    } catch (error) {
+      const actionText = action === "activate" ? "enable" : "disable";
+      toast.error(
+        error?.response?.data?.message ||
+          error.message ||
+          `Failed to ${actionText} URLs`
+      );
+      throw error; // Re-throw to handle loading state in dialog
+    }
+  };
+
+  // Handle bulk status toggle dialog close
+  const handleBulkStatusToggleDialogClose = () => {
+    setBulkStatusToggleDialogOpen(false);
+    setBulkStatusToggleData(null);
   };
 
   // Set breadcrumb
@@ -544,6 +610,27 @@ export default function BlockURLsPage() {
           onConfirm={handleDeleteConfirm}
           loading={isDeleting}
           urlData={urlToDelete}
+        />
+
+        {/* Bulk Delete Confirmation Dialog */}
+        <BlockUrlDeleteDialog
+          open={bulkDeleteDialogOpen}
+          onClose={handleBulkDeleteDialogClose}
+          onConfirm={handleBulkDeleteConfirm}
+          loading={isBulkDeleting}
+          title="Confirm Bulk Delete"
+          selectedCount={selectedUrls.size}
+          isBulkDelete={true}
+        />
+
+        {/* Bulk Status Toggle Confirmation Dialog */}
+        <StatusToggleDialog
+          isOpen={bulkStatusToggleDialogOpen}
+          onClose={handleBulkStatusToggleDialogClose}
+          newStatus={bulkStatusToggleData?.newStatus}
+          isBulkOperation={true}
+          selectedCount={bulkStatusToggleData?.selectedCount}
+          onBulkConfirm={handleBulkStatusToggleConfirm}
         />
       </div>
     </div>

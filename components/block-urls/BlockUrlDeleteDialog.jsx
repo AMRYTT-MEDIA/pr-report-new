@@ -9,11 +9,40 @@ const BlockUrlDeleteDialog = ({
   onConfirm,
   loading = false,
   urlData = null,
+  title = "Delete URL",
+  message = null,
+  selectedCount = 0,
+  isBulkDelete = false,
 }) => {
-  if (!open || !urlData) return null;
+  if (!open) return null;
+
+  // For single delete, require urlData
+  if (!isBulkDelete && !urlData) return null;
 
   const handleConfirm = () => {
-    onConfirm(urlData._id);
+    if (isBulkDelete) {
+      onConfirm();
+    } else {
+      onConfirm(urlData._id);
+    }
+  };
+
+  const getDisplayMessage = () => {
+    if (message) return message;
+
+    if (isBulkDelete) {
+      return `Are you sure you want to delete ${selectedCount} URL(s)? This action cannot be undone.`;
+    }
+
+    return (
+      <>
+        Are you sure you want to delete{" "}
+        <span className="font-bold max-w-[500px] break-words">
+          {urlData.domain}
+        </span>
+        ?
+      </>
+    );
   };
 
   return (
@@ -37,13 +66,9 @@ const BlockUrlDeleteDialog = ({
             </div>
 
             <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-font-h2">Delete URL</h2>
+              <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
               <p className="text-font-h2-5 text-sm font-medium">
-                Are you sure you want to delete{" "}
-                <span className="font-bold max-w-[500px] break-words">
-                  {urlData.domain}
-                </span>
-                ?
+                {getDisplayMessage()}
               </p>
             </div>
           </div>

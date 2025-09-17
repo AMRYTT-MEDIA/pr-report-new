@@ -12,14 +12,30 @@ export default function StatusToggleDialog({
   onSuccess,
   urlData,
   newStatus,
+  isBulkOperation = false,
+  selectedCount = 0,
+  onBulkConfirm = null,
 }) {
   const [loading, setLoading] = useState(false);
 
   const isActivating = newStatus === true;
-  const actionText = isActivating ? "Unblock" : "Block";
-  const confirmationText = isActivating ? "unblocking" : "blocking";
+  const actionText = isActivating ? "Enable" : "Disable";
+  const confirmationText = isActivating ? "Enabling" : "Disabling";
 
   const handleConfirm = async () => {
+    if (isBulkOperation && onBulkConfirm) {
+      setLoading(true);
+      try {
+        await onBulkConfirm(newStatus);
+        onClose();
+      } catch (error) {
+        // Error handling is done in the bulk confirm function
+      } finally {
+        setLoading(false);
+      }
+      return;
+    }
+
     if (!urlData) return;
 
     setLoading(true);
@@ -30,7 +46,7 @@ export default function StatusToggleDialog({
       });
       toast.success(
         response.message ||
-          `URL ${isActivating ? "unblocked" : "blocked"} successfully!`
+          `URL ${isActivating ? "enabled" : "disabled"} successfully!`
       );
 
       onClose();
@@ -54,7 +70,8 @@ export default function StatusToggleDialog({
     onClose();
   };
 
-  if (!urlData) return null;
+  if (!isOpen) return null;
+  if (!isBulkOperation && !urlData) return null;
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -86,8 +103,17 @@ export default function StatusToggleDialog({
               {isActivating ? "Enable Confirmation" : "Disable Confirmation"}
             </h2>
             <p className="text-sm font-medium text-[#263145] opacity-50">
-              Are you sure you want {actionText.toLowerCase()}{" "}
-              <span className="font-bold">{urlData.domain}</span>?
+              {isBulkOperation ? (
+                <>
+                  Are you sure you want {actionText.toLowerCase()}{" "}
+                  <span className="font-bold">{selectedCount} URL(s)</span>?
+                </>
+              ) : (
+                <>
+                  Are you sure you want {actionText.toLowerCase()}{" "}
+                  <span className="font-bold">{urlData?.domain}</span>?
+                </>
+              )}
             </p>
           </div>
         </div>
@@ -106,16 +132,12 @@ export default function StatusToggleDialog({
           <button
             onClick={handleConfirm}
             disabled={loading}
-            className={`px-4 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-50 ${
-              isActivating
-                ? "bg-indigo-500 text-white hover:bg-indigo-600"
-                : "bg-rose-100 text-rose-600 hover:bg-rose-200"
-            }`}
+            className={`px-4 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-50 bg-indigo-500 text-white hover:bg-indigo-600`}
           >
             {isActivating ? (
               <CheckCircle className="w-5 h-5" />
             ) : (
-              <Ban className="w-5 h-5" />
+              <CircleX className="w-5 h-5" />
             )}
             {loading ? `${actionText}ing...` : actionText}
           </button>
