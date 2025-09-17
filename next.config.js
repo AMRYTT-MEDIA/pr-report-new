@@ -12,9 +12,11 @@ const nextConfig = {
   output: "standalone", // ✅ Important for Dokploy/Docker
   reactStrictMode: true,
   swcMinify: true,
-  experimental: {
-    appDir: true, // ✅ Ensure App Router works
+
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
+
   env: {
     NEXT_PUBLIC_GPL_BACKEND_BASE_URL:
       process.env.ENV === "staging" || process.env.NODE_ENV === "development"
