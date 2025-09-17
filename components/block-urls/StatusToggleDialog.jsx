@@ -57,7 +57,7 @@ export default function StatusToggleDialog({
     } catch (error) {
       console.error(`Error ${confirmationText} URL:`, error);
       toast.error(
-        error.response.data.message ||
+        error?.response?.data?.message ||
           error.message ||
           `Failed to ${actionText.toLowerCase()} URL. Please try again.`
       );

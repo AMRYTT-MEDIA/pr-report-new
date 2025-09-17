@@ -59,7 +59,9 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
       } catch (error) {
         console.error("Error blocking URL(s):", error);
         toast.error(
-          error.message || "Failed to block URL(s). Please try again."
+          error?.response?.data?.message ||
+            error.message ||
+            "Failed to block URL(s). Please try again."
         );
       } finally {
         setLoading(false);
