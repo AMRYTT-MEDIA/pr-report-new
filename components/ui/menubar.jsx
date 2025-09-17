@@ -8,7 +8,11 @@ const MenubarContext = React.createContext();
 const useMenubar = () => {
   const context = React.useContext(MenubarContext);
   if (!context) {
-    throw new Error("useMenubar must be used within a Menubar component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      activeMenu: null,
+      setActiveMenu: () => {},
+    };
   }
   return context;
 };

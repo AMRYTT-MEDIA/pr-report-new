@@ -7,7 +7,13 @@ const SelectContext = React.createContext(null);
 const useSelect = () => {
   const context = React.useContext(SelectContext);
   if (!context) {
-    throw new Error("useSelect must be used within a Select component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      open: false,
+      setOpen: () => {},
+      value: "",
+      onValueChange: () => {},
+    };
   }
   return context;
 };

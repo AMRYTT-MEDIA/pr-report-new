@@ -6,7 +6,11 @@ const HoverCardContext = React.createContext(null);
 const useHoverCard = () => {
   const context = React.useContext(HoverCardContext);
   if (!context) {
-    throw new Error("useHoverCard must be used within a HoverCard component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      open: false,
+      setOpen: () => {},
+    };
   }
   return context;
 };

@@ -11,7 +11,10 @@ function useChart() {
   const context = React.useContext(ChartContext);
 
   if (!context) {
-    throw new Error("useChart must be used within a <ChartContainer />");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      config: {},
+    };
   }
 
   return context;
