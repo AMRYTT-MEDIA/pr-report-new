@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import Image from "next/image";
 import WebsiteConstants from "./constans";
 import { NoDataFound } from "../icon";
+import WebsiteAvatar from "../ui/website-avatar";
 
 // Simple checkbox component for this dialog
 const SimpleCheckbox = ({ checked, onChange, className = "" }) => {
@@ -708,7 +709,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
                             ) : (
-                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                              <WebsiteAvatar
+                                websiteName={website?.name || "-"}
+                                size="default"
+                              />
                             )}
                           </div>
                         </td>
