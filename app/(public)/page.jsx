@@ -6,6 +6,9 @@ import { useAuth } from "@/lib/auth";
 import { getDefaultLandingPage } from "@/lib/rbac";
 import Loading from "@/components/ui/loading";
 
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
+
 export default function HomePage() {
   const { user, loading, initialized } = useAuth();
   const router = useRouter();

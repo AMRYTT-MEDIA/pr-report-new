@@ -14,7 +14,11 @@ const BreadcrumbContext = createContext();
 export const useBreadcrumb = () => {
   const context = useContext(BreadcrumbContext);
   if (!context) {
-    throw new Error("useBreadcrumb must be used within a BreadcrumbProvider");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      breadcrumbItems: [],
+      setBreadcrumb: () => {},
+    };
   }
   return context;
 };
