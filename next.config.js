@@ -9,7 +9,12 @@ dotenv.config({
 const nextConfig = {
   // Output configuration for deployment
   // output: "standalone",
-
+  output: "standalone", // ✅ Important for Dokploy/Docker
+  reactStrictMode: true,
+  swcMinify: true,
+  experimental: {
+    appDir: true, // ✅ Ensure App Router works
+  },
   env: {
     NEXT_PUBLIC_GPL_BACKEND_BASE_URL:
       process.env.ENV === "staging" || process.env.NODE_ENV === "development"
