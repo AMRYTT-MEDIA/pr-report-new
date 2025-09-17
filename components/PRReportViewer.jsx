@@ -518,7 +518,6 @@ const PRReportViewer = ({
       setOutletToEdit(null);
     } catch (error) {
       console.error("Error in handleWebsiteAdded:", error);
-      toast.error("Failed to process request. Please try again.");
     }
   };
 

@@ -146,9 +146,8 @@ const AddNewWebsiteDialog = ({
 
         handleClose();
       } catch (error) {
-        console.error("Error saving website:", error);
         const errorMessage =
-          error?.message ||
+          error?.response.data.message ||
           (editWebsite
             ? WebsiteConstants.updateWebsiteError
             : WebsiteConstants.addWebsiteError);
