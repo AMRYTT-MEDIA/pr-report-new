@@ -35,6 +35,7 @@ import {
   StatusToggleDialog,
   BlockUrlDeleteDialog,
 } from "@/components/block-urls";
+import WebsiteAvatar from "@/components/ui/website-avatar";
 
 export default function BlockURLsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -85,8 +86,8 @@ export default function BlockURLsPage() {
         setTotalCount(response.totalCount || response.length || 0);
       }
     } catch (error) {
-      setError("Failed to load blocked URLs. Please try again.");
-      toast.error("Failed to load blocked URLs");
+      setError(error.message || "Failed to load blocked URLs");
+      toast.error(error.message || "Failed to load blocked URLs");
     } finally {
       setLoading(false);
       isFetching.current = false;
@@ -136,45 +137,68 @@ export default function BlockURLsPage() {
     setSelectedUrls(newSelected);
   };
 
-  // Handle bulk approve
-  const handleBulkApprove = async () => {
+  // Handle bulk activate
+  const handleBulkActivate = async () => {
     if (selectedUrls.size === 0) {
-      toast.error("Please select URLs to approve");
+      toast.error(error.message || "Please select URLs to approve");
       return;
     }
 
     try {
-      // Bulk update: set isActive=true for selected
-      await blockUrlsService.bulkUpdateBlocks({
-        ids: Array.from(selectedUrls),
-        update: { isActive: true },
-      });
-      toast.success(`Enabled ${selectedUrls.size} URL(s)`);
+      const response = await blockUrlsService.bulkActivateBlocks(
+        Array.from(selectedUrls)
+      );
+      toast.success(response.message || `Enabled ${selectedUrls.size} URL(s)`);
       setSelectedUrls(new Set());
       fetchBlockUrls();
     } catch (error) {
-      toast.error("Failed to enable URLs");
+      toast.error(error.message || "Failed to enable URLs");
     }
   };
 
-  // Handle bulk reject
-  const handleBulkReject = async () => {
+  // Handle bulk deactivate
+  const handleBulkDeactivate = async () => {
     if (selectedUrls.size === 0) {
-      toast.error("Please select URLs to reject");
+      toast.error(error.message || "Please select URLs to reject");
       return;
     }
 
     try {
-      // Bulk update: set isActive=false for selected
-      await blockUrlsService.bulkUpdateBlocks({
-        ids: Array.from(selectedUrls),
-        update: { isActive: false },
-      });
-      toast.success(`Disabled ${selectedUrls.size} URL(s)`);
+      const response = await blockUrlsService.bulkDeactivateBlocks(
+        Array.from(selectedUrls)
+      );
+      toast.success(response.message || `Disabled ${selectedUrls.size} URL(s)`);
       setSelectedUrls(new Set());
       fetchBlockUrls();
     } catch (error) {
-      toast.error("Failed to disable URLs");
+      toast.error(error.message || "Failed to deactivate URLs");
+    }
+  };
+
+  // Handle bulk delete
+  const handleBulkDelete = async () => {
+    if (selectedUrls.size === 0) {
+      toast.error(error.message || "Please select URLs to delete");
+      return;
+    }
+
+    if (
+      !confirm(
+        `Are you sure you want to delete ${selectedUrls.size} URL(s)? This action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+
+    try {
+      const response = await blockUrlsService.bulkDeleteBlocks(
+        Array.from(selectedUrls)
+      );
+      toast.success(response.message || `Deleted ${selectedUrls.size} URL(s)`);
+      setSelectedUrls(new Set());
+      fetchBlockUrls();
+    } catch (error) {
+      toast.error(error.message || "Failed to delete URLs");
     }
   };
 
@@ -205,15 +229,15 @@ export default function BlockURLsPage() {
   const handleDeleteConfirm = async (urlId) => {
     setIsDeleting(true);
     try {
-      await blockUrlsService.deleteBlock(urlId);
+      const response = await blockUrlsService.deleteBlock(urlId);
       const updatedUrls = blockUrls.filter((url) => url._id !== urlId);
       setBlockUrls(updatedUrls);
       setTotalCount(updatedUrls.length);
-      toast.success("URL deleted successfully");
+      toast.success(response.message || "URL deleted successfully");
       setDeleteDialogOpen(false);
       setUrlToDelete(null);
     } catch (error) {
-      toast.error("Failed to delete URL");
+      toast.error(error.message || "Failed to delete URL");
     } finally {
       setIsDeleting(false);
     }
@@ -259,22 +283,6 @@ export default function BlockURLsPage() {
     };
   }, []);
 
-  // Show loading while auth is initializing
-  if (authLoading || loading) {
-    return (
-      <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
-        <Loading
-          size="lg"
-          color="purple"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
-      </div>
-    );
-  }
-
   // Don't render if not authenticated
   if (!user) {
     return null;
@@ -290,17 +298,20 @@ export default function BlockURLsPage() {
       <div className="mx-auto">
         <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+          <div className="px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 gap-3.5">
             <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                 Block URLs
               </h1>
+              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
+                {totalCount}
+              </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-2 w-full sm:w-auto">
               {/* Search Input */}
-              <div className="flex items-center gap-2 w-full relative max-w-full sm:max-w-[400px]">
+              <div className="flex items-center gap-2 w-full relative max-w-full sm:max-w-[400px] order-2 sm:order-1">
                 <Search className="w-4 h-4 absolute left-4 text-slate-600" />
                 <Input
                   placeholder="Search..."
@@ -318,49 +329,60 @@ export default function BlockURLsPage() {
                 )}
               </div>
 
-              {/* Enable Button */}
-              <button
-                onClick={handleBulkApprove}
-                disabled={selectedUrls.size === 0}
-                className="relative rounded-full border border-slate-300 disabled:opacity-50"
-              >
-                <div className="flex gap-2 items-center justify-center px-4 py-2.5">
-                  <CheckCircle className="w-5 h-5 text-slate-600" />
-                  <span className="font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
-                    Enable
-                  </span>
-                </div>
-              </button>
+              <div className="flex items-center gap-2 order-1 sm:order-2">
+                {/* Enable Button */}
+                <button
+                  onClick={handleBulkActivate}
+                  disabled={selectedUrls.size === 0}
+                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
+                >
+                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+                    <CheckCircle className="w-5 h-5 text-slate-600" />
+                    <span className="hidden lg:block">Enable</span>
+                  </div>
+                </button>
 
-              {/* Disable Button */}
-              <button
-                onClick={handleBulkReject}
-                disabled={selectedUrls.size === 0}
-                className="relative rounded-full border border-slate-300 disabled:opacity-50"
-              >
-                <div className="flex gap-2 items-center justify-center px-4 py-2.5">
-                  <XCircle className="w-5 h-5 text-slate-600" />
-                  <span className="font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
-                    Disable
-                  </span>
-                </div>
-              </button>
+                {/* Disable Button */}
+                <button
+                  onClick={handleBulkDeactivate}
+                  disabled={selectedUrls.size === 0}
+                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
+                >
+                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+                    <XCircle className="w-5 h-5 text-slate-600" />
+                    <span className="hidden lg:block">Disable</span>
+                  </div>
+                </button>
 
-              {/* Block URL Button */}
-              <button
-                onClick={() => setBlockUrlDialogOpen(true)}
-                className="font-semibold text-sm text-danger-60 whitespace-nowrap bg-danger-10 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-danger-20 transition-colors"
-              >
-                <Plus /> Block URL
-              </button>
+                {/* Delete Button */}
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={selectedUrls.size === 0}
+                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
+                >
+                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+                    <Trash2 className="w-5 h-5 text-slate-600" />
+                    <span className="hidden lg:block">Delete</span>
+                  </div>
+                </button>
+
+                {/* Block URL Button */}
+                <button
+                  onClick={() => setBlockUrlDialogOpen(true)}
+                  className="font-semibold text-sm text-danger-60 whitespace-nowrap bg-danger-10 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-danger-20 transition-colors"
+                >
+                  <Plus className="w-5 h-5" />{" "}
+                  <span className="hidden lg:block">Block URL</span>
+                </button>
+              </div>
             </div>
           </div>
 
           <div className="overflow-x-auto">
             {/* Table Section */}
-            <div className="max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
+            <div className="max-h-[calc(100dvh-400px)] sm:max-h-[calc(100dvh-290px)] xl:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
               <Table>
-                <TableHeader>
+                <TableHeader className="sticky top-0 bg-gray-50 z-10">
                   <TableRow>
                     <TableHead className="w-16 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
                       <SimpleCheckbox
@@ -370,26 +392,51 @@ export default function BlockURLsPage() {
                         aria-label="Select all URLs"
                       />
                     </TableHead>
-                    <TableHead className="w-60 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    <TableHead className="w-60 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Website Icon
                     </TableHead>
-                    {/* <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Website Name
-                    </TableHead> */}
-                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    </TableHead>
+                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Website URL
                     </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Status
                     </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Actions
                     </TableHead>
                   </TableRow>
                 </TableHeader>
-                {blockUrls?.length > 0 && (
-                  <TableBody>
-                    {blockUrls.map((url, index) => (
+                <TableBody>
+                  {loading ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={5}
+                        className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
+                      >
+                        <Loading size="lg" color="purple" />
+                      </TableCell>
+                    </TableRow>
+                  ) : blockUrls?.length === 0 ? (
+                    <TableRow className="hover:bg-white">
+                      <TableCell
+                        colSpan={5}
+                        className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
+                      >
+                        <div className="flex flex-col items-center justify-center space-y-3 h-full">
+                          <NoDataFound width={105} height={130} />
+                          <div>
+                            <h3 className="text-lg font-medium text-slate-900">
+                              No Block URLs Found...
+                            </h3>
+                          </div>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ) : (
+                    blockUrls?.map((url, index) => (
                       <TableRow key={url._id} className="hover:bg-gray-50">
                         <TableCell>
                           <SimpleCheckbox
@@ -402,24 +449,31 @@ export default function BlockURLsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {url?.logo ? (
+                            {url?.website_id?.logo ? (
                               <Image
-                                src={url.logo}
-                                alt={url.logo}
+                                src={blockUrlsService.getLogoUrl(
+                                  url?.website_id?.logo
+                                )}
+                                alt={url?.website_id?.logo}
                                 width={138}
                                 height={38}
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
                             ) : (
-                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                              <WebsiteAvatar
+                                websiteName={
+                                  url?.website_id?.name || url?.domain || "-"
+                                }
+                                size="default"
+                              />
                             )}
                           </div>
                         </TableCell>
-                        {/* <TableCell>
+                        <TableCell>
                           <div className="font-medium text-gray-900">
-                            {url.websiteName}
+                            {url?.website_id?.name || "-"}
                           </div>
-                        </TableCell> */}
+                        </TableCell>
                         <TableCell>
                           <div className="text-gray-600 truncate max-w-xs">
                             {url.domain}
@@ -447,22 +501,11 @@ export default function BlockURLsPage() {
                           </div>
                         </TableCell>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                )}
+                    ))
+                  )}
+                </TableBody>
               </Table>
             </div>
-
-            {blockUrls?.length === 0 && (
-              <div className="flex items-center justify-center h-full min-h-[368px] w-full border-t border-gray-200">
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <NoDataFound />
-                  <p className="text-gray-scale-80 text-sm font-semibold">
-                    No Block URLs Found...
-                  </p>
-                </div>
-              </div>
-            )}
           </div>
 
           {/* Pagination */}

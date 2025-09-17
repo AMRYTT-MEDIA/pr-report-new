@@ -25,9 +25,12 @@ export default function StatusToggleDialog({
     setLoading(true);
 
     try {
-      await blockUrlsService.updateBlock(urlData._id, { isActive: newStatus });
+      const response = await blockUrlsService.updateBlock(urlData._id, {
+        isActive: newStatus,
+      });
       toast.success(
-        `URL ${isActivating ? "unblocked" : "blocked"} successfully!`
+        response.message ||
+          `URL ${isActivating ? "unblocked" : "blocked"} successfully!`
       );
 
       onClose();
@@ -56,8 +59,8 @@ export default function StatusToggleDialog({
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent
+        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
         showCloseButton={false}
-        className="p-0 max-w-md bg-slate-100 rounded-[14px] border border-slate-300 shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)] gap-0"
       >
         <div className="bg-white rounded-[14px] border border-slate-300 p-5 space-y-5">
           {/* Header */}

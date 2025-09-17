@@ -15,42 +15,12 @@ export const blockUrlsService = {
     }
   },
 
-  // Create single block
-  async createBlock(blockData) {
-    try {
-      return await apiPost("/blocks", blockData);
-    } catch (error) {
-      console.error("Error adding blocked URL:", error);
-      throw error;
-    }
-  },
-
   // Bulk create blocks
   async bulkCreateBlocks(urls) {
     try {
       return await apiPost("/blocks/bulk", { urls });
     } catch (error) {
       console.error("Error bulk creating blocks:", error);
-      throw error;
-    }
-  },
-
-  // Get block by id
-  async getBlockById(id) {
-    try {
-      return await apiGet(`/blocks/${id}`);
-    } catch (error) {
-      console.error("Error fetching block by id:", error);
-      throw error;
-    }
-  },
-
-  // Check website block status
-  async checkBlockStatus(url) {
-    try {
-      return await apiGet("/blocks/check/status", { url });
-    } catch (error) {
-      console.error("Error checking block status:", error);
       throw error;
     }
   },
@@ -85,14 +55,41 @@ export const blockUrlsService = {
     }
   },
 
-  // Backwards compatibility aliases (old names)
-  getBlockUrls(page = 1, pageSize = 25, search = null) {
-    return this.getBlocks(page, pageSize, search);
+  // Bulk activate blocks
+  async bulkActivateBlocks(blockIds) {
+    try {
+      return await apiPut("/blocks/bulk/activate", { blockIds });
+    } catch (error) {
+      console.error("Error bulk activating blocks:", error);
+      throw error;
+    }
   },
-  addBlockUrl(data) {
-    return this.createBlock(data);
+
+  // Bulk deactivate blocks
+  async bulkDeactivateBlocks(blockIds) {
+    try {
+      return await apiPut("/blocks/bulk/deactivate", { blockIds });
+    } catch (error) {
+      console.error("Error bulk deactivating blocks:", error);
+      throw error;
+    }
   },
-  deleteBlockUrl(id) {
-    return this.deleteBlock(id);
+
+  // Bulk delete blocks
+  async bulkDeleteBlocks(blockIds) {
+    try {
+      return await apiDelete("/blocks/bulk/delete", { blockIds });
+    } catch (error) {
+      console.error("Error bulk deleting blocks:", error);
+      throw error;
+    }
   },
+
+    // Get logo URL
+  getLogoUrl: (filename) => {
+    if (filename.startsWith('logo/')) {
+      return `${process.env.NEXT_PUBLIC_API_URL}/${filename}`;
+    }
+    return `${process.env.NEXT_PUBLIC_API_URL}/logo/${filename}`;
+  }
 };

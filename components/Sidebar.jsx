@@ -61,16 +61,16 @@ const Sidebar = () => {
       badge: null,
     },
     {
-      name: "PR Reports",
-      href: "/pr-reports-list",
-      icon: FileSpreadsheet,
-      badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
-    },
-    {
       name: "Block URLs",
       href: "/block-urls",
       icon: Ban,
       badge: null,
+    },
+    {
+      name: "PR Reports",
+      href: "/pr-reports-list",
+      icon: FileSpreadsheet,
+      badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
     },
   ];
 

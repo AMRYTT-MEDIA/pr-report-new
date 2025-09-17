@@ -64,6 +64,7 @@ export default function ViewPR() {
               potential_reach: item.potential_reach || 0,
               semrush_traffic: item?.semrush_traffic || 0,
               _id: item._id || null,
+              logo: item.exchange_symbol || null,
             })),
             sharedEmails: response.sharedEmails || [],
           };

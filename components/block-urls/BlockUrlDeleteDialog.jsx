@@ -46,16 +46,6 @@ const BlockUrlDeleteDialog = ({
                 ?
               </p>
             </div>
-
-            <div className="flex items-center gap-2 bg-warning-5 rounded-lg py-1.5 px-2.5 border border-warning-10">
-              <div>
-                <Info className="w-5 h-5 text-warning-60" />
-              </div>
-              <p className="text-warning-60 text-sm font-semibold">
-                If you delete this URL, it will be permanently removed from the
-                blocked URLs list.
-              </p>
-            </div>
           </div>
         </div>
 
@@ -74,7 +64,7 @@ const BlockUrlDeleteDialog = ({
             type="button"
             onClick={handleConfirm}
             disabled={loading}
-            className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white rounded-full font-medium disabled:opacity-50"
+            className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
           >
             <Trash2 className="w-5 h-5" />
             {loading ? "Deleting..." : "Delete"}
