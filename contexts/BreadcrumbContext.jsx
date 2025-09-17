@@ -14,7 +14,11 @@ const BreadcrumbContext = createContext();
 export const useBreadcrumb = () => {
   const context = useContext(BreadcrumbContext);
   if (!context) {
-    throw new Error("useBreadcrumb must be used within a BreadcrumbProvider");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      breadcrumbItems: [],
+      setBreadcrumb: () => {},
+    };
   }
   return context;
 };
@@ -39,6 +43,9 @@ export const useBreadcrumbDirect = (items) => {
   const itemsRef = useRef(null);
 
   useLayoutEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") return;
+
     const itemsString = JSON.stringify(items);
     if (itemsRef.current !== itemsString) {
       itemsRef.current = itemsString;

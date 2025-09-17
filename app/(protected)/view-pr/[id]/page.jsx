@@ -58,14 +58,15 @@ export default function ViewPR() {
             date_created: response.createdAt || new Date().toISOString(),
             visibility: "public",
             total_semrush_traffic: response?.total_semrush_traffic || 0,
-            outlets: (response.distribution_data || []).map((item) => ({
-              website_name: item.recipient || "Unknown Outlet",
+            outlets: (response?.distribution_data || []).map((item) => ({
+              website_name: item.recipient || item?.name || "Unknown Outlet",
               published_url: item.url || "",
               potential_reach: item.potential_reach || 0,
               semrush_traffic: item?.semrush_traffic || 0,
               _id: item._id || null,
-              logo: item.exchange_symbol || null,
+              logo: item?.exchange_symbol || item?.logo || null,
             })),
+
             sharedEmails: response.sharedEmails || [],
           };
 
@@ -126,11 +127,13 @@ export default function ViewPR() {
   return (
     <div>
       {report && (
-        <PRReportViewer
-          report={report}
-          isPublic={false}
-          fetchReportData={() => fetchReportData(true)}
-        />
+        <div className="max-w-[1270px] mx-auto">
+          <PRReportViewer
+            report={report}
+            isPublic={false}
+            fetchReportData={() => fetchReportData(true)}
+          />
+        </div>
       )}
     </div>
   );

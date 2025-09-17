@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DeleteDialog } from "@/components/view-reports";
 import { useAuth } from "@/lib/auth";
+import { canDeleteReports } from "@/lib/rbac";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import ShareDialog from "@/components/ShareDialog";
 import {
@@ -467,26 +468,28 @@ export default function PRReportsList() {
                                 )}
                               </button>
                             </CustomTooltip>
-                            <CustomTooltip
-                              content="Delete"
-                              position={tooltipPosition}
-                            >
-                              <button
-                                onClick={() => openDeleteDialog(report)}
-                                disabled={deletingReports.has(
-                                  report.grid_id || report._id
-                                )}
-                                className="text-danger-60 hover:text-danger-50"
+                            {canDeleteReports(user) && (
+                              <CustomTooltip
+                                content="Delete"
+                                position={tooltipPosition}
                               >
-                                {deletingReports.has(
-                                  report.grid_id || report._id
-                                ) ? (
-                                  <Loading size="sm" color="danger" />
-                                ) : (
-                                  <Trash2 className="w-4 h-4" />
-                                )}
-                              </button>
-                            </CustomTooltip>
+                                <button
+                                  onClick={() => openDeleteDialog(report)}
+                                  disabled={deletingReports.has(
+                                    report.grid_id || report._id
+                                  )}
+                                  className="text-danger-60 hover:text-danger-50"
+                                >
+                                  {deletingReports.has(
+                                    report.grid_id || report._id
+                                  ) ? (
+                                    <Loading size="sm" color="danger" />
+                                  ) : (
+                                    <Trash2 className="w-4 h-4" />
+                                  )}
+                                </button>
+                              </CustomTooltip>
+                            )}
                           </td>
                         </tr>
                       );

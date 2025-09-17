@@ -133,7 +133,6 @@ const LoginForm = ({ searchParams }) => {
           values.email,
           values.password
         );
-
         if (result.user) {
           toast.success("Sign in successful!");
 

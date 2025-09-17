@@ -10,7 +10,11 @@ const DialogContext = React.createContext();
 const useDialog = () => {
   const context = React.useContext(DialogContext);
   if (!context) {
-    throw new Error("useDialog must be used within a Dialog component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      open: false,
+      setOpen: () => {},
+    };
   }
   return context;
 };

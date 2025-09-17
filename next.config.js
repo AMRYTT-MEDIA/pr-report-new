@@ -7,14 +7,14 @@ dotenv.config({
 });
 
 const nextConfig = {
-  output: "standalone", // Back to standalone for client components
-  trailingSlash: true, // Better for hosting
-  basePath: "", // Ensure no base path issues
-  assetPrefix: "", // Ensure assets load correctly
+  // Output configuration for deployment
+  // output: "standalone",
+  output: "standalone", // ✅ Important for Dokploy/Docker
+  reactStrictMode: true,
+  swcMinify: true,
 
-  // Firebase compatibility
-  experimental: {
-    esmExternals: false,
+  images: {
+    remotePatterns: [{ protocol: "https", hostname: "**" }],
   },
 
   env: {
@@ -53,32 +53,24 @@ const nextConfig = {
     ENV: process.env.ENV, // Expose ENV explicitly to the client
   },
   // Webpack configuration for better file watching
-  webpack: (config, { dev, isServer }) => {
-    // Add alias for better module resolution
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": require("path").resolve(__dirname),
-    };
+  // webpack: (config, { dev, isServer }) => {
+  //   // Add alias for better module resolution
+  //   config.resolve.alias = {
+  //     ...config.resolve.alias,
+  //     "@": require("path").resolve(__dirname),
+  //   };
 
-    // Better file watching in development
-    if (dev && !isServer) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: /node_modules/,
-      };
-    }
+  //   // Better file watching in development
+  //   if (dev && !isServer) {
+  //     config.watchOptions = {
+  //       poll: 1000,
+  //       aggregateTimeout: 300,
+  //       ignored: /node_modules/,
+  //     };
+  //   }
 
-    return config;
-  },
-
-  images: {
-    unoptimized: true,
-  },
-
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
+  //   return config;
+  // },
 };
 
 module.exports = nextConfig;

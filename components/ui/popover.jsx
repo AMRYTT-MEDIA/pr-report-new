@@ -6,7 +6,11 @@ const PopoverContext = React.createContext(null);
 const usePopover = () => {
   const context = React.useContext(PopoverContext);
   if (!context) {
-    throw new Error("usePopover must be used within a Popover component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      open: false,
+      setOpen: () => {},
+    };
   }
   return context;
 };

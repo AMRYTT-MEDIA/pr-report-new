@@ -6,7 +6,11 @@ const TabsContext = React.createContext(null);
 const useTabs = () => {
   const context = React.useContext(TabsContext);
   if (!context) {
-    throw new Error("useTabs must be used within a Tabs component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      value: "",
+      onValueChange: () => {},
+    };
   }
   return context;
 };

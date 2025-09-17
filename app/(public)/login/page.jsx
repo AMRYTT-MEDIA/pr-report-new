@@ -7,11 +7,17 @@ import { getDefaultLandingPage } from "@/lib/rbac";
 import { LoginForm } from "@/components/auth";
 import Loading from "@/components/ui/loading";
 
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
+
 export default function LoginPage({ searchParams }) {
   const { user, loading, initialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
+    // Only run on client side
+    if (typeof window === "undefined") return;
+
     // Wait for auth to initialize
     if (!initialized) return;
 

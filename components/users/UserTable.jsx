@@ -14,7 +14,7 @@ import DeactivateUserDialog from "./DeactivateUserDialog";
 import UserDialog from "./UserDialog";
 import DeleteUserDialog from "./DeleteUserDialog";
 
-const UserTable = ({ onRefresh, loading = false }) => {
+const UserTable = ({ loading = false }) => {
   // Set breadcrumb
   useBreadcrumbDirect([{ name: "Users", href: "/users", current: true }]);
 
@@ -183,7 +183,6 @@ const UserTable = ({ onRefresh, loading = false }) => {
 
   const handleUserDialogSuccess = () => {
     fetchUsers();
-    onRefresh?.();
   };
 
   const handleCloseDeactivateModal = () => {
@@ -205,9 +204,8 @@ const UserTable = ({ onRefresh, loading = false }) => {
       setShowDeleteModal(false);
       setSelectedUser(null);
       await fetchUsers(); // Refresh the list
-      onRefresh?.(); // Call parent refresh if provided
     } catch (error) {
-      console.error("Error deleting user:", error);
+      //empty catch
       toast.error("Failed to delete user");
     } finally {
       setIsSubmitting(false);

@@ -28,7 +28,19 @@ const defaultProvider = {
 const AuthContext = createContext(defaultProvider);
 
 export const useAuth = () => {
-  return useContext(AuthContext);
+  const context = useContext(AuthContext);
+  // Return default values during SSR/static generation if context is not available
+  if (!context) {
+    return {
+      user: null,
+      loading: false,
+      initialized: true,
+      setUser: () => null,
+      setLoading: () => Boolean,
+      logout: async () => ({ success: false, error: "No auth context" }),
+    };
+  }
+  return context;
 };
 
 const AuthProvider = ({ children }) => {

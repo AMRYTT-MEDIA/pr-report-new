@@ -33,7 +33,8 @@ const CONFIG = {
   },
 }[ENV];
 
-const HOST = "pr.guestpostlinks.net";
+// const HOST = "pr.guestpostlinks.net";
+const HOST = "srvr.anzac.co.in";
 const USER = "gplprpt";
 const PORT = 243;
 const KEY_PATH = "C:/Users/AMRYTT2.0/.ssh/id_ed25519";

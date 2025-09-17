@@ -22,6 +22,8 @@ import {
 } from "@/components/website";
 import { toast } from "sonner";
 import { websitesService } from "@/services/websites";
+import { useAuth } from "@/lib/auth";
+import { canManageWebsite } from "@/lib/rbac";
 import Image from "next/image";
 import { NoDataFound } from "@/components/icon";
 import WebsiteConstants from "@/components/website/constans";
@@ -30,6 +32,7 @@ const WebsiteTableClient = ({
   initialWebsites = [],
   initialTotalCount = 0,
 }) => {
+  const { user } = useAuth();
   const [websites, setWebsites] = useState(initialWebsites);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -268,24 +271,28 @@ const WebsiteTableClient = ({
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <Button
-                    onClick={() => setReOrderWebsiteDialog(true)}
-                    className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
-                  >
-                    <ListRestart className="w-4 h-4 text-slate-600" />
-                    <span className="hidden md:inline">
-                      {WebsiteConstants.reOrder}
-                    </span>
-                  </Button>
-                  <Button
-                    onClick={handleAddNewWebsite}
-                    className="text-white px-4 py-2.5 flex items-center gap-2 bg-primary-50 hover:bg-primary-60 rounded-[39px]"
-                  >
-                    <Plus className="w-4 h-4 text-white" />
-                    <span className="hidden md:inline">
-                      {WebsiteConstants.addNew}
-                    </span>
-                  </Button>
+                  {canManageWebsite(user) && (
+                    <>
+                      <Button
+                        onClick={() => setReOrderWebsiteDialog(true)}
+                        className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
+                      >
+                        <ListRestart className="w-4 h-4 text-slate-600" />
+                        <span className="hidden md:inline">
+                          {WebsiteConstants.reOrder}
+                        </span>
+                      </Button>
+                      <Button
+                        onClick={handleAddNewWebsite}
+                        className="text-white px-4 py-2.5 flex items-center gap-2 bg-primary-50 hover:bg-primary-60 rounded-[39px]"
+                      >
+                        <Plus className="w-4 h-4 text-white" />
+                        <span className="hidden md:inline">
+                          {WebsiteConstants.addNew}
+                        </span>
+                      </Button>
+                    </>
+                  )}
                 </div>
               </div>
             </div>
@@ -297,10 +304,10 @@ const WebsiteTableClient = ({
               <table className="w-full divide-y divide-slate-200 table-auto">
                 <thead className="bg-slate-50 w-full sticky top-0 z-10">
                   <tr className="w-full">
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[68px]">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[10%]">
                       {WebsiteConstants.no}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[241px] whitespace-nowrap">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[20%] whitespace-nowrap">
                       {WebsiteConstants.websiteIcon}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
@@ -309,9 +316,11 @@ const WebsiteTableClient = ({
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
                       {WebsiteConstants.websiteUrl}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[140px] whitespace-nowrap">
-                      {WebsiteConstants.actions}
-                    </th>
+                    {canManageWebsite(user) && (
+                      <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[15%] whitespace-nowrap">
+                        {WebsiteConstants.actions}
+                      </th>
+                    )}
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-slate-200">
@@ -349,7 +358,7 @@ const WebsiteTableClient = ({
                                   : WebsiteConstants.addFirstWebsiteDescription}
                               </p>
                             </div>
-                            {!searchQuery && (
+                            {!searchQuery && canManageWebsite(user) && (
                               <Button
                                 onClick={handleAddFirstWebsite}
                                 className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
@@ -445,26 +454,28 @@ const WebsiteTableClient = ({
                             )}
                           </div>
                         </td>
-                        <td className="px-6 py-3">
-                          <div className="flex gap-8 items-center">
-                            <CustomTooltip content="Edit" position="bottom">
-                              <button
-                                onClick={() => handleEdit(website)}
-                                className="text-slate-600 flex text-sm font-medium"
-                              >
-                                <PencilLine className="w-4 h-4" />
-                              </button>
-                            </CustomTooltip>
-                            <CustomTooltip content="Delete" position="bottom">
-                              <button
-                                onClick={() => handleDelete(website)}
-                                className="text-red-600 flex text-sm font-medium"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </CustomTooltip>
-                          </div>
-                        </td>
+                        {canManageWebsite(user) && (
+                          <td className="px-6 py-3">
+                            <div className="flex gap-8 items-center">
+                              <CustomTooltip content="Edit" position="bottom">
+                                <button
+                                  onClick={() => handleEdit(website)}
+                                  className="text-slate-600 flex text-sm font-medium"
+                                >
+                                  <PencilLine className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                              <CustomTooltip content="Delete" position="bottom">
+                                <button
+                                  onClick={() => handleDelete(website)}
+                                  className="text-red-600 flex text-sm font-medium"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </CustomTooltip>
+                            </div>
+                          </td>
+                        )}
                       </tr>
                     ))
                   )}

@@ -1,7 +1,8 @@
 import { ForgotPasswordForm } from "@/components/auth";
 
-const ForgotPasswordPage = () => {
-  return <ForgotPasswordForm />;
-};
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
 
-export default ForgotPasswordPage;
+export default function ForgotPasswordPage() {
+  return <ForgotPasswordForm />;
+}

@@ -125,11 +125,10 @@ const AddUpdateWebsite = ({
               throw new Error(response.message || "API call failed");
             }
           } catch (error) {
-            console.error("Error submitting URLs:", error);
-            errors.push({
-              url: "API Error",
-              error: error.message || "Failed to submit URLs to API",
-            });
+            console.log(error);
+            toast.error(
+              error.response.data.message || "Failed to submit URLs to API"
+            );
           }
         }
 

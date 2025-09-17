@@ -9,7 +9,11 @@ const SheetContext = React.createContext();
 const useSheet = () => {
   const context = React.useContext(SheetContext);
   if (!context) {
-    throw new Error("useSheet must be used within a Sheet component");
+    // Return default values instead of throwing error during SSR/static generation
+    return {
+      open: false,
+      setOpen: () => {},
+    };
   }
   return context;
 };
