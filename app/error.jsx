@@ -1,5 +1,8 @@
 "use client";
 
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
+
 export default function Error({ error, reset }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

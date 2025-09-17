@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { LeftArrow, HomeIcon } from "../components/icon";
 
+// Force dynamic rendering to prevent prerender errors
+export const dynamic = "force-dynamic";
+
 export default function NotFound() {
   const router = useRouter();
 
