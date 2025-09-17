@@ -1,25 +1,10 @@
 import React from "react";
-import { logoMapping } from "@/utils/logoMapping";
 import { PublicationsIcon, ReachIcon, StatusPdfIcon } from "./icon";
 
-// Dynamic PDF component that loads @react-pdf/renderer at runtime
-const PRReportPDF = ({ report, formatData }) => {
-  const [PDFComponents, setPDFComponents] = React.useState(null);
-
-  React.useEffect(() => {
-    const loadPDFComponents = async () => {
-      try {
-        const pdfRenderer = await import("@react-pdf/renderer");
-        setPDFComponents(pdfRenderer);
-      } catch (error) {
-        console.error("Failed to load PDF renderer:", error);
-      }
-    };
-    loadPDFComponents();
-  }, []);
-
+// PDF component that expects PDF components to be passed as props
+const PRReportPDF = ({ report, formatData, PDFComponents }) => {
   if (!PDFComponents) {
-    return null; // or a loading component
+    return null;
   }
 
   const { Document, Page, Text, View, StyleSheet, Image } = PDFComponents;
@@ -224,27 +209,19 @@ const PRReportPDF = ({ report, formatData }) => {
     }
   };
 
-  const getLogoUrl = (outletName) => {
-    if (!outletName) return null;
-
-    // Helper function to normalize strings for matching
-    const normalizeString = (str) => {
-      if (!str) return "";
-      return str.toLowerCase().trim();
-    };
-
-    // First try exact match
-    let src = logoMapping[outletName];
-    if (src) return src;
-
-    // Try normalized match
-    const normalizedName = normalizeString(outletName);
-    for (const [key, value] of Object.entries(logoMapping)) {
-      if (normalizeString(key) === normalizedName) {
-        return value;
+  // Get logo URL from API or return null for fallback
+  const getLogoUrl = (outlet) => {
+    // Check if outlet has logo from API
+    if (outlet && outlet.logo) {
+      // If logo starts with "logo/" prefix, construct full URL
+      if (outlet.logo.startsWith("logo/")) {
+        return `${process.env.NEXT_PUBLIC_API_URL}/${outlet.logo}`;
       }
+      // If logo doesn't have prefix, add it
+      return `${process.env.NEXT_PUBLIC_API_URL}/logo/${outlet.logo}`;
     }
 
+    // No logo available, return null to show fallback
     return null;
   };
   // Prevent row splitting
@@ -358,9 +335,9 @@ const PRReportPDF = ({ report, formatData }) => {
 
           {/* Table Body */}
           {outlets.map((outlet, idx) => {
-            const logoUrl =
-              outlet.base64Logo ||
-              getLogoUrl(outlet.original_website_name || outlet.website_name);
+            // Check for base64Logo first (from PDF generation), then API logo
+            const logoUrl = outlet.base64Logo || getLogoUrl(outlet);
+
             const firstChar = (outlet.website_name || "?")
               .charAt(0)
               .toUpperCase();
@@ -371,7 +348,10 @@ const PRReportPDF = ({ report, formatData }) => {
                 {/* Outlet */}
                 <View style={[styles.td, styles.outletCell, { flex: 1 }]}>
                   <View style={styles.logoContainer}>
-                    {logoUrl ? (
+                    {logoUrl &&
+                    logoUrl.trim() !== "" &&
+                    (logoUrl.startsWith("data:") ||
+                      logoUrl.startsWith("http")) ? (
                       <Image src={logoUrl} style={styles.logoImage} />
                     ) : (
                       <View

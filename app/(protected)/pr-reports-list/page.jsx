@@ -87,7 +87,7 @@ export default function PRReportsList() {
           setTotalCount(response.totalCount || response.length || 0);
         }
       } else {
-        console.log("error");
+        //empty catch
       }
 
       // Update URL

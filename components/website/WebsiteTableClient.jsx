@@ -307,7 +307,7 @@ const WebsiteTableClient = ({
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[10%]">
                       {WebsiteConstants.no}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[20%] whitespace-nowrap">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[15%] whitespace-nowrap">
                       {WebsiteConstants.websiteIcon}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
@@ -405,7 +405,7 @@ const WebsiteTableClient = ({
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
+                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help ">
                                     {formatTitle(website.name, "name")}
                                   </p>
                                 </TooltipTrigger>
