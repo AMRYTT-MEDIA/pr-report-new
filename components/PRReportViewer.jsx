@@ -26,7 +26,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 // Dynamic import will be used in handleDownload function
-import { logoMapping, orderMapping } from "@/utils/logoMapping";
 import React from "react";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
@@ -185,12 +184,14 @@ const PRReportViewer = ({
         // Convert logo images to base64 for PDF generation
         const outletsWithBase64Logos = await Promise.allSettled(
           (formatData || report.outlets || []).map(async (outlet) => {
-            const outletName =
-              outlet.original_website_name || outlet.website_name;
-            const logoUrl = getLogoUrl(outletName);
-
-            if (logoUrl && isValidLogoUrl(logoUrl)) {
+            // Check if outlet has logo from API
+            if (outlet.logo) {
               try {
+                // Build the logo URL from API
+                const logoUrl = outlet.logo.startsWith("logo/")
+                  ? `${process.env.NEXT_PUBLIC_API_URL}/${outlet.logo}`
+                  : `${process.env.NEXT_PUBLIC_API_URL}/logo/${outlet.logo}`;
+
                 const base64Logo = await convertImageToBase64(logoUrl);
                 return {
                   ...outlet,
@@ -198,14 +199,15 @@ const PRReportViewer = ({
                 };
               } catch (error) {
                 console.error(
-                  `Failed to convert logo for ${outletName}:`,
+                  `Failed to convert logo for ${outlet.website_name}:`,
                   error
                 );
                 // Return outlet without logo, will use fallback
                 return outlet;
               }
-            } else {
             }
+
+            // No logo available, return outlet as is (will show fallback)
             return outlet;
           })
         );
@@ -215,21 +217,22 @@ const PRReportViewer = ({
           if (result.status === "fulfilled") {
             return result.value;
           } else {
-            console.error(
-              `Failed to process outlet at index ${index}:`,
-              result.reason
-            );
             // Return the original outlet data if processing failed
             return (formatData || report.outlets || [])[index];
           }
         });
 
         // Generate PDF using the new PRReportPDF component with base64 logos
-        const { pdf } = await import("@react-pdf/renderer");
-        const pdfBlob = await pdf(
-          <PRReportPDF report={report} formatData={processedOutlets} />
-        ).toBlob();
+        const pdfRenderer = await import("@react-pdf/renderer");
+        const { pdf } = pdfRenderer;
 
+        const pdfBlob = await pdf(
+          <PRReportPDF
+            report={report}
+            formatData={processedOutlets}
+            PDFComponents={pdfRenderer}
+          />
+        ).toBlob();
         downloadFile(
           pdfBlob,
           `PR_Report_${report.id || "report"}.pdf`,
@@ -260,22 +263,35 @@ const PRReportViewer = ({
 
         // Create an image element using the browser's native Image constructor
         const img = new window.Image();
+
+        // Try to handle CORS
         img.crossOrigin = "anonymous";
 
         // Add timeout to prevent hanging
         const timeoutId = setTimeout(() => {
           reject(new Error(`Image conversion timeout for: ${imagePath}`));
-        }, 10000); // 10 second timeout
+        }, 15000); // 15 second timeout for external images
 
         img.onload = () => {
           try {
             clearTimeout(timeoutId);
-            canvas.width = img.width;
-            canvas.height = img.height;
+
+            // Set canvas dimensions to image dimensions
+            canvas.width = img.naturalWidth || img.width;
+            canvas.height = img.naturalHeight || img.height;
+
+            // Draw image on canvas
             ctx.drawImage(img, 0, 0);
 
-            // Convert to base64
-            const dataURL = canvas.toDataURL("image/png");
+            // Convert to base64 - try PNG first, fallback to JPEG
+            let dataURL;
+            try {
+              dataURL = canvas.toDataURL("image/png");
+            } catch (pngError) {
+              console.warn("PNG conversion failed, trying JPEG:", pngError);
+              dataURL = canvas.toDataURL("image/jpeg", 0.9);
+            }
+
             resolve(dataURL);
           } catch (error) {
             clearTimeout(timeoutId);
@@ -283,8 +299,9 @@ const PRReportViewer = ({
           }
         };
 
-        img.onerror = () => {
+        img.onerror = (error) => {
           clearTimeout(timeoutId);
+          console.error("Image load error:", error);
           reject(new Error(`Failed to load image: ${imagePath}`));
         };
 
@@ -334,71 +351,18 @@ const PRReportViewer = ({
     URL.revokeObjectURL(url);
   };
 
-  // Format and order outlets according to orderMapping
-  // This ensures that outlets are displayed in the predefined order from orderMapping
-  // Expected order: Business Insider, YahooFinance, The Globe and Mail, Benzinga, Marketwatch, etc.
-  // Outlets not in orderMapping will appear at the end of the list
+  // Format outlets data without orderMapping logic
   const formatData = useMemo(() => {
     if (!report?.outlets) return [];
 
-    // Helper function to normalize strings for matching
-    const normalizeString = (str) => {
-      if (!str) return "";
-      return str.toLowerCase().trim();
-    };
-
-    // Create a map from normalized website_name to its order index, if present in orderMapping
-    const orderIndex = Object.entries(orderMapping).reduce(
-      (acc, [key, value], idx) => {
-        const normalizedValue = normalizeString(value);
-        acc[normalizedValue] = idx;
-        return acc;
-      },
-      {}
-    );
-
-    // Create a map from normalized API website_name to orderMapping value
-    const outletNameMapping = Object.entries(orderMapping).reduce(
-      (acc, [key, value]) => {
-        const normalizedValue = normalizeString(value);
-        acc[normalizedValue] = value; // Store the original formatted value
-        return acc;
-      },
-      {}
-    );
-
-    // Map and format the outlets
-    const formatted = report.outlets.map((outlet) => {
-      const normalizedApiName = normalizeString(outlet.website_name);
-      const mappedName =
-        outletNameMapping[normalizedApiName] ||
-        outlet.website_name ||
-        "Unknown";
-
-      return {
-        ...outlet,
-        original_website_name: outlet.website_name, // Preserve original for logo mapping
-        website_name: mappedName,
-      };
-    });
-
-    // Sort by orderMapping order if present, otherwise keep at the end
-    const sorted = formatted.sort((a, b) => {
-      const aNormalized = normalizeString(a.website_name);
-      const bNormalized = normalizeString(b.website_name);
-      const aIdx = orderIndex[aNormalized];
-      const bIdx = orderIndex[bNormalized];
-      if (aIdx === undefined && bIdx === undefined) return 0;
-      if (aIdx === undefined) return 1;
-      if (bIdx === undefined) return -1;
-      return aIdx - bIdx;
-    });
-
-    return sorted;
+    // Simply return the outlets as they are from the API
+    return report.outlets.map((outlet) => ({
+      ...outlet,
+      original_website_name: outlet.website_name, // Preserve original for logo mapping
+    }));
   }, [report]);
 
-  // Filter the formatted and ordered outlets based on search term
-  // Search works against both formatted names and original names for better user experience
+  // Filter the outlets based on search term
   const filteredOutlets = useMemo(() => {
     if (!formatData || formatData.length === 0) return [];
 
@@ -794,7 +758,7 @@ const PRReportViewer = ({
         <CardContent className="p-0">
           <div className="overflow-x-auto">
             <div className="max-h-[calc(100vh-250px)] lg:max-h-[calc(100dvh-302px)] overflow-y-auto scrollbar-custom">
-              <Table containerClassName="contents">
+              <Table>
                 <TableHeader className="sticky top-0 z-10">
                   <TableRow className="w-full">
                     <TableHead className="min-w-[200px]">Outlet</TableHead>
@@ -830,7 +794,7 @@ const PRReportViewer = ({
                             {outlet.logo ? (
                               <Image
                                 src={getLogoUrl(outlet.logo)}
-                                alt={outlet.name}
+                                alt={outlet.website_name || "Media outlet logo"}
                                 width={138}
                                 height={38}
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"

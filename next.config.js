@@ -18,6 +18,7 @@ const nextConfig = {
   },
 
   env: {
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_GPL_BACKEND_BASE_URL:
       process.env.ENV === "staging" || process.env.NODE_ENV === "development"
         ? process.env.NEXT_PUBLIC_GPL_BACKEND_BASE_URL_STAGING
