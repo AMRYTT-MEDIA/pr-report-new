@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { Upload, Eye, Share2, Trash2, File } from "lucide-react";
+import { Eye, Share2, Trash2, File } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,6 @@ import { DeleteDialog } from "@/components/view-reports";
 import { useAuth } from "@/lib/auth";
 import { canDeleteReports } from "@/lib/rbac";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import ShareDialog from "@/components/ShareDialog";
 import {
   Tooltip,

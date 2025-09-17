@@ -11,6 +11,7 @@ import {
   X,
   LayoutList,
   FileSpreadsheet,
+  Ban,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
@@ -57,6 +58,12 @@ const Sidebar = () => {
       name: "Website",
       href: "/website",
       icon: Globe,
+      badge: null,
+    },
+    {
+      name: "Block URLs",
+      href: "/block-urls",
+      icon: Ban,
       badge: null,
     },
     {

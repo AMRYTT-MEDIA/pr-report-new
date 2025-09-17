@@ -4,21 +4,14 @@ import React, { useState, useEffect } from "react";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  ListRestart,
-  Plus,
-  Search,
-  Trash2,
-  X,
-  PencilLine,
-  ImageOff,
-} from "lucide-react";
+import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
 import {
   Tooltip,
   TooltipProvider,
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import WebsiteAvatar from "@/components/ui/website-avatar";
 import CustomTooltip from "@/components/ui/custom-tooltip";
 import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
@@ -247,6 +240,9 @@ const WebsiteTableClient = ({
               <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
                 {WebsiteConstants.allWebsites}
               </h1>
+              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
+                {totalCount}
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
@@ -397,7 +393,10 @@ const WebsiteTableClient = ({
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
                             ) : (
-                              <ImageOff className="w-6 h-6 text-gray-scale-60" />
+                              <WebsiteAvatar
+                                websiteName={website.name}
+                                size="default"
+                              />
                             )}
                           </div>
                         </td>
