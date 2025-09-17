@@ -457,7 +457,15 @@ const WebsiteTableClient = ({
                         {canManageWebsite(user) && (
                           <td className="px-6 py-3">
                             <div className="flex gap-8 items-center">
-                              <CustomTooltip content="Edit" position="bottom">
+                              <CustomTooltip
+                                content="Edit"
+                                position={
+                                  filteredWebsites?.length > 1 &&
+                                  filteredWebsites?.length - 1 === index
+                                    ? "top"
+                                    : "bottom"
+                                }
+                              >
                                 <button
                                   onClick={() => handleEdit(website)}
                                   className="text-slate-600 flex text-sm font-medium"
@@ -465,7 +473,15 @@ const WebsiteTableClient = ({
                                   <PencilLine className="w-4 h-4" />
                                 </button>
                               </CustomTooltip>
-                              <CustomTooltip content="Delete" position="bottom">
+                              <CustomTooltip
+                                content="Delete"
+                                position={
+                                  filteredWebsites?.length > 1 &&
+                                  filteredWebsites?.length - 1 === index
+                                    ? "top"
+                                    : "bottom"
+                                }
+                              >
                                 <button
                                   onClick={() => handleDelete(website)}
                                   className="text-red-600 flex text-sm font-medium"
