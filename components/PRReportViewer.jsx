@@ -12,6 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
+import WebsiteAvatar from "@/components/ui/website-avatar";
 import {
   Search,
   Eye,
@@ -800,47 +801,10 @@ const PRReportViewer = ({
                                 className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
                               />
                             ) : (
-                              (() => {
-                                const isLoading = isImageLoading(
-                                  outletWithId.original_website_name ||
-                                    outletWithId.website_name
-                                );
-
-                                if (isLoading) {
-                                  return <Skeleton className="w-full h-full" />;
-                                }
-
-                                const firstChar = outletWithId.website_name
-                                  .charAt(0)
-                                  .toUpperCase();
-                                const colorClasses = [
-                                  "text-blue-700 border-blue-300 bg-blue-50",
-                                  "text-green-700 border-green-300 bg-green-50",
-                                  "text-purple-700 border-purple-300 bg-purple-10",
-                                  "text-orange-700 border-orange-300 bg-orange-10",
-                                  "text-red-700 border-red-300 bg-red-50",
-                                  "text-indigo-700 border-indigo-300 bg-indigo-50",
-                                ];
-                                const colorClass =
-                                  colorClasses[index % colorClasses.length];
-
-                                return (
-                                  <div
-                                    className={`w-[32px] sm:w-[38px] h-[32px] sm:h-[38px] rounded-full flex items-center justify-center border-2 text-base sm:text-lg font-bold tracking-wide ${colorClass}`}
-                                    style={{
-                                      borderRadius: "50%",
-                                      aspectRatio: "1 / 1",
-                                      textAlign: "center",
-                                      display: "flex",
-                                      alignItems: "center",
-                                      justifyContent: "center",
-                                      border: "1px solid currentColor",
-                                    }}
-                                  >
-                                    {firstChar}
-                                  </div>
-                                );
-                              })()
+                              <WebsiteAvatar
+                                websiteName={outletWithId.website_name}
+                                size="default"
+                              />
                             )}
                           </div>
                         </TableCell>
