@@ -8,7 +8,7 @@ dotenv.config({
 
 const nextConfig = {
   // Output configuration for deployment
-  output: "standalone",
+  // output: "standalone",
 
   // Server-side rendering optimizations
   poweredByHeader: false,
