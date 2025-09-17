@@ -10,25 +10,6 @@ const nextConfig = {
   // Output configuration for deployment
   // output: "standalone",
 
-  // Server-side rendering optimizations
-  poweredByHeader: false,
-  trailingSlash: false,
-
-  // Experimental features
-  experimental: {
-    esmExternals: false,
-  },
-
-  // Compiler optimizations
-  compiler: {
-    removeConsole: process.env.NODE_ENV === "production",
-  },
-
-  // Disable static optimization for problematic routes
-  async generateBuildId() {
-    return "build-" + Date.now();
-  },
-
   env: {
     NEXT_PUBLIC_GPL_BACKEND_BASE_URL:
       process.env.ENV === "staging" || process.env.NODE_ENV === "development"
@@ -65,32 +46,24 @@ const nextConfig = {
     ENV: process.env.ENV, // Expose ENV explicitly to the client
   },
   // Webpack configuration for better file watching
-  webpack: (config, { dev, isServer }) => {
-    // Add alias for better module resolution
-    config.resolve.alias = {
-      ...config.resolve.alias,
-      "@": require("path").resolve(__dirname),
-    };
+  // webpack: (config, { dev, isServer }) => {
+  //   // Add alias for better module resolution
+  //   config.resolve.alias = {
+  //     ...config.resolve.alias,
+  //     "@": require("path").resolve(__dirname),
+  //   };
 
-    // Better file watching in development
-    if (dev && !isServer) {
-      config.watchOptions = {
-        poll: 1000,
-        aggregateTimeout: 300,
-        ignored: /node_modules/,
-      };
-    }
+  //   // Better file watching in development
+  //   if (dev && !isServer) {
+  //     config.watchOptions = {
+  //       poll: 1000,
+  //       aggregateTimeout: 300,
+  //       ignored: /node_modules/,
+  //     };
+  //   }
 
-    return config;
-  },
-
-  images: {
-    unoptimized: true,
-  },
-
-  env: {
-    CUSTOM_KEY: process.env.CUSTOM_KEY,
-  },
+  //   return config;
+  // },
 };
 
 module.exports = nextConfig;
