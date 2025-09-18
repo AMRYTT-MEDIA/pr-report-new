@@ -179,14 +179,14 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
               <h2 className="text-lg font-semibold text-font-h2">
                 Import .CSV
               </h2>
-              <p className="text-sm text-font-h2-5 mt-1">
+              <p className="text-sm text-font-h2 opacity-50 font-semibold mt-1">
                 Are you sure you want to Import .CSV File?
               </p>
             </div>
             <div className="flex items-center gap-2 justify-end">
               <button
                 onClick={handleSampleCsvDownload}
-                className="flex items-center gap-1.5 px-3 py-1 text-sm text-gray-scale-secondary font-semibold border border-border-gray rounded-md hover:bg-gray-100"
+                className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-scale-secondary font-semibold border border-border-gray rounded-md hover:bg-gray-100"
               >
                 <Download className="w-4 h-4 font-semibold" />
                 Sample CSV
@@ -196,10 +196,10 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
 
           {/* File Upload Area */}
           <div
-            className={`flex flex-col items-center justify-center py-10 px-4 md:px-6 border-2 border-dashed rounded-lg transition-colors ${
+            className={`flex flex-col items-center justify-center py-10 px-4 md:px-6 border-2 border-dashed rounded-lg transition-colors duration-300 ${
               isDragOver
                 ? "border-blue-500 bg-blue-50"
-                : "border-gray-scale-20 hover:border-gray-scale-50"
+                : "border-Gray-30 hover:border-primary-50"
             }`}
             onDragOver={handleDragOver}
             onDragEnter={handleDragEnter}
@@ -212,7 +212,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
             <p className="text-gray-scale-60 font-semibold mb-2.5">
               Choose a file or drag & drop it here
             </p>
-            <p className="text-sm text-font-h2-5 font-semibold mb-3.5">
+            <p className="text-sm text-font-h2-5 font-bold mb-3.5">
               CSV formats, up to 50MB
             </p>
             <label
@@ -233,7 +233,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
 
           {/* PR Report Name Input */}
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5">
-            <label className="block text-sm text-gray-scale-70 font-semibold whitespace-nowrap">
+            <label className="block text-md text-font-h2 font-semibold whitespace-nowrap">
               PR Report Name :
             </label>
             <input
@@ -241,7 +241,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
               value={reportTitle}
               onChange={(e) => setReportTitle(e.target.value)}
               placeholder="Enter PR Report Name..."
-              className="w-full px-3 py-1.5 border border-gray-scale-20 text-gray-scale-60 font-bold rounded-md focus:outline-none focus:border-gray-scale-50"
+              className="w-full px-3 py-1.5 border border-gray-scale-20 text-gray-scale-60 font-semibold rounded-md focus:outline-none focus:border-gray-scale-50"
             />
           </div>
 
@@ -266,9 +266,9 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
           <Button
             variant="default"
             onClick={handleClose}
-            className="gap-1.5 px-4 py-2.5 bg-primary-10 hover:bg-primary-20 text-primary-50 hover:text-primary-60 rounded-3xl font-semibold w-full sm:w-auto"
+            className="px-4 py-2.5 bg-white border border-slate-300 rounded-full flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-gray-scale-10 transition-colors"
           >
-            <CircleXIcon className="w-4 h-4" />
+            <X className="w-5 h-5" />
             Cancel
           </Button>
           <Button

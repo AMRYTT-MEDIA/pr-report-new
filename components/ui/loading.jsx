@@ -32,6 +32,9 @@ const Loading = ({
     if (color === "white") {
       return "border-b-2 border-white";
     }
+    if (color === "primary") {
+      return "border-b-2 border-primary-60";
+    }
     if (color === "danger") {
       return "border-b-2 border-danger-60";
     }

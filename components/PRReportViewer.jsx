@@ -456,7 +456,6 @@ const PRReportViewer = ({
         // This is an update operation - call the update API
         const recordId = outletToEdit._id || outletToEdit.id;
         const updateData = {
-          id: recordId,
           urls: result.websites
             ? result.websites.map((w) => w.url)
             : result.urls || [],

@@ -20,6 +20,7 @@ const Pagination = ({
   // Custom labels
   resultsLabel = "results",
   rowsPerPageLabel = "Rows Per Page:",
+  rows = "Rows",
   goToPageLabel = "Go to Page:",
   previousLabel = "Previous",
   nextLabel = "Next",
@@ -223,7 +224,8 @@ const Pagination = ({
         {/* Rows Per Page */}
         {showRowsPerPage && (
           <div className="flex items-center gap-2 relative">
-            <p className="m-0">{rowsPerPageLabel}</p>
+            <p className="m-0 hidden sm:block">{rowsPerPageLabel}</p>
+            <p className="m-0 sm:hidden">{rows}</p>
             <div className="relative" ref={dropdownRef}>
               <button
                 type="button"

@@ -101,7 +101,6 @@ export default function ViewPR() {
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
         <Loading
           size="lg"
-          color="purple"
           showText={true}
           text="Loading..."
           textColor="black"
