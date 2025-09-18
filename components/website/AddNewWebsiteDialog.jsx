@@ -54,14 +54,17 @@ const AddNewWebsiteDialog = ({
 
           const urlValue = value.trim();
 
-          // Prepare URL for validation
-          const urlToValidate = urlValue.startsWith("http")
-            ? urlValue
-            : `https://${urlValue}`;
+          // Require protocol - don't auto-add, just validate
+          if (
+            !urlValue.startsWith("http://") &&
+            !urlValue.startsWith("https://")
+          ) {
+            return false; // Must include protocol
+          }
 
           // Check if it's a valid URL using validator.js
           if (
-            !validator.isURL(urlToValidate, {
+            !validator.isURL(urlValue, {
               protocols: ["http", "https"],
               require_protocol: true,
               require_host: true,
@@ -72,6 +75,8 @@ const AddNewWebsiteDialog = ({
               allow_trailing_dot: false,
               allow_protocol_relative_urls: false,
               disallow_auth: true,
+              allow_fragments: true,
+              allow_query_components: true,
             })
           ) {
             return false;
@@ -82,12 +87,13 @@ const AddNewWebsiteDialog = ({
             return false;
           }
 
-          // Check domain format (remove protocol first)
+          // Check domain format (remove protocol first and extract just the domain part)
           const cleanUrl = urlValue.replace(/^https?:\/\//, "");
+          const domainPart = cleanUrl.split("/")[0]; // Get only domain part, ignore path
 
           // Validate domain using FQDN (Fully Qualified Domain Name)
           if (
-            !validator.isFQDN(cleanUrl, {
+            !validator.isFQDN(domainPart, {
               require_tld: true,
               allow_underscores: false,
               allow_trailing_dot: false,
@@ -98,7 +104,7 @@ const AddNewWebsiteDialog = ({
           }
 
           // Additional check for proper domain extension
-          const parts = cleanUrl.split(".");
+          const parts = domainPart.split(".");
           if (parts.length < 2) return false;
 
           const extension = parts[parts.length - 1];
@@ -108,10 +114,8 @@ const AddNewWebsiteDialog = ({
     }),
     onSubmit: async (values) => {
       try {
-        // Prepare URL
-        const websiteUrl = values.websiteUrl.startsWith("http")
-          ? values.websiteUrl
-          : `https://${values.websiteUrl}`;
+        // Use URL as entered by user
+        const websiteUrl = values.websiteUrl;
 
         const websiteData = {
           name: values.websiteName.trim(),
@@ -316,9 +320,6 @@ const AddNewWebsiteDialog = ({
                   )}
                 </Label>
                 <div className="relative">
-                  <span className="text-sm font-medium text-slate-600 absolute top-[1px] left-[1px] bottom-[1px] bg-gray-scale-5 pl-3 pr-2 py-2.5 rounded-l-lg border-r border-gray-scale-20">
-                    {WebsiteConstants.httpsPrefix}{" "}
-                  </span>
                   <Input
                     type="text"
                     name="websiteUrl"
@@ -329,7 +330,7 @@ const AddNewWebsiteDialog = ({
                       formik.setFieldValue("websiteUrl", lowercaseValue);
                     }}
                     onBlur={formik.handleBlur}
-                    className={`flex-1 rounded-lg border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40 pl-[74px] 
+                    className={`flex-1 rounded-lg border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40
                           ${
                             editWebsite
                               ? "bg-gray-scale-5 pointer-events-none cursor-not-allowed"

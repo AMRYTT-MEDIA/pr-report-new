@@ -36,7 +36,6 @@ export default function HomePage() {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loading
           size="lg"
-          color="purple"
           showText={true}
           text="Loading..."
           textColor="black"

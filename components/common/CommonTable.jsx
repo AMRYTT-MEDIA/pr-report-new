@@ -97,12 +97,7 @@ const CommonTable = ({
         )}
         <div className="p-8">
           <div className="flex items-center justify-center">
-            <Loading
-              size="lg"
-              color="purple"
-              showText={true}
-              text="Loading..."
-            />
+            <Loading size="lg" showText={true} text="Loading..." />
           </div>
         </div>
       </div>
@@ -198,12 +193,7 @@ const CommonTable = ({
                     className="px-6 py-8 text-center bg-white"
                   >
                     <div className="flex items-center justify-center min-h-[calc(100dvh-340px)]">
-                      <Loading
-                        size="lg"
-                        color="purple"
-                        showText={false}
-                        text="Loading..."
-                      />
+                      <Loading size="lg" showText={false} text="Loading..." />
                     </div>
                   </TableCell>
                 </TableRow>

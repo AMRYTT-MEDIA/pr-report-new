@@ -482,7 +482,7 @@ export default function BlockURLsPage() {
                         colSpan={5}
                         className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
                       >
-                        <Loading size="lg" color="purple" />
+                        <Loading size="lg" />
                       </TableCell>
                     </TableRow>
                   ) : blockUrls?.length === 0 ? (

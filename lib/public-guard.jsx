@@ -37,7 +37,6 @@ export function PublicGuard({ children }) {
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loading
           size="lg"
-          color="purple"
           showText={true}
           text="Loading..."
           textColor="black"

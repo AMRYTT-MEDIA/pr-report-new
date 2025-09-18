@@ -59,7 +59,6 @@ const GlobalRouteGuard = ({ children }) => {
         <div className="min-h-screen bg-background flex items-center justify-center">
           <Loading
             size="lg"
-            color="purple"
             showText={true}
             text="Redirecting..."
             textColor="black"

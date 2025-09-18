@@ -332,7 +332,7 @@ const WebsiteTableClient = ({
                           colSpan={5}
                           className="text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
                         >
-                          <Loading size="lg" color="purple" />
+                          <Loading size="lg" />
                         </td>
                       </tr>
                     </>

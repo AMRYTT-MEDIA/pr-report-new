@@ -16,7 +16,7 @@ const WebsiteConstants = {
   websiteNameRequired: "Website name is required",
   websiteNameMinLength: "Website name must be at least 2 characters",
   websiteUrlRequired: "Website URL is required",
-  invalidUrl: "Please enter a valid website URL (e.g., example.com)",
+  invalidUrl: "Please enter a valid URL with protocol (e.g., https://example.com/ or http://example.com)",
   invalidUrlFormat: "URL format is invalid. Please enter a valid domain",
   invalidUrlChars: "URL contains invalid characters",
   invalidUrlExtension: "Please enter a valid domain with proper extension",
@@ -42,8 +42,7 @@ const WebsiteConstants = {
   websiteUrlLabel: "Website URL",
   websiteIconLabel: "Website Icon",
   enterWebsiteName: "Enter website name",
-  urlPlaceholder: "example.com",
-  httpsPrefix: "https://",
+  urlPlaceholder: "https://example.com/",
   
   // File upload area
   pngJpgSvgWebpUpTo10mb: "PNG, JPG, SVG, WebP up to 10MB",
