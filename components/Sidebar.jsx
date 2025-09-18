@@ -3,19 +3,12 @@
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Users,
-  Globe,
-  FileText,
-  Menu,
-  X,
-  LayoutList,
-  FileSpreadsheet,
-  Ban,
-} from "lucide-react";
+import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
-import { filterNavigationByPermissions } from "@/lib/rbac";
+import { useAuthReady } from "@/hooks/useAuthReady";
+import { getSidebarRoutes, ICON_MAP } from "@/config/routes";
+import { APP_CONFIG, ROUTES } from "@/constants/index.js";
 import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 
@@ -23,6 +16,7 @@ const Sidebar = () => {
   const pathname = usePathname();
   const router = useRouter();
   const { user } = useAuth();
+  const { isAuthReady } = useAuthReady();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [prReportsCount, setPrReportsCount] = useState(0);
 
@@ -35,7 +29,7 @@ const Sidebar = () => {
   // Fetch PR reports count
   const fetchPRReportsCount = async () => {
     try {
-      if (user) {
+      if (isAuthReady && user) {
         const response = await prReportsService.getPRReportTotalCount();
         if (response && response?.data !== undefined) {
           setPrReportsCount(response?.data);
@@ -46,52 +40,31 @@ const Sidebar = () => {
     }
   };
 
-  // All navigation items (will be filtered based on user permissions)
-  const allNavigationItems = [
-    {
-      name: "Users",
-      href: "/users",
-      icon: Users,
-      badge: null,
-    },
-    {
-      name: "Website",
-      href: "/website",
-      icon: Globe,
-      badge: null,
-    },
-    {
-      name: "Block URLs",
-      href: "/block-urls",
-      icon: Ban,
-      badge: null,
-    },
-    {
-      name: "PR Reports",
-      href: "/pr-reports-list",
-      icon: FileSpreadsheet,
-      badge: prReportsCount > 0 ? prReportsCount.toString() : "0",
-    },
-  ];
+  // Get navigation items from centralized route configuration
+  const sidebarRoutes = getSidebarRoutes(user);
 
-  // Filter navigation items based on user permissions
-  const navigationItems = filterNavigationByPermissions(
-    allNavigationItems,
-    user
-  );
-
-  // Navigation filtering is handled by filterNavigationByPermissions
+  // Add dynamic badge for PR Reports
+  const navigationItems = sidebarRoutes.map((route) => ({
+    ...route,
+    icon: ICON_MAP[route.icon] || ICON_MAP.FileText, // Fallback icon
+    badge:
+      route.path === ROUTES.PR_REPORTS
+        ? prReportsCount > 0
+          ? prReportsCount.toString()
+          : "0"
+        : route.badge,
+  }));
 
   const isActiveRoute = useCallback(
     (href) => {
       const normalizedHref = normalizePath(href);
       const normalizedPathname = normalizePath(pathname);
 
-      // Special handling for PR Reports
-      if (normalizedHref === "/pr-reports-list") {
+      // Special handling for PR Reports - include view-pr routes
+      if (normalizedHref === ROUTES.PR_REPORTS) {
         return (
-          normalizedPathname === "/pr-reports-list" ||
-          normalizedPathname.startsWith("/view-pr")
+          normalizedPathname === ROUTES.PR_REPORTS ||
+          normalizedPathname.startsWith(ROUTES.VIEW_PR)
         );
       }
 
@@ -107,10 +80,10 @@ const Sidebar = () => {
 
   // Fetch PR reports count when user is available
   useEffect(() => {
-    if (user) {
+    if (isAuthReady && user) {
       fetchPRReportsCount();
     }
-  }, [user]);
+  }, [isAuthReady, user]);
 
   // Sync with global toggle events
   useEffect(() => {
@@ -189,25 +162,28 @@ const Sidebar = () => {
           <div className="self-stretch flex flex-col justify-start items-start gap-8">
             {/* Logo */}
             <div className="self-stretch flex flex-col justify-start items-center gap-2.5">
-              <Image
-                src="/guestpost-link.webp"
-                alt="GUESTPOSTLINKS"
-                width={202}
-                height={41}
-                className="object-contain"
-              />
+              <div className="w-[202px] h-[41px] relative">
+                <Image
+                  src={APP_CONFIG.logo}
+                  alt={APP_CONFIG.logoAlt}
+                  fill
+                  className="object-contain"
+                  priority
+                  sizes="202px"
+                />
+              </div>
             </div>
 
             {/* Navigation Items */}
             <div className="self-stretch flex flex-col justify-start items-start gap-2">
               {navigationItems?.map((item) => {
                 const Icon = item.icon;
-                const active = isActiveRoute(item.href);
+                const active = isActiveRoute(item.path);
 
                 return (
                   <Link
                     key={item.name}
-                    href={item.href}
+                    href={item.path}
                     onClick={() => setIsSidebarOpen(false)}
                     className={cn(
                       "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",

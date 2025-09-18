@@ -19,18 +19,13 @@ import Loading from "@/components/ui/loading";
 import ErrorMessage from "@/components/ui/error-message";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
-import {
-  EmailIcon,
-  LockIcon,
-  EyeCloseIcon,
-  ArrowRightIcon,
-} from "@/components/icon";
+import { EmailIcon, LockIcon, ArrowRightIcon } from "@/components/icon";
 import { useFormik } from "formik";
 import { isEmail } from "validator";
 import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { globalConstants } from "@/lib/constants/globalConstants";
+import { ERROR_MESSAGES } from "@/constants/index.js";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { Eye, EyeClosed } from "lucide-react";
 
@@ -80,7 +75,7 @@ const LoginForm = ({ searchParams }) => {
       case "auth/account-exists-with-different-credential":
         return "An account already exists with this email using a different sign-in method.";
       default:
-        return error.message || globalConstants?.SomethingWentWrong;
+        return error.message || ERROR_MESSAGES.SOMETHING_WENT_WRONG;
     }
   };
 
@@ -97,7 +92,7 @@ const LoginForm = ({ searchParams }) => {
     } else if (error.response?.data?.message) {
       return error.response.data.message;
     } else {
-      return error.message || globalConstants?.SomethingWentWrong;
+      return error.message || ERROR_MESSAGES.SOMETHING_WENT_WRONG;
     }
   };
 

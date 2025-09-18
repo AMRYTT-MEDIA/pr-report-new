@@ -1,10 +1,11 @@
 import React from "react";
+import { LOADING_MESSAGES, THEME } from "@/constants/index.js";
 
 const Loading = ({
   size = "md",
   className = "",
   color = "primary",
-  text = "",
+  text = LOADING_MESSAGES.DEFAULT,
   showText = false,
   textColor = "white",
   textPosition = "end", // "start", "end", "top", or "bottom"

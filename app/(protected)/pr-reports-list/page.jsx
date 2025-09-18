@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { DeleteDialog } from "@/components/view-reports";
 import { useAuth } from "@/lib/auth";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { canDeleteReports } from "@/lib/rbac";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import ShareDialog from "@/components/ShareDialog";
@@ -24,7 +25,8 @@ import Loading from "@/components/ui/loading";
 import CustomTooltip from "@/components/ui/custom-tooltip";
 
 export default function PRReportsList() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
+  const { isAuthReady } = useAuthReady();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -65,7 +67,7 @@ export default function PRReportsList() {
     }
 
     // Wait for auth to be ready
-    if (authLoading || !user) {
+    if (!isAuthReady || !user) {
       return;
     }
 
@@ -245,15 +247,15 @@ export default function PRReportsList() {
 
   // Fetch reports on mount and when dependencies change
   useEffect(() => {
-    if (!authLoading && user && !hasInitialFetch.current) {
+    if (isAuthReady && user && !hasInitialFetch.current) {
       hasInitialFetch.current = true;
       fetchReports();
     }
-  }, [authLoading, user]); // Only run when auth state changes
+  }, [isAuthReady, user]); // Only run when auth state changes
 
   // Separate effect for pagination/sorting changes
   useEffect(() => {
-    if (!authLoading && user && hasInitialFetch.current) {
+    if (isAuthReady && user && hasInitialFetch.current) {
       fetchReports();
     }
   }, [currentPage, pageSize, sortField, sortOrder]); // Only run when these specific values change
@@ -279,7 +281,7 @@ export default function PRReportsList() {
   }, [searchQuery, q]); // Added q to dependencies
 
   // Show loading while auth is initializing
-  if (authLoading || loading) {
+  if (!isAuthReady || loading) {
     return (
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
         <Loading
