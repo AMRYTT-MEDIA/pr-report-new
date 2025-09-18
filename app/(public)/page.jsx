@@ -1,51 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
+import { AuthGuard } from "@/components/AuthGuard";
+import { ROUTES } from "@/constants/index.js";
 import { useRouter } from "next/navigation";
-import { useAuth } from "@/lib/auth";
-import { getDefaultLandingPage } from "@/lib/rbac";
-import Loading from "@/components/ui/loading";
+import { useEffect } from "react";
 
 // Force dynamic rendering to prevent prerender errors
 export const dynamic = "force-dynamic";
 
 export default function HomePage() {
-  const { user, loading, initialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === "undefined") return;
+    // Redirect to login immediately since this is just a landing page
+    router.replace(ROUTES.LOGIN);
+  }, [router]);
 
-    // Wait for auth to initialize
-    if (!initialized) return;
-
-    // If user is logged in, redirect to role-based landing page
-    if (user) {
-      const landingPage = getDefaultLandingPage(user);
-      router.replace(landingPage);
-    } else {
-      // If no user, redirect to login
-      router.replace("/login");
-    }
-  }, [user, initialized, router]);
-
-  // Show minimal loading while determining redirect
-  if (!initialized || loading) {
-    return (
+  return (
+    <AuthGuard requireAuth={false}>
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loading
-          size="lg"
-          color="purple"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600 mx-auto"></div>
+        </div>
       </div>
-    );
-  }
-
-  // Don't render anything while redirecting
-  return null;
+    </AuthGuard>
+  );
 }

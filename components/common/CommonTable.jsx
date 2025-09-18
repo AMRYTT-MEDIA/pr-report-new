@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Edit, Trash2, Eye, MoreHorizontal } from "lucide-react";
 import Loading from "@/components/ui/loading";
+import { LOADING_MESSAGES } from "@/constants/index.js";
 import {
   Tooltip,
   TooltipContent,
@@ -101,7 +102,7 @@ const CommonTable = ({
               size="lg"
               color="purple"
               showText={true}
-              text="Loading..."
+              text={LOADING_MESSAGES.FETCHING_DATA}
             />
           </div>
         </div>

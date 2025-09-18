@@ -14,7 +14,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { getFirebaseAuth } from "./firebase";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { toast } from "sonner";
-import { globalConstants } from "./constants/globalConstants";
+import { ERROR_MESSAGES } from "../constants/index.js";
 
 // ** Defaults
 const defaultProvider = {
@@ -84,7 +84,7 @@ const AuthProvider = ({ children }) => {
           if (pathName !== "/login/") {
             toast.error(
               error?.response?.data?.message ||
-                globalConstants?.SomethingWentWrong
+                ERROR_MESSAGES.SOMETHING_WENT_WRONG
             );
           }
           setUser(null);

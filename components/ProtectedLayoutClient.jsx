@@ -1,15 +1,15 @@
 "use client";
 
-import { Guard } from "@/lib/client-guard";
+import { AuthGuard } from "@/components/AuthGuard";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { BreadcrumbProvider } from "@/contexts/BreadcrumbContext";
 
 export function ProtectedLayoutClient({ children }) {
   return (
-    <Guard mode="protected">
+    <AuthGuard requireAuth={true}>
       <BreadcrumbProvider>
         <LayoutWrapper>{children}</LayoutWrapper>
       </BreadcrumbProvider>
-    </Guard>
+    </AuthGuard>
   );
 }

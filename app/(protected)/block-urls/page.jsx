@@ -15,6 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useAuth } from "@/lib/auth";
+import { useAuthReady } from "@/hooks/useAuthReady";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
@@ -30,7 +31,8 @@ import {
 import WebsiteAvatar from "@/components/ui/website-avatar";
 
 export default function BlockURLsPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user } = useAuth();
+  const { isAuthReady } = useAuthReady();
   const [blockUrls, setBlockUrls] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,7 +69,7 @@ export default function BlockURLsPage() {
       return;
     }
 
-    if (authLoading || !user) {
+    if (!isAuthReady || !user) {
       return;
     }
 
@@ -322,16 +324,16 @@ export default function BlockURLsPage() {
 
   // Fetch data on mount and when dependencies change
   useEffect(() => {
-    if (!authLoading && user && !hasInitialFetch.current) {
+    if (isAuthReady && user && !hasInitialFetch.current) {
       hasInitialFetch.current = true;
       fetchBlockUrls();
     }
-  }, [authLoading, user]);
+  }, [isAuthReady, user]);
 
   useEffect(() => {
     const timeoutId = setTimeout(
       () => {
-        if (!authLoading && user && hasInitialFetch.current) {
+        if (isAuthReady && user && hasInitialFetch.current) {
           fetchBlockUrls();
         }
       },
