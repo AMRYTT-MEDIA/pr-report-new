@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Ban, X } from "lucide-react";
+import { Ban, Info, X } from "lucide-react";
 import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { blockUrlsService } from "@/services/blockUrls";
@@ -172,10 +172,10 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
             </div>
 
             {/* Divider */}
-            <div className="w-full h-px bg-slate-300"></div>
+            <div className="w-full border-b-2 border-dashed border-gray-scale-30"></div>
 
             {/* Input Section */}
-            <div className="space-y-2">
+            <div className="flex flex-col gap-2">
               <label className="block text-sm font-semibold text-slate-800">
                 Block Website URLs <span className="text-rose-600">*</span>
               </label>
@@ -195,8 +195,8 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
                 }`}
               />
               {formik.errors.websiteUrls && formik.touched.websiteUrls && (
-                <p className="text-red-500 text-xs mt-1">
-                  {formik.errors.websiteUrls}
+                <p className="text-danger-60 text-sm font-medium flex items-center gap-2">
+                  <Info className="w-4 h-4" /> {formik.errors.websiteUrls}
                 </p>
               )}
             </div>

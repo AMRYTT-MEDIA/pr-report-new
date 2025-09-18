@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Input } from "./ui/input";
 import LeftArrow from "./icon/LeftArrow";
 import RightArrow from "./icon/RightArrow";
 // import { useIsMobile } from "@/hooks/use-mobile";
@@ -230,7 +229,7 @@ const Pagination = ({
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center justify-between bg-white border border-gray-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-gray-700 focus:border-gray-400 hover:border-gray-400 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md"
+                className="flex items-center justify-between bg-white border border-gray-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-gray-700 focus:border-gray-400 hover:border-gray-400 transition-all duration-200 cursor-pointer"
               >
                 <span>{localRowsPerPage}</span>
                 <svg
@@ -277,12 +276,12 @@ const Pagination = ({
         {showGoToPage && (
           <div className="flex items-center gap-2">
             <p className="text-nowrap m-0">{goToPageLabel}</p>
-            <Input
+            <input
               placeholder="#"
               value={goToPage}
               onChange={(e) => setGoToPage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="text-center bg-white max-w-[50px] max-h-[40px] border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:border-gray-400 hover:border-gray-400 transition-all duration-200 cursor-pointer shadow-sm hover:shadow-md focus:outline-none focus:ring-0"
+              className="text-center bg-white max-w-[50px] max-h-[40px] border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-primary-50"
             />
           </div>
         )}
