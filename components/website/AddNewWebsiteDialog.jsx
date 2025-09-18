@@ -28,9 +28,7 @@ const AddNewWebsiteDialog = ({
     if (editWebsite) {
       return {
         websiteName: editWebsite.name || "",
-        websiteUrl: editWebsite.domain
-          ? editWebsite.domain.replace(/^https?:\/\//, "")
-          : "",
+        websiteUrl: editWebsite.url,
       };
     }
     return {
@@ -134,7 +132,7 @@ const AddNewWebsiteDialog = ({
             ...editWebsite,
             ...(response.data || response),
             name: values.websiteName.trim(),
-            domain: websiteUrl,
+            url: websiteUrl,
           };
 
           onEditWebsite(updatedWebsite);
