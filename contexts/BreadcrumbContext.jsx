@@ -46,10 +46,17 @@ export const useBreadcrumbDirect = (items) => {
     // Only run on client side
     if (typeof window === "undefined") return;
 
-    const itemsString = JSON.stringify(items);
-    if (itemsRef.current !== itemsString) {
-      itemsRef.current = itemsString;
-      setBreadcrumb(items);
+    // Ensure items is valid
+    if (!items || !Array.isArray(items)) return;
+
+    try {
+      const itemsString = JSON.stringify(items);
+      if (itemsRef.current !== itemsString) {
+        itemsRef.current = itemsString;
+        setBreadcrumb(items);
+      }
+    } catch (error) {
+      console.warn("Error setting breadcrumb:", error);
     }
   }, [setBreadcrumb, items]);
 };

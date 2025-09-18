@@ -107,7 +107,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
               {
                 label: "View Profile",
                 icon: User,
-                onClick: () => {},
+                onClick: () => router.push("/profile"),
               },
               {
                 label: "Settings",
