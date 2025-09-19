@@ -22,10 +22,9 @@ import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { websitesService } from "@/services/websites";
 import { toast } from "sonner";
-import Image from "next/image";
 import WebsiteConstants from "./constans";
 import { NoDataFound } from "../icon";
-import WebsiteAvatar from "../ui/website-avatar";
+import WebsiteIcon from "../ui/WebsiteIcon";
 
 // Simple checkbox component for this dialog
 const SimpleCheckbox = ({ checked, onChange, className = "" }) => {
@@ -700,20 +699,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                         </td>
                         <td className="px-6 py-[6px]">
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {website.logo ? (
-                              <Image
-                                src={websitesService.getLogoUrl(website.logo)}
-                                alt={website.name}
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
-                            ) : (
-                              <WebsiteAvatar
-                                websiteName={website?.name || "-"}
-                                size="default"
-                              />
-                            )}
+                            <WebsiteIcon
+                              logoFilename={website.logo}
+                              websiteName={website?.name || "-"}
+                              size="default"
+                              alt={website.name}
+                            />
                           </div>
                         </td>
                         <td className="px-6 py-[6px]">

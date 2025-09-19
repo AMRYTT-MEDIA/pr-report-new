@@ -84,12 +84,4 @@ export const blockUrlsService = {
       throw error;
     }
   },
-
-    // Get logo URL
-  getLogoUrl: (filename) => {
-    if (filename.startsWith('logo/')) {
-      return `${process.env.NEXT_PUBLIC_API_URL}/${filename}`;
-    }
-    return `${process.env.NEXT_PUBLIC_API_URL}/logo/${filename}`;
-  }
 };

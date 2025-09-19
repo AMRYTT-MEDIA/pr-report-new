@@ -24,9 +24,9 @@ import { toast } from "sonner";
 import { websitesService } from "@/services/websites";
 import { useAuth } from "@/lib/auth";
 import { canManageWebsite } from "@/lib/rbac";
-import Image from "next/image";
 import { NoDataFound } from "@/components/icon";
 import WebsiteConstants from "@/components/website/constans";
+import WebsiteIcon from "../ui/WebsiteIcon";
 
 const WebsiteTableClient = ({
   initialWebsites = [],
@@ -160,7 +160,8 @@ const WebsiteTableClient = ({
     setIsDeleting(true);
     try {
       await websitesService.deleteWebsite(
-        websiteToDelete._id || websiteToDelete.id
+        websiteToDelete._id || websiteToDelete.id,
+        websiteToDelete.logo // Pass logo filename for deletion
       );
 
       refreshData();
@@ -383,22 +384,12 @@ const WebsiteTableClient = ({
                           </p>
                         </td>
                         <td className="px-6 py-3">
-                          <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {website.logo ? (
-                              <Image
-                                src={websitesService.getLogoUrl(website.logo)}
-                                alt={website.name}
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
-                            ) : (
-                              <WebsiteAvatar
-                                websiteName={website.name}
-                                size="default"
-                              />
-                            )}
-                          </div>
+                          <WebsiteIcon
+                            logoFilename={website.logo}
+                            websiteName={website.name}
+                            size="default"
+                            alt={website.name}
+                          />
                         </td>
                         <td className="px-6 py-3">
                           {needsTruncation(website.name, "name") ? (
