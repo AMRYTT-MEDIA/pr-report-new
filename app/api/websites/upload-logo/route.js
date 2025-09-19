@@ -28,7 +28,7 @@ export async function POST(request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     
     // Create website-logos directory if it doesn't exist
-    const logoDir = path.join(process.cwd(), 'public/websites-logos');
+    const logoDir = path.join(os.tmpdir(), 'websites-logos');
     if (!existsSync(logoDir)) {
       await mkdir(logoDir, { recursive: true });
     }
