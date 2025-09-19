@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from 'next/server';
 import { writeFile, mkdir, unlink } from 'fs/promises';
 import path from 'path';
 import { existsSync } from 'fs';
-import os from "os";
 
 export async function POST(request) {
   try {
@@ -29,7 +28,7 @@ export async function POST(request) {
     const buffer = Buffer.from(await file.arrayBuffer());
     
     // Create website-logos directory if it doesn't exist
-    const logoDir = path.join(os.tmpdir(), 'websites-logos');
+    const logoDir = path.join(process.cwd(), 'public/websites-logos');
     if (!existsSync(logoDir)) {
       await mkdir(logoDir, { recursive: true });
     }

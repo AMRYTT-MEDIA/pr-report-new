@@ -242,11 +242,8 @@ const PRReportViewer = ({
             PDFComponents={pdfRenderer}
           />
         ).toBlob();
-        downloadFile(
-          pdfBlob,
-          `PR_Report_${report.id || "report"}.pdf`,
-          "application/pdf"
-        );
+        const filename = (report.title || "PR_Report").replace(/\s+/g, "_");
+        downloadFile(pdfBlob, `${filename}.pdf`, "application/pdf");
         toast.success("PDF download completed");
       } catch (error) {
         console.error("PDF generation failed:", error);
@@ -257,7 +254,8 @@ const PRReportViewer = ({
     } else if (format === "csv") {
       // Generate CSV content
       const csvContent = generateCSVContent(report);
-      downloadFile(csvContent, `PR_Report_${csvContent}.csv`, "text/csv");
+      const filename = (report.title || "PR_Report").replace(/\s+/g, "_");
+      downloadFile(csvContent, `${filename}.csv`, "text/csv");
       toast.success("CSV download completed");
     }
   };
