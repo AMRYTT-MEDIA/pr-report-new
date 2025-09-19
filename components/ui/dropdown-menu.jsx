@@ -20,14 +20,16 @@ export default function DropdownMenu({
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-        onOpenChange?.(false);
+        closeWithAnimation();
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onOpenChange]);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [isOpen]);
 
   const closeWithAnimation = () => {
     setIsOpen(false);
@@ -36,7 +38,8 @@ export default function DropdownMenu({
     window.setTimeout(() => setIsVisible(false), 150);
   };
 
-  const handleToggle = () => {
+  const handleToggle = (event) => {
+    event.stopPropagation();
     if (!isOpen) {
       setIsVisible(true);
       // Allow next tick so transition applies

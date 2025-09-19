@@ -284,7 +284,6 @@ export default function PRReportsList() {
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
         <Loading
           size="lg"
-          color="purple"
           showText={true}
           text="Loading..."
           textColor="black"
@@ -315,7 +314,7 @@ export default function PRReportsList() {
             </div>
             <Button
               onClick={() => setImportDialogOpen(true)}
-              className="text-white px-6 py-3 flex items-center gap-2 bg-primary-50 rounded-3xl"
+              className="text-white px-6 py-3 flex items-center gap-2 bg-primary-50 rounded-3xl hover:bg-primary-60"
             >
               <ImportIcon color="#fff" width={20} height={20} />
               <span className="hidden sm:inline">Import</span>
@@ -328,13 +327,13 @@ export default function PRReportsList() {
               <table className="w-full divide-y divide-gray-200 table-auto">
                 <thead className="bg-gray-50 w-full">
                   <tr className="w-full ">
-                    <th className="px-6 py-4 text-left text-sm font-semibold w-[60%] min-w-[220px]">
+                    <th className="px-6 py-4 text-left text-sm font-semibold w-[60%] min-w-[220px] whitespace-nowrap">
                       Full Name
                     </th>
-                    <th className="px-6 py-4 text-left text-sm font-semibold w-[20%]">
+                    <th className="px-6 py-4 text-left text-sm font-semibold w-[20%] whitespace-nowrap">
                       Created by
                     </th>
-                    <th className="px-6 py-3  whitespace-nowrap text-sm font-semibold text-left w-[15%]">
+                    <th className="px-6 py-3 text-sm font-semibold text-left w-[15%] whitespace-nowrap">
                       Actions
                     </th>
                   </tr>
@@ -499,7 +498,7 @@ export default function PRReportsList() {
               </table>
             </div>
             {reports?.length === 0 && (
-              <div className="flex items-center justify-center h-full min-h-[368px] 2xl:min-h-[368px] 3xl:min-h-[580px] w-full border-t border-gray-200">
+              <div className="flex items-center justify-center h-full min-h-[calc(100dvh-206px)] lg:min-h-[calc(100dvh-214px)]  w-full border-t border-gray-200">
                 <div className="flex flex-col items-center justify-center gap-2">
                   <NoDataFound />
                   <p className="text-gray-scale-80 text-sm font-semibold">
@@ -511,13 +510,15 @@ export default function PRReportsList() {
           </div>
 
           {/* Pagination */}
-          <Pagination
-            totalItems={totalCount}
-            currentPage={currentPage}
-            rowsPerPage={pageSize}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handlePageSizeChange}
-          />
+          {reports?.length > 0 && (
+            <Pagination
+              totalItems={totalCount}
+              currentPage={currentPage}
+              rowsPerPage={pageSize}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handlePageSizeChange}
+            />
+          )}
         </div>
 
         {/* Share Dialog */}

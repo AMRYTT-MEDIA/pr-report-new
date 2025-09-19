@@ -10,12 +10,12 @@ const nextConfig = {
   // Output configuration for deployment
   // output: "standalone",
   output: "standalone", // ✅ Important for Dokploy/Docker
-  reactStrictMode: true,
-  swcMinify: true,
+  // reactStrictMode: true,
+  // swcMinify: true,
 
-  images: {
-    remotePatterns: [{ protocol: "https", hostname: "**" }],
-  },
+  // images: {
+  //   remotePatterns: [{ protocol: "https", hostname: "**" }],
+  // },
 
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
