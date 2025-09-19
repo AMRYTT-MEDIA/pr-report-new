@@ -67,7 +67,7 @@ const WebsiteIcon = ({
         } ${containerClassName}`}
       >
         <Image
-          src={`/api/websites/getlogos/${logoFilename}`}
+          src={logoUrl}
           alt={alt || websiteName || "Website logo"}
           width={currentSize.width}
           height={currentSize.height}
