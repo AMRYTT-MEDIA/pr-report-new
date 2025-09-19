@@ -12,6 +12,7 @@ import validator from "validator";
 import * as Yup from "yup";
 import WebsiteConstants from "./constans";
 import { websitesService } from "@/services/websites";
+import { getLogoUrl } from "@/lib/utils";
 
 const AddNewWebsiteDialog = ({
   onWebsiteAdded,
@@ -22,6 +23,7 @@ const AddNewWebsiteDialog = ({
 }) => {
   const [iconPreview, setIconPreview] = useState(null);
   const [websiteIcon, setWebsiteIcon] = useState(null);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
 
   // Get initial form values
   const getInitialValues = () => {
@@ -112,6 +114,7 @@ const AddNewWebsiteDialog = ({
     }),
     onSubmit: async (values) => {
       try {
+        setIsUploadingLogo(true);
         // Use URL as entered by user
         const websiteUrl = values.websiteUrl;
 
@@ -123,6 +126,11 @@ const AddNewWebsiteDialog = ({
 
         if (editWebsite) {
           // Edit mode - update existing website
+          // Add existing logo info for replacement
+          if (editWebsite.logo) {
+            websiteData.existingLogo = editWebsite.logo;
+          }
+
           const response = await websitesService.updateWebsite(
             editWebsite._id || editWebsite.id,
             websiteData
@@ -148,12 +156,27 @@ const AddNewWebsiteDialog = ({
 
         handleClose();
       } catch (error) {
-        const errorMessage =
-          error?.response.data.message ||
-          (editWebsite
-            ? WebsiteConstants.updateWebsiteError
-            : WebsiteConstants.addWebsiteError);
+        console.error(
+          error.message ||
+            error.response.data.message ||
+            "Website creation/update error:",
+          error
+        );
+
+        let errorMessage = editWebsite
+          ? WebsiteConstants.updateWebsiteError
+          : WebsiteConstants.addWebsiteError;
+
+        // More specific error messages
+        if (error?.message) {
+          errorMessage = error.message;
+        } else if (error?.response?.data?.message) {
+          errorMessage = error.response.data.message;
+        }
+
         toast.error(errorMessage);
+      } finally {
+        setIsUploadingLogo(false);
       }
     },
     enableReinitialize: true,
@@ -165,7 +188,7 @@ const AddNewWebsiteDialog = ({
       if (editWebsite) {
         // Set icon preview for edit mode
         if (editWebsite.logo) {
-          setIconPreview(websitesService.getLogoUrl(editWebsite.logo));
+          setIconPreview(getLogoUrl(editWebsite.logo));
         } else {
           setIconPreview(editWebsite.icon || null);
         }
@@ -196,6 +219,7 @@ const AddNewWebsiteDialog = ({
 
       // Validate file size (max 10MB)
       if (file.size > 10 * 1024 * 1024) {
+        console.error("File too large:", file.size);
         toast.error(WebsiteConstants.fileSizeError);
         return;
       }
@@ -214,7 +238,7 @@ const AddNewWebsiteDialog = ({
     // Reset to original icon when removing uploaded file
     if (editWebsite) {
       if (editWebsite.logo) {
-        setIconPreview(websitesService.getLogoUrl(editWebsite.logo));
+        setIconPreview(getLogoUrl(editWebsite.logo));
       } else {
         setIconPreview(editWebsite.icon || null);
       }
@@ -232,6 +256,7 @@ const AddNewWebsiteDialog = ({
 
     setIconPreview(null);
     setWebsiteIcon(null);
+    setIsUploadingLogo(false);
     formik.resetForm();
     onClose();
   };
@@ -405,6 +430,7 @@ const AddNewWebsiteDialog = ({
               type="submit"
               disabled={
                 formik.isSubmitting ||
+                isUploadingLogo ||
                 !formik.isValid ||
                 (!formik.dirty && !websiteIcon) ||
                 (editWebsite && !formik.dirty && !websiteIcon)
@@ -412,7 +438,9 @@ const AddNewWebsiteDialog = ({
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
-              {formik.isSubmitting
+              {isUploadingLogo
+                ? "Uploading..."
+                : formik.isSubmitting
                 ? WebsiteConstants.saving
                 : WebsiteConstants.save}
             </Button>

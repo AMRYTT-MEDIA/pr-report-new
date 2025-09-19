@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
-import WebsiteAvatar from "@/components/ui/website-avatar";
+import WebsiteIcon from "@/components/ui/WebsiteIcon";
 import {
   Search,
   Eye,
@@ -28,7 +28,6 @@ import {
 import { toast } from "sonner";
 // Dynamic import will be used in handleDownload function
 import React from "react";
-import Image from "next/image";
 import { prReportsService } from "@/services/prReports";
 import { viewReportsService } from "@/services/viewReports";
 import PRReportPDF from "./PRReportPDF";
@@ -38,6 +37,7 @@ import ShareDialog from "./ShareDialog";
 import AddUpdateWebsite from "./view-reports/AddUpdateWebsite";
 import CustomTooltip from "./ui/custom-tooltip";
 import { DeleteDialog } from "./view-reports";
+import { getLogoUrl } from "@/lib/utils";
 
 const PRReportViewer = ({
   report,
@@ -185,13 +185,21 @@ const PRReportViewer = ({
         // Convert logo images to base64 for PDF generation
         const outletsWithBase64Logos = await Promise.allSettled(
           (formatData || report.outlets || []).map(async (outlet) => {
-            // Check if outlet has logo from API
             if (outlet.logo) {
               try {
-                // Build the logo URL from API
-                const logoUrl = outlet.logo.startsWith("logo/")
-                  ? `${process.env.NEXT_PUBLIC_API_URL}/${outlet.logo}`
-                  : `${process.env.NEXT_PUBLIC_API_URL}/logo/${outlet.logo}`;
+                let logoUrl;
+                const localLogoPath = `${process.env.NEXT_PUBLIC_FRONTEND_URL}${outlet.logo}`;
+                try {
+                  // Try to fetch from local folder first
+                  const response = await fetch(localLogoPath);
+                  if (response.ok) {
+                    logoUrl = localLogoPath;
+                  } else {
+                    throw new Error("Local logo not found");
+                  }
+                } catch (localError) {
+                  logoUrl = getLogoUrl(outlet.logo);
+                }
 
                 const base64Logo = await convertImageToBase64(logoUrl);
                 return {
@@ -570,15 +578,6 @@ const PRReportViewer = ({
     );
   }
 
-  // Get logo URL
-  const getLogoUrl = (filename) => {
-    if (filename.startsWith("logo/")) {
-      return `${process.env.NEXT_PUBLIC_API_URL}/${filename}`;
-    }
-    // If filename doesn't have logo/ prefix, add it
-    return `${process.env.NEXT_PUBLIC_API_URL}/logo/${filename}`;
-  };
-
   return (
     <div className="">
       {/* Summary Stats */}
@@ -791,20 +790,12 @@ const PRReportViewer = ({
                       <TableRow key={index}>
                         <TableCell className="flex items-center gap-3 min-w-[200px]">
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {outlet.logo ? (
-                              <Image
-                                src={getLogoUrl(outlet.logo)}
-                                alt={outlet.website_name || "Media outlet logo"}
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
-                            ) : (
-                              <WebsiteAvatar
-                                websiteName={outletWithId.website_name}
-                                size="default"
-                              />
-                            )}
+                            <WebsiteIcon
+                              logoFilename={outlet.logo}
+                              websiteName={outletWithId.website_name}
+                              size="default"
+                              alt={outlet.website_name || "Media outlet logo"}
+                            />
                           </div>
                         </TableCell>
 

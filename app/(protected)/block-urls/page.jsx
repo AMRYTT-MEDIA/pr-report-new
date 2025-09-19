@@ -20,14 +20,14 @@ import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
 import { NoDataFound } from "@/components/icon";
 import CustomTooltip from "@/components/ui/custom-tooltip";
-import Image from "next/image";
+
 import { blockUrlsService } from "@/services/blockUrls";
 import {
   BlockUrlDialog,
   StatusToggleDialog,
   BlockUrlDeleteDialog,
 } from "@/components/block-urls";
-import WebsiteAvatar from "@/components/ui/website-avatar";
+import WebsiteIcon from "@/components/ui/WebsiteIcon";
 
 export default function BlockURLsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -515,24 +515,14 @@ export default function BlockURLsPage() {
                         </TableCell>
                         <TableCell>
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            {url?.website_id?.logo ? (
-                              <Image
-                                src={blockUrlsService.getLogoUrl(
-                                  url?.website_id?.logo
-                                )}
-                                alt={url?.website_id?.logo}
-                                width={138}
-                                height={38}
-                                className="max-w-[120px] sm:max-w-[137px] max-h-[38px] object-contain w-full h-full"
-                              />
-                            ) : (
-                              <WebsiteAvatar
-                                websiteName={
-                                  url?.website_id?.name || url?.domain || "-"
-                                }
-                                size="default"
-                              />
-                            )}
+                            <WebsiteIcon
+                              logoFilename={url?.website_id?.logo}
+                              websiteName={
+                                url?.website_id?.name || url?.domain || "-"
+                              }
+                              size="default"
+                              alt={url?.website_id?.name || url?.domain}
+                            />
                           </div>
                         </TableCell>
                         <TableCell>

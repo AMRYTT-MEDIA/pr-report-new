@@ -1,5 +1,6 @@
 import React from "react";
 import { PublicationsIcon, ReachIcon, StatusPdfIcon } from "./icon";
+import { getLogoUrl } from "@/lib/utils";
 
 // PDF component that expects PDF components to be passed as props
 const PRReportPDF = ({ report, formatData, PDFComponents }) => {
@@ -209,21 +210,6 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
     }
   };
 
-  // Get logo URL from API or return null for fallback
-  const getLogoUrl = (outlet) => {
-    // Check if outlet has logo from API
-    if (outlet && outlet.logo) {
-      // If logo starts with "logo/" prefix, construct full URL
-      if (outlet.logo.startsWith("logo/")) {
-        return `${process.env.NEXT_PUBLIC_API_URL}/${outlet.logo}`;
-      }
-      // If logo doesn't have prefix, add it
-      return `${process.env.NEXT_PUBLIC_API_URL}/logo/${outlet.logo}`;
-    }
-
-    // No logo available, return null to show fallback
-    return null;
-  };
   // Prevent row splitting
   const Row = ({ children, style, idx }) => (
     <View
@@ -336,7 +322,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
           {/* Table Body */}
           {outlets.map((outlet, idx) => {
             // Check for base64Logo first (from PDF generation), then API logo
-            const logoUrl = outlet.base64Logo || getLogoUrl(outlet);
+            const logoUrl = outlet.base64Logo || getLogoUrl(outlet.logo);
 
             const firstChar = (outlet.website_name || "?")
               .charAt(0)
