@@ -9,7 +9,6 @@ import GlobalRouteGuard from "./GlobalRouteGuard";
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
   const { breadcrumbItems } = useBreadcrumb();
-  console.log(pathname);
   const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (

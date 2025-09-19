@@ -15,6 +15,7 @@ export const PasswordField = ({
   required = false,
   disabled = false,
   className = "",
+  autoComplete = "off",
   ...props
 }) => {
   const [showPassword, setShowPassword] = useState(false);
@@ -32,6 +33,9 @@ export const PasswordField = ({
       required={required}
       disabled={disabled}
       className={className}
+      autoComplete={autoComplete}
+      autoSave="off"
+      data-form-type="other"
       rightElement={
         <button
           type="button"

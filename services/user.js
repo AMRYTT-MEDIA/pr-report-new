@@ -88,4 +88,42 @@ export const userService = {
       throw error;
     }
   },
+
+  // Update user profile
+  updateProfile: async (profileData) => {
+    try {
+      const requestBody = {};
+
+      // Add text fields
+      if (profileData.fullName) {
+        requestBody.fullName = profileData.fullName;
+      }
+
+      // Add password fields if provided
+      if (profileData.currentPassword) {
+        requestBody.oldPassword = profileData.currentPassword;
+      }
+      if (profileData.newPassword) {
+        requestBody.newPassword = profileData.newPassword;
+      }
+      if (profileData.confirmPassword) {
+        requestBody.confirmPassword = profileData.confirmPassword;
+      }
+
+      // Add avatar filename if provided
+      if (profileData.avatar) {
+        if (profileData.avatar instanceof File) {
+          requestBody.avatar = profileData.avatar.name;
+        } else if (typeof profileData.avatar === "string") {
+          requestBody.avatar = profileData.avatar;
+        }
+      }
+
+      const response = await apiPut("/auth/profile/update", requestBody);
+      return response;
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      throw error;
+    }
+  },
 };
