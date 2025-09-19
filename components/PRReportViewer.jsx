@@ -37,6 +37,7 @@ import ShareDialog from "./ShareDialog";
 import AddUpdateWebsite from "./view-reports/AddUpdateWebsite";
 import CustomTooltip from "./ui/custom-tooltip";
 import { DeleteDialog } from "./view-reports";
+import { getLogoUrl } from "@/lib/utils";
 
 const PRReportViewer = ({
   report,
@@ -184,13 +185,21 @@ const PRReportViewer = ({
         // Convert logo images to base64 for PDF generation
         const outletsWithBase64Logos = await Promise.allSettled(
           (formatData || report.outlets || []).map(async (outlet) => {
-            // Check if outlet has logo from API
             if (outlet.logo) {
               try {
-                // Build the logo URL from API
-                const logoUrl = outlet.logo.startsWith("logo/")
-                  ? `${process.env.NEXT_PUBLIC_API_URL}/${outlet.logo}`
-                  : `${process.env.NEXT_PUBLIC_API_URL}/logo/${outlet.logo}`;
+                let logoUrl;
+                const localLogoPath = `${process.env.NEXT_PUBLIC_FRONTEND_URL}${outlet.logo}`;
+                try {
+                  // Try to fetch from local folder first
+                  const response = await fetch(localLogoPath);
+                  if (response.ok) {
+                    logoUrl = localLogoPath;
+                  } else {
+                    throw new Error("Local logo not found");
+                  }
+                } catch (localError) {
+                  logoUrl = getLogoUrl(outlet.logo);
+                }
 
                 const base64Logo = await convertImageToBase64(logoUrl);
                 return {
