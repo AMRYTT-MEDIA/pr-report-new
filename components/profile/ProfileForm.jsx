@@ -156,7 +156,7 @@ export const ProfileForm = ({ className = "" }) => {
   }, [formik, router]);
 
   return (
-    <div className={cn("bg-white", className)}>
+    <div className={cn("", className)}>
       <FormikProvider value={formik}>
         <form
           onSubmit={formik.handleSubmit}
@@ -165,9 +165,9 @@ export const ProfileForm = ({ className = "" }) => {
           data-lpignore="true"
         >
           {/* Single Unified Responsive Layout */}
-          <div className="bg-slate-50 md:bg-white min-h-screen md:min-h-0">
+          <div>
             {/* Main Container */}
-            <div className="bg-neutral-50 md:bg-transparent px-4 md:px-8  lg:mx-auto py-5 md:py-4 lg:py-6">
+            <div className="bg-transparent px-4 md:px-8  lg:mx-auto py-5 md:py-4 lg:py-6">
               <div className="md:flex md:gap-8">
                 {/* Title & Description */}
                 <div className="md:w-[204px] md:flex-shrink-0 mb-6 md:mb-0">
