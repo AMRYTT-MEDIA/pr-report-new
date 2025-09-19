@@ -13,13 +13,6 @@ const nextConfig = {
   // reactStrictMode: true,
   // swcMinify: true,
 
-  // Ensure static files are properly served in standalone mode
-  experimental: {
-    outputFileTracingIncludes: {
-      '/': ['./public/**/*'],
-    },
-  },
-
   // images: {
   //   remotePatterns: [{ protocol: "https", hostname: "**" }],
   // },
