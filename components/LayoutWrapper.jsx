@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Sidebar from "./Sidebar";
 import NavBar from "./NavBar";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
@@ -9,7 +9,6 @@ import GlobalRouteGuard from "./GlobalRouteGuard";
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
   const { breadcrumbItems } = useBreadcrumb();
-
   const isPRPage = pathname.includes("/report") || pathname.includes("/login");
 
   return (
@@ -25,7 +24,7 @@ const LayoutWrapper = ({ children }) => {
 
           {/* Page Content */}
           <main>
-            <div className="m-[10px] sm:m-[15px]">{children}</div>
+            <div className={"m-[10px] sm:m-[15px]"}>{children}</div>
           </main>
         </div>
       </div>
