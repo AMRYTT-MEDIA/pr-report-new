@@ -301,7 +301,10 @@ const WebsiteTableClient = ({
 
           {/* Table Section */}
           <div className="overflow-x-auto">
-            <div className="max-h-[calc(100dvh-340px)] sm:max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom">
+            <div
+              className="max-h-[calc(100dvh-340px)] sm:max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom"
+              style={loading ? { paddingRight: "10px" } : {}}
+            >
               <table className="w-full divide-y divide-slate-200 table-auto">
                 <thead className="bg-slate-50 w-full sticky top-0 z-10">
                   <tr className="w-full">
@@ -311,14 +314,14 @@ const WebsiteTableClient = ({
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[15%] whitespace-nowrap">
                       {WebsiteConstants.websiteIcon}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[25%] whitespace-nowrap">
                       {WebsiteConstants.websiteName}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 flex-1 whitespace-nowrap">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[40%] whitespace-nowrap">
                       {WebsiteConstants.websiteUrl}
                     </th>
                     {canManageWebsite(user) && (
-                      <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[15%] whitespace-nowrap">
+                      <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[10%] whitespace-nowrap">
                         {WebsiteConstants.actions}
                       </th>
                     )}
@@ -492,7 +495,7 @@ const WebsiteTableClient = ({
           </div>
 
           {/* Pagination */}
-          {filteredWebsites?.length > 0 && !loading && (
+          {filteredWebsites?.length > 0 && (
             <Pagination
               totalItems={totalCount}
               currentPage={currentPage}

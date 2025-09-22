@@ -86,7 +86,7 @@ const WebsiteIcon = ({
 
   // Fallback to WebsiteAvatar if no logo
   return (
-    <div className={`${containerClassName}`}>
+    <div className={`${containerClassName} flex items-center justify-center`}>
       <WebsiteAvatar
         websiteName={websiteName}
         size={size === "custom" ? "default" : size}
