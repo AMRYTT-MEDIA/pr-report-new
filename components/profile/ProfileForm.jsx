@@ -6,7 +6,7 @@ import { useFormik, FormikProvider } from "formik";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { FormField, PasswordField, FileUploadField } from "@/components/forms";
-import { Save, X } from "lucide-react";
+import { PencilLine, Save, X } from "lucide-react";
 import {
   profileValidationSchema,
   getProfileInitialValues,
@@ -17,6 +17,8 @@ import { useAuth } from "@/lib/auth";
 import { userService } from "@/services/user";
 import { toast } from "sonner";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
+import Loading from "../ui/loading";
+import AvatarSelectionPopup from "./AvatarSelectionPopup";
 
 /**
  * Optimized Profile Form Component using Formik and Yup
@@ -26,6 +28,7 @@ export const ProfileForm = ({ className = "" }) => {
   const router = useRouter();
   const { user, setUser, logout } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
+  const [isAvatarPopupOpen, setIsAvatarPopupOpen] = useState(false);
 
   // Set breadcrumb for this page
   useBreadcrumbDirect([{ name: "Profile", href: "/profile", current: true }]);
@@ -155,6 +158,19 @@ export const ProfileForm = ({ className = "" }) => {
     router.back(); // Navigate to the previous page
   }, [formik, router]);
 
+  // Avatar selection handler
+  const handleAvatarSelect = useCallback(
+    (selectedAvatar) => {
+      formik.setFieldValue("avatar", selectedAvatar);
+    },
+    [formik]
+  );
+
+  // Handle delete picture - show default avatar
+  const handleDeletePicture = useCallback(() => {
+    formik.setFieldValue("avatar", null);
+  }, [formik]);
+
   return (
     <div className={cn("", className)}>
       <FormikProvider value={formik}>
@@ -164,145 +180,169 @@ export const ProfileForm = ({ className = "" }) => {
           noValidate
           data-lpignore="true"
         >
-          {/* Single Unified Responsive Layout */}
-          <div>
-            {/* Main Container */}
-            <div className="bg-transparent px-4 md:px-8  lg:mx-auto py-5 md:py-4 lg:py-6">
-              <div className="md:flex md:gap-8">
-                {/* Title & Description */}
-                <div className="md:w-[204px] md:flex-shrink-0 mb-6 md:mb-0">
-                  <h1 className="text-sm font-semibold text-slate-700 leading-5">
-                    Personal info
-                  </h1>
-                  <p className="text-sm font-normal text-slate-500 leading-5 mt-1">
-                    Update your personal details.
-                  </p>
-                </div>
-
-                {/* Form Card */}
-                <div className="md:flex-1">
-                  <Card className="bg-white rounded-xl shadow-[0px_1px_3px_0px_rgba(10,13,18,0.1),0px_1px_2px_0px_rgba(10,13,18,0.06)] md:shadow-[0px_0px_20px_0px_rgba(10,13,18,0.05)] border-0">
-                    <CardContent className="p-4 md:p-6">
-                      <div className="space-y-6">
-                        {/* Status Message */}
-                        {formik.status && (
-                          <div className="p-4 rounded-lg bg-red-50 border border-red-200">
-                            <p className="text-sm text-red-600">
-                              {formik.status}
-                            </p>
-                          </div>
-                        )}
-
-                        {/* Avatar Upload - Different order on mobile vs desktop */}
-                        <div className="md:order-1 order-5">
-                          <div className="md:block hidden">
-                            <FileUploadField
-                              name="avatar"
-                              currentImage={user?.avatar || null}
-                              fallbackText={
-                                (formik.values?.fullName || user?.fullName)
+          {/* Main Container */}
+          <div className="">
+            <div className="flex gap-4 max-w-7xl mx-auto flex-col md:flex-row">
+              {/* Left Avatar Panel */}
+              <div className="w-full md:w-[296px] flex-shrink-0">
+                <Card className="bg-white rounded-xl border border-slate-200 h-fit">
+                  <CardContent className="p-5">
+                    <div className="flex flex-col items-center space-y-6">
+                      {/* Avatar Section */}
+                      <div className="flex flex-col items-center space-y-5">
+                        <div className="relative">
+                          <div className="w-[110px] h-[110px] rounded-full overflow-hidden bg-slate-100">
+                            {user?.avatar ? (
+                              <img
+                                src={user.avatar}
+                                alt="Profile"
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 text-2xl font-semibold">
+                                {(formik.values?.fullName || user?.fullName)
                                   ?.charAt(0)
-                                  ?.toUpperCase() || "U"
-                              }
-                            />
-                          </div>
-
-                          {/* Mobile Avatar Section */}
-                          <div className="md:hidden block">
-                            <div className="flex items-center gap-5">
-                              <div className="flex-1">
-                                <FileUploadField
-                                  name="avatar"
-                                  currentImage={user?.avatar || null}
-                                  fallbackText={
-                                    (formik.values?.fullName || user?.fullName)
-                                      ?.charAt(0)
-                                      ?.toUpperCase() || "U"
-                                  }
-                                />
+                                  ?.toUpperCase() || "U"}
                               </div>
-                            </div>
+                            )}
                           </div>
+                          {/* Edit Button */}
+                          <button
+                            type="button"
+                            className="absolute bottom-1 right-0 w-8 h-8 bg-indigo-500 rounded-full flex items-center justify-center hover:bg-indigo-600 transition-colors"
+                            onClick={() => setIsAvatarPopupOpen(true)}
+                          >
+                            <PencilLine className="w-4 h-4 text-white" />
+                          </button>
                         </div>
 
-                        {/* Form Fields */}
-                        <div className="space-y-4 md:space-y-4 md:order-2 order-1">
-                          {/* User Name Field */}
+                        {/* Delete Picture Button */}
+                        <button
+                          type="button"
+                          className="bg-blue-50 text-slate-700 px-3 py-2 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors"
+                          onClick={handleDeletePicture}
+                        >
+                          Delete Picture
+                        </button>
+                      </div>
+
+                      {/* Divider */}
+                      <div className="w-full h-px bg-slate-200"></div>
+
+                      {/* User Info Display */}
+                      <div className="w-full space-y-5">
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-slate-800">
+                            User Name
+                          </p>
+                          <p className="text-base text-slate-500">
+                            {formik.values?.fullName || user?.fullName || "N/A"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-slate-800">
+                            Email Address
+                          </p>
+                          <p className="text-base text-slate-500">
+                            {formik.values?.email || user?.email || "N/A"}
+                          </p>
+                        </div>
+
+                        <div className="space-y-1">
+                          <p className="text-sm font-medium text-slate-800">
+                            User Role
+                          </p>
+                          <p className="text-base text-slate-500">
+                            {formik.values?.role || user?.role || "N/A"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Right Form Panel */}
+              <div className="flex-1">
+                <Card className="bg-white rounded-xl border border-slate-200">
+                  <CardContent className="p-6 max-h-auto md:max-h-[calc(100vh-74px)] overflow-y-auto scrollbar-custom">
+                    <div className="space-y-6">
+                      {/* Form Header */}
+                      <div>
+                        <h2 className="text-xl font-semibold text-slate-800">
+                          Edit Profile
+                        </h2>
+                        <div className="w-full h-px bg-slate-200 mt-6"></div>
+                      </div>
+
+                      {/* Status Message */}
+                      {formik.status && (
+                        <div className="p-4 rounded-lg bg-red-50 border border-red-200">
+                          <p className="text-sm text-red-600">
+                            {formik.status}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Form Fields */}
+                      <div className="space-y-6">
+                        {/* User Name Field */}
+                        <div className="space-y-2">
+                          <FormField
+                            name="fullName"
+                            label="User Name"
+                            placeholder="Enter your full name"
+                            required
+                          />
+                        </div>
+
+                        {/* Password Fields */}
+                        <div className="space-y-6">
+                          {/* Current Password */}
                           <div className="space-y-2">
-                            <FormField
-                              name="fullName"
-                              label="User Name"
-                              placeholder="Enter your full name"
+                            <PasswordField
+                              name="currentPassword"
+                              label="Current Password"
+                              placeholder="Enter current password"
                               required
+                              autoComplete="current-password"
                             />
                           </div>
 
-                          {/* User Role Field */}
+                          {/* New Password */}
                           <div className="space-y-2">
-                            <FormField
-                              name="role"
-                              label="User Role"
-                              disabled
-                              className="bg-slate-50"
-                            />
-                          </div>
-
-                          {/* Email Field */}
-                          <div className="space-y-2">
-                            <FormField
-                              name="email"
-                              label="Email Address"
-                              type="email"
-                              disabled
-                              className="bg-slate-50"
+                            <PasswordField
+                              name="newPassword"
+                              label="New Password"
+                              placeholder="Enter new password"
                               required
+                              autoComplete="new-password"
                             />
                           </div>
 
-                          {/* Password Fields - Different layout on mobile vs desktop */}
-                          <div className="space-y-4 md:space-y-4">
-                            {/* Current Password - Hidden on mobile */}
-                            <div className="block">
-                              <PasswordField
-                                name="currentPassword"
-                                label="Current Password"
-                                placeholder="Enter current password"
-                                required
-                                autoComplete="current-password"
-                              />
-                            </div>
-
-                            {/* New Password & Confirm Password */}
-                            <div className="space-y-4 md:grid md:grid-cols-2 md:gap-6 md:space-y-0">
-                              <PasswordField
-                                name="newPassword"
-                                label="New Password"
-                                placeholder="Enter new password"
-                                required
-                                autoComplete="new-password"
-                              />
-
-                              <PasswordField
-                                name="confirmPassword"
-                                label="Confirm Password"
-                                placeholder="Confirm new password"
-                                required
-                                autoComplete="new-password"
-                              />
-                            </div>
+                          {/* Confirm Password */}
+                          <div className="space-y-2">
+                            <PasswordField
+                              name="confirmPassword"
+                              label="Confirm Password"
+                              placeholder="Confirm new password"
+                              required
+                              autoComplete="new-password"
+                            />
                           </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="flex gap-2.5 md:gap-3 justify-end pt-4 md:order-3 order-3">
+                        <div className="flex gap-3 justify-end pt-4">
                           <Button
                             type="button"
                             variant="outline"
                             onClick={handleCancel}
                             disabled={formik.isSubmitting || isLoading}
-                            className="rounded-full px-4 py-2.5 md:py-2 h-10 border-slate-300 text-slate-600 hover:bg-slate-50 bg-white"
+                            className="rounded-full px-4 py-2 h-10 border-slate-300 text-slate-600 hover:bg-slate-50 bg-white"
                           >
-                            <X className="w-5 h-5 md:w-4 md:h-4 mr-2" />
+                            <X className="w-4 h-4" />
                             Cancel
                           </Button>
                           <Button
@@ -313,22 +353,37 @@ export const ProfileForm = ({ className = "" }) => {
                               !formik.dirty ||
                               Object.keys(formik.errors).length > 0
                             }
-                            className="rounded-full px-4 py-2.5 md:py-2 h-10 bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-50"
+                            className="rounded-full px-4 py-2 h-10 bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-50"
                           >
-                            <Save className="w-5 h-5 md:w-4 md:h-4 mr-2" />
-                            {formik.isSubmitting || isLoading
-                              ? "Saving..."
-                              : "Save"}
+                            {formik.isSubmitting || isLoading ? (
+                              <Loading
+                                size="sm"
+                                color="white"
+                                className="w-4 h-4 animate-spin"
+                              />
+                            ) : (
+                              <Save className="w-4 h-4" />
+                            )}
+                            Save
                           </Button>
                         </div>
                       </div>
-                    </CardContent>
-                  </Card>
-                </div>
+                    </div>
+                  </CardContent>
+                </Card>
               </div>
             </div>
           </div>
         </form>
+
+        {/* Avatar Selection Popup */}
+        <AvatarSelectionPopup
+          isOpen={isAvatarPopupOpen}
+          onClose={() => setIsAvatarPopupOpen(false)}
+          onSelectAvatar={handleAvatarSelect}
+          currentAvatar={formik.values?.avatar || user?.avatar}
+          userName={formik.values?.fullName || user?.fullName}
+        />
       </FormikProvider>
     </div>
   );
