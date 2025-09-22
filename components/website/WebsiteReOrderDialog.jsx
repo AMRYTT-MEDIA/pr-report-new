@@ -692,7 +692,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                             onChange={(e) => handlePositionChange(e, index)}
                             onBlur={(e) => handlePositionBlur(e, index)}
                             onKeyDown={(e) => handlePositionKeyDown(e, index)}
-                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[38px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-primary-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[42px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-primary-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             min="1"
                             max={websites.length}
                           />
