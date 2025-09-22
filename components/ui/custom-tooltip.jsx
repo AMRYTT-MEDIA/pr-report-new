@@ -7,6 +7,7 @@ import React, {
   useRef,
   useEffect,
 } from "react";
+import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 const CustomTooltip = React.memo(
@@ -20,6 +21,8 @@ const CustomTooltip = React.memo(
   }) => {
     const [isVisible, setIsVisible] = useState(false);
     const timeoutRef = useRef(null);
+    const triggerRef = useRef(null);
+    const [coords, setCoords] = useState({ top: 0, left: 0 });
 
     const handleMouseEnter = useCallback(() => {
       if (timeoutRef.current) {
@@ -37,21 +40,64 @@ const CustomTooltip = React.memo(
       setIsVisible(false);
     }, []);
 
-    // Memoized position classes for tooltip
-    const positionClasses = useMemo(() => {
-      const baseClasses = "absolute z-50 pointer-events-none";
+    // Compute viewport-fixed position for portal tooltip
+    const computePosition = useCallback(() => {
+      const el = triggerRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const gap = 8; // space between trigger and tooltip
 
       switch (position) {
         case "top":
-          return `${baseClasses} bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
+          setCoords({ top: rect.top - gap, left: rect.left + rect.width / 2 });
+          break;
         case "bottom":
-          return `${baseClasses} top-full left-1/2 transform -translate-x-1/2 mt-2`;
+          setCoords({
+            top: rect.bottom + gap,
+            left: rect.left + rect.width / 2,
+          });
+          break;
         case "left":
-          return `${baseClasses} right-full top-1/2 transform -translate-y-1/2 mr-2`;
+          setCoords({ top: rect.top + rect.height / 2, left: rect.left - gap });
+          break;
         case "right":
-          return `${baseClasses} left-full top-1/2 transform -translate-y-1/2 ml-2`;
+          setCoords({
+            top: rect.top + rect.height / 2,
+            left: rect.right + gap,
+          });
+          break;
         default:
-          return `${baseClasses} bottom-full left-1/2 transform -translate-x-1/2 mb-2`;
+          setCoords({ top: rect.top - gap, left: rect.left + rect.width / 2 });
+      }
+    }, [position]);
+
+    useEffect(() => {
+      if (!isVisible) return;
+      computePosition();
+      const handle = () => computePosition();
+      window.addEventListener("scroll", handle, true);
+      window.addEventListener("resize", handle);
+      return () => {
+        window.removeEventListener("scroll", handle, true);
+        window.removeEventListener("resize", handle);
+      };
+    }, [isVisible, computePosition]);
+
+    // Memoized position classes for tooltip (fixed + transforms only)
+    const positionClasses = useMemo(() => {
+      const baseClasses = "fixed z-[9999] pointer-events-none";
+
+      switch (position) {
+        case "top":
+          return `${baseClasses} -translate-x-1/2 -translate-y-full`;
+        case "bottom":
+          return `${baseClasses} -translate-x-1/2`;
+        case "left":
+          return `${baseClasses} -translate-y-1/2 -translate-x-full`;
+        case "right":
+          return `${baseClasses} -translate-y-1/2`;
+        default:
+          return `${baseClasses} -translate-x-1/2 -translate-y-full`;
       }
     }, [position]);
 
@@ -84,30 +130,37 @@ const CustomTooltip = React.memo(
 
     return (
       <div
+        ref={triggerRef}
         className={cn("relative inline-block", className)}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {children}
 
-        {isVisible && content && (
-          <div className={positionClasses}>
-            {/* Tooltip Container */}
+        {isVisible &&
+          content &&
+          createPortal(
             <div
-              className={cn(
-                "bg-white rounded-[6px] px-2 py-2 text-sm font-medium text-[#101010] whitespace-nowrap",
-                "shadow-[0px_0px_20px_0px_rgba(52,64,84,0.2)]",
-                "animate-in fade-in-0 zoom-in-95 duration-200",
-                contentClassName
-              )}
+              className={positionClasses}
+              style={{ top: coords.top, left: coords.left }}
             >
-              {content}
+              {/* Tooltip Container */}
+              <div
+                className={cn(
+                  "bg-white rounded-[6px] px-2 py-2 text-sm font-medium text-[#101010] whitespace-nowrap",
+                  "shadow-[0px_0px_20px_0px_rgba(52,64,84,0.2)]",
+                  "animate-in fade-in-0 zoom-in-95 duration-200",
+                  contentClassName
+                )}
+              >
+                {content}
 
-              {/* Arrow/Pointer */}
-              <div className={arrowClasses} />
-            </div>
-          </div>
-        )}
+                {/* Arrow/Pointer */}
+                <div className={arrowClasses} />
+              </div>
+            </div>,
+            document.body
+          )}
       </div>
     );
   }

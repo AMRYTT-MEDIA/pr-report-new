@@ -21,6 +21,20 @@ export const userService = {
     }
   },
 
+  // Change user password
+  changePassword: async ({ email, password }) => {
+    try {
+      const response = await apiPost("/auth/changepassword", {
+        email,
+        password,
+      });
+      return response;
+    } catch (error) {
+      console.error("Error changing password:", error);
+      throw error;
+    }
+  },
+
   // Get user by ID
   getUserById: async (userId) => {
     try {
