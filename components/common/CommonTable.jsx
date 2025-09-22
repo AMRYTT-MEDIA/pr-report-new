@@ -13,12 +13,7 @@ import {
 } from "@/components/ui/table";
 import { Edit, Trash2, Eye, MoreHorizontal } from "lucide-react";
 import Loading from "@/components/ui/loading";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+import CustomTooltip from "../ui/custom-tooltip";
 
 const CommonTable = ({
   columns = [],
@@ -326,38 +321,24 @@ const CommonTable = ({
                             )}
                             {customActions.map((action, actionIndex) => {
                               const buttonElement = (
-                                <Button
-                                  key={actionIndex}
-                                  variant="outline"
-                                  size="sm"
-                                  onClick={() => action.onClick(row)}
-                                  className={
-                                    action.className ||
-                                    "bg-slate-100 hover:bg-slate-200 text-slate-600 border-0 rounded-full px-4 py-2.5 h-10"
-                                  }
-                                >
-                                  {action.icon && (
-                                    <action.icon className="w-4 h-4 mr-2" />
-                                  )}
-                                  {action.label}
-                                </Button>
+                                <CustomTooltip content={action.tooltipText}>
+                                  <Button
+                                    key={actionIndex}
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => action.onClick(row)}
+                                    className={
+                                      action.className ||
+                                      "bg-slate-100 hover:bg-slate-200 text-slate-600 border-0 rounded-full px-4 py-2.5 h-10"
+                                    }
+                                  >
+                                    {action.icon && (
+                                      <action.icon className="w-4 h-4 mr-2" />
+                                    )}
+                                    {action.label}
+                                  </Button>
+                                </CustomTooltip>
                               );
-
-                              // If tooltip is enabled, wrap with tooltip
-                              if (action.showTooltip && action.tooltipText) {
-                                return (
-                                  <TooltipProvider key={actionIndex}>
-                                    <Tooltip>
-                                      <TooltipTrigger asChild>
-                                        {buttonElement}
-                                      </TooltipTrigger>
-                                      <TooltipContent>
-                                        <p>{action.tooltipText}</p>
-                                      </TooltipContent>
-                                    </Tooltip>
-                                  </TooltipProvider>
-                                );
-                              }
 
                               return buttonElement;
                             })}
