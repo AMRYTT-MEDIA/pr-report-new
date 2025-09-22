@@ -62,7 +62,7 @@ const WebsiteIcon = ({
   if (logoUrl) {
     return (
       <div
-        className={`flex items-center justify-center ${
+        className={`flex items-center justify-center justify-self-center ${
           size !== "custom" ? currentSize.container : ""
         } ${containerClassName}`}
       >
