@@ -156,21 +156,11 @@ const AddNewWebsiteDialog = ({
 
         handleClose();
       } catch (error) {
-        console.error(
-          error.message ||
-            error.response.data.message ||
-            "Website creation/update error:",
-          error
-        );
-
         let errorMessage = editWebsite
           ? WebsiteConstants.updateWebsiteError
           : WebsiteConstants.addWebsiteError;
 
-        // More specific error messages
-        if (error?.message) {
-          errorMessage = error.message;
-        } else if (error?.response?.data?.message) {
+        if (error?.response?.data?.message) {
           errorMessage = error.response.data.message;
         }
 
