@@ -1,6 +1,122 @@
 import { publicPrReportsService } from "@/services/publicPrReports";
 import { ReportPageClient } from "@/components/report";
 
+// Server-side data fetching function
+async function getReportData(reportId) {
+  try {
+    // First verify URL access
+    const verifyResponse = await publicPrReportsService.verifyUrlAccess(
+      reportId
+    );
+
+    if (!verifyResponse.success || verifyResponse.data.verify !== true) {
+      return {
+        error: "Report not found or access denied",
+        isPrivate: false,
+        report: null,
+      };
+    }
+
+    // Check if it's a private report
+    if (verifyResponse.data.is_private === true) {
+      return {
+        error: null,
+        isPrivate: true,
+        report: null,
+      };
+    }
+
+    // For public reports, get the actual report data
+    const reportResponse = await publicPrReportsService.getReportData(reportId);
+
+    if (!reportResponse.success) {
+      return {
+        error: "Failed to load report data",
+        isPrivate: false,
+        report: null,
+      };
+    }
+
+    // Transform the API response to match the component's expected structure
+    const transformedData = {
+      id: reportId,
+      title: reportResponse.data.report_title || "PR Report",
+      total_outlets: reportResponse.data.total_records || 0,
+      total_reach: reportResponse.data.overallPotentialReach || 0,
+      status: "completed",
+      date_created: new Date().toISOString(),
+      visibility: "public",
+      total_semrush_traffic: reportResponse?.data?.total_semrush_traffic || 0,
+      outlets: (reportResponse.data.distribution_data || []).map((item) => ({
+        website_name: item.recipient || item?.name || "Unknown Outlet",
+        published_url: item.url || "",
+        potential_reach: item.potential_reach || 0,
+        semrush_traffic: item?.semrush_traffic || 0,
+        logo: item?.exchange_symbol || item?.logo || null,
+      })),
+    };
+
+    return {
+      error: null,
+      isPrivate: false,
+      report: transformedData,
+    };
+  } catch (error) {
+    console.error("Error fetching report data:", error);
+    return {
+      error: "Error loading report data",
+      isPrivate: false,
+      report: null,
+    };
+  }
+}
+
+// Server action to verify email and load report on the server
+export async function verifyEmailAndGetReport(reportId, email) {
+  "use server";
+  try {
+    const verifyResponse = await publicPrReportsService.verifyUrlAccess(
+      reportId,
+      email
+    );
+
+    if (!verifyResponse.success || verifyResponse.data.verify !== true) {
+      return { success: false, error: "Email not authorized" };
+    }
+
+    const reportResponse = await publicPrReportsService.getReportData(
+      reportId,
+      email
+    );
+
+    if (!reportResponse.success) {
+      return { success: false, error: "Failed to load report data" };
+    }
+
+    const transformedData = {
+      id: reportId,
+      title: reportResponse.data.report_title || "PR Report",
+      total_outlets: reportResponse.data.total_records || 0,
+      total_reach: reportResponse.data.overallPotentialReach || 0,
+      status: "completed",
+      date_created: new Date().toISOString(),
+      visibility: "public",
+      total_semrush_traffic: reportResponse?.data?.total_semrush_traffic || 0,
+      outlets: (reportResponse.data.distribution_data || []).map((item) => ({
+        website_name: item.recipient || item?.name || "Unknown Outlet",
+        published_url: item.url || "",
+        potential_reach: item.potential_reach || 0,
+        semrush_traffic: item?.semrush_traffic || 0,
+        logo: item?.exchange_symbol || item?.logo || null,
+      })),
+    };
+
+    return { success: true, report: transformedData };
+  } catch (error) {
+    return { success: false, error: "Server error" };
+  }
+}
+
 // Dynamic metadata generation
 export async function generateMetadata({ params }) {
   const reportId = params.id;
@@ -60,6 +176,19 @@ export async function generateMetadata({ params }) {
   };
 }
 
-export default function ReportPage() {
-  return <ReportPageClient />;
+export default async function ReportPage({ params }) {
+  const reportId = params.id;
+
+  // Fetch data server-side
+  const { error, isPrivate, report } = await getReportData(reportId);
+
+  return (
+    <ReportPageClient
+      reportId={reportId}
+      initialReport={report}
+      isPrivate={isPrivate}
+      error={error}
+      verifyEmailAndGetReport={verifyEmailAndGetReport}
+    />
+  );
 }

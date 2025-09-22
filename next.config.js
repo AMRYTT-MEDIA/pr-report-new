@@ -15,7 +15,8 @@ const nextConfig = {
 
   images: {
     remotePatterns: [{ protocol: "https", hostname: "**" }],
-  }, 
+    minimumCacheTTL: 60 * 60 * 24 * 30,
+  },
 
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
@@ -54,24 +55,24 @@ const nextConfig = {
     ENV: process.env.ENV, // Expose ENV explicitly to the client
   },
   // Webpack configuration for better file watching
-  // webpack: (config, { dev, isServer }) => {
-  //   // Add alias for better module resolution
-  //   config.resolve.alias = {
-  //     ...config.resolve.alias,
-  //     "@": require("path").resolve(__dirname),
-  //   };
+  webpack: (config, { dev, isServer }) => {
+    // Add alias for better module resolution
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      "@": require("path").resolve(__dirname),
+    };
 
-  //   // Better file watching in development
-  //   if (dev && !isServer) {
-  //     config.watchOptions = {
-  //       poll: 1000,
-  //       aggregateTimeout: 300,
-  //       ignored: /node_modules/,
-  //     };
-  //   }
+    // Better file watching in development
+    if (dev && !isServer) {
+      config.watchOptions = {
+        poll: 1000,
+        aggregateTimeout: 300,
+        ignored: /node_modules/,
+      };
+    }
 
-  //   return config;
-  // },
+    return config;
+  },
 };
 
 module.exports = nextConfig;

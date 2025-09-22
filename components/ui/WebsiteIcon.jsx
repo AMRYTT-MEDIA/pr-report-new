@@ -79,6 +79,7 @@ const WebsiteIcon = ({
           } object-contain w-full h-full ${imageClassName}`}
           onLoad={onImageLoad}
           onError={onImageError}
+          loading="lazy"
         />
       </div>
     );
