@@ -71,7 +71,7 @@ const WebsiteIcon = ({
           alt={alt || websiteName || "Website logo"}
           width={currentSize.width}
           height={currentSize.height}
-          unoptimized={shouldUnoptimize}
+          unoptimized={true}
           className={`${
             size !== "custom"
               ? `${currentSize.maxWidth} ${currentSize.maxHeight}`
