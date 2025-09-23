@@ -144,8 +144,7 @@ export default function ReportPageClient({
                 alt="PR Reports"
                 width={223}
                 height={45}
-                className="h-auto w-auto"
-                priority={true}
+                loading="lazy"
               />
             </div>
           </div>
