@@ -58,6 +58,7 @@ const WebsiteAvatar = ({
           } transition-opacity duration-200`}
           onLoad={handleImageLoad}
           onError={handleImageError}
+          loading="lazy"
         />
       </div>
     );
