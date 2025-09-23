@@ -62,23 +62,24 @@ const WebsiteIcon = ({
   if (logoUrl) {
     return (
       <div
-        className={`flex items-center justify-center justify-self-center ${
+        className={`relative flex items-center justify-center justify-self-center ${
           size !== "custom" ? currentSize.container : ""
         } ${containerClassName}`}
       >
         <Image
           src={logoUrl}
           alt={alt || websiteName || "Website logo"}
-          width={currentSize.width}
-          height={currentSize.height}
+          fill
+          sizes="(max-width: 640px) 120px, 137px"
           unoptimized={true}
           className={`${
             size !== "custom"
               ? `${currentSize.maxWidth} ${currentSize.maxHeight}`
               : ""
-          } object-contain w-full h-full ${imageClassName}`}
+          } object-contain ${imageClassName}`}
           onLoad={onImageLoad}
           onError={onImageError}
+          loading="lazy"
         />
       </div>
     );

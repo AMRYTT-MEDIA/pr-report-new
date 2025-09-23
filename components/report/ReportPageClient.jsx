@@ -1,85 +1,49 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Mail, X, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
-import { publicPrReportsService } from "@/services/publicPrReports";
 import PRReportViewer from "@/components/PRReportViewer";
 import ReportNotFound from "@/components/ReportNotFound";
 import Image from "next/image";
 
-export default function ReportPageClient() {
-  const params = useParams();
-  const reportId = params.id;
-  const [report, setReport] = useState(null);
-  const [loading, setLoading] = useState(true);
+export default function ReportPageClient({
+  reportId,
+  initialReport,
+  isPrivate,
+  error,
+  verifyEmailAndGetReport,
+}) {
+  const [report, setReport] = useState(initialReport);
+  const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [email, setEmail] = useState("");
   const [emailSubmitted, setEmailSubmitted] = useState(false);
-  const [showFullReport, setShowFullReport] = useState(false);
-  const [showEmailDialog, setShowEmailDialog] = useState(false);
+  const [showFullReport, setShowFullReport] = useState(!!initialReport);
+  const [showEmailDialog, setShowEmailDialog] = useState(isPrivate);
   const [verifying, setVerifying] = useState(false);
 
   useEffect(() => {
-    verifyReportAccess();
-  }, [reportId]);
-
-  const verifyReportAccess = async () => {
-    try {
-      setLoading(true);
-      const response = await publicPrReportsService.verifyUrlAccess(reportId);
-
-      if (response.success && response.data.verify === true) {
-        if (response.data.is_private === true) {
-          // Private report - show email dialog
-          setShowEmailDialog(true);
-          setLoading(false);
-        } else {
-          // Public report - load data immediately
-          await loadReportData();
-        }
-      } else {
-        toast.error("Report not found or access denied");
-        setLoading(false);
-      }
-    } catch (error) {
-      toast.error("Error accessing report");
+    // If we have an error or no initial data, show appropriate state
+    if (error) {
+      setLoading(false);
+    } else if (initialReport) {
+      setShowFullReport(true);
+      setLoading(false);
+    } else if (isPrivate) {
+      setShowEmailDialog(true);
       setLoading(false);
     }
-  };
+  }, [error, initialReport, isPrivate]);
 
   const loadReportData = async (userEmail = null) => {
     try {
       setLoading(true);
-      const response = await publicPrReportsService.getReportData(
-        reportId,
-        userEmail
-      );
+      const result = await verifyEmailAndGetReport(reportId, userEmail);
 
-      if (response.success) {
-        // Transform the API response to match the component's expected structure
-        const transformedData = {
-          // Map the basic fields
-          id: reportId,
-          title: response.data.report_title || "PR Report",
-          total_outlets: response.data.total_records || 0,
-          total_reach: response.data.overallPotentialReach || 0,
-          status: "completed", // Default status since it's not in your JSON
-          date_created: new Date().toISOString(), // Default date since it's not in your JSON
-          visibility: "public", // Default visibility
-          total_semrush_traffic: response?.data?.total_semrush_traffic || 0,
-          // Transform distribution_data to outlets format
-          outlets: (response.data.distribution_data || []).map((item) => ({
-            website_name: item.recipient || item?.name || "Unknown Outlet",
-            published_url: item.url || "",
-            potential_reach: item.potential_reach || 0,
-            semrush_traffic: item?.semrush_traffic || 0,
-            logo: item?.exchange_symbol || item?.logo || null,
-          })),
-        };
-
+      if (result?.success) {
+        const transformedData = result.report;
         setReport(transformedData);
         setShowFullReport(true);
         if (userEmail) {
@@ -92,7 +56,7 @@ export default function ReportPageClient() {
           document.title = `${transformedData.title} | PR Reports`;
         }
       } else {
-        toast.error("Failed to load report data");
+        toast.error(result?.error || "Failed to load report data");
       }
     } catch (error) {
       toast.error("Error loading report data");
@@ -107,19 +71,21 @@ export default function ReportPageClient() {
       try {
         setVerifying(true);
 
-        // Verify email access first
-        const verifyResponse = await publicPrReportsService.verifyUrlAccess(
-          reportId,
-          email.trim()
-        );
+        const result = await verifyEmailAndGetReport(reportId, email.trim());
 
-        if (verifyResponse.success && verifyResponse.data.verify === true) {
-          // Email is verified, now load the report data
-          await loadReportData(email.trim());
+        if (result?.success) {
+          // Use the result directly to avoid extra client fetches
+          setReport(result.report);
+          setShowFullReport(true);
+          setEmailSubmitted(true);
+          setEmail(email.trim());
           setShowEmailDialog(false);
+          if (result.report?.title && typeof window !== "undefined") {
+            document.title = `${result.report.title} | PR Reports`;
+          }
           toast.success("Email verified successfully!");
         } else {
-          toast.error("Email not authorized for this report");
+          toast.error(result?.error || "Email not authorized for this report");
         }
       } catch (error) {
         if (error.response?.status === 401) {
@@ -163,7 +129,7 @@ export default function ReportPageClient() {
 
   // if report is not found and not in email dialog
   // show report not found component
-  if (!report && !showEmailDialog) {
+  if (error || (!report && !showEmailDialog)) {
     return <ReportNotFound />;
   }
 
@@ -178,7 +144,7 @@ export default function ReportPageClient() {
                 alt="PR Reports"
                 width={223}
                 height={45}
-                priority={true}
+                loading="lazy"
               />
             </div>
           </div>
