@@ -40,6 +40,7 @@ export const AvatarSelectionPopup = ({
   const [uploadedFile, setUploadedFile] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDeleteRequested, setIsDeleteRequested] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   const handleAvatarSelect = (avatarPath) => {
     // Selecting a default avatar clears any staged upload and delete flag
@@ -61,6 +62,35 @@ export const AvatarSelectionPopup = ({
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
+    const file = event.dataTransfer?.files?.[0];
+    if (file && file.type?.startsWith("image/")) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUploadedFile(e.target.result);
+        setSelectedAvatar(null);
+        setSelectedFile(file);
+        setIsDeleteRequested(false);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(true);
+  };
+
+  const handleDragLeave = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+    setIsDragging(false);
   };
 
   const handleSave = async () => {
@@ -196,7 +226,7 @@ export const AvatarSelectionPopup = ({
                   }`}
                 >
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${avatar}`}
+                    src={`/meek/${avatar}`}
                     alt={`Avatar ${index + 1}`}
                     className="w-full h-full object-cover"
                     width={60}
@@ -215,7 +245,17 @@ export const AvatarSelectionPopup = ({
 
           {/* File Upload Section */}
           <div className="mt-5 flex gap-4 items-center justify-center">
-            <div className="flex-1 border-2 border-dashed border-slate-300 rounded-lg p-3">
+            <div
+              className={`flex-1 border-2 border-dashed rounded-lg p-3 transition-colors ${
+                isDragging
+                  ? "border-indigo-400 bg-indigo-50"
+                  : "border-slate-300"
+              }`}
+              onDragOver={handleDragOver}
+              onDragEnter={handleDragOver}
+              onDragLeave={handleDragLeave}
+              onDrop={handleDrop}
+            >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-100">
@@ -236,8 +276,10 @@ export const AvatarSelectionPopup = ({
                   </div>
                   <span className="text-sm font-semibold text-slate-600">
                     {uploadedFile
-                      ? selectedFile?.name || "IMAGE.png"
-                      : "IMAGE.png"}
+                      ? selectedFile?.name || "Image"
+                      : isDragging
+                      ? "Drop image to upload"
+                      : "Drag & drop or click to upload"}
                   </span>
                 </div>
                 <label className="bg-indigo-50 text-slate-600 px-3 py-2 rounded-md text-sm font-semibold cursor-pointer hover:bg-indigo-100 transition-colors">
