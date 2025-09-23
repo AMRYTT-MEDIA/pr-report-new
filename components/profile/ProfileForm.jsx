@@ -172,7 +172,7 @@ export const ProfileForm = ({ className = "" }) => {
   }, [formik]);
 
   return (
-    <div className={cn("", className)}>
+    <div className={cn("p-[10px] sm:p-[15px]", className)}>
       <FormikProvider value={formik}>
         <form
           onSubmit={formik.handleSubmit}
@@ -182,7 +182,7 @@ export const ProfileForm = ({ className = "" }) => {
         >
           {/* Main Container */}
           <div className="">
-            <div className="flex gap-4 max-w-7xl mx-auto flex-col md:flex-row">
+            <div className="flex gap-4  mx-auto flex-col md:flex-row">
               {/* Left Avatar Panel */}
               <div className="w-full md:w-[296px] flex-shrink-0">
                 <Card className="bg-white rounded-xl border border-slate-200 h-fit">
@@ -264,7 +264,7 @@ export const ProfileForm = ({ className = "" }) => {
               </div>
 
               {/* Right Form Panel */}
-              <div className="flex-1">
+              <div className="flex-1 max-w-[849px] ">
                 <Card className="bg-white rounded-xl border border-slate-200">
                   <CardContent className="p-6 max-h-auto md:max-h-[calc(100vh-74px)] overflow-y-auto scrollbar-custom">
                     <div className="space-y-6">

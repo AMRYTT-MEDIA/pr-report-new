@@ -12,7 +12,7 @@ export const metadata = {
  */
 export default function ProfilePage() {
   return (
-    <div>
+    <div className="fixed inset-0 bg-gray-50 overflow-y-auto pt-14 lg:left-[250px] ">
       <ProfileForm />
     </div>
   );

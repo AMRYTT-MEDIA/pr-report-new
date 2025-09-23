@@ -5,19 +5,26 @@ import { X, Upload, Save, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const AVATAR_IMAGES = [
-  "/meek/avatar1.png",
-  "/meek/avatar2.png",
-  "/meek/avatar3.png",
-  "/meek/avatar4.png",
-  "/meek/avatar5.png",
-  "/meek/avatar6.png",
-  "/meek/avatar7.png",
-  "/meek/avatar8.png",
-  "/meek/avatar9.png",
-  "/meek/avatar10.png",
-  "/meek/avatar11.png",
-  "/meek/avatar12.png",
-  "/meek/avatar13.png",
+  "woman5.png",
+  "znouser.png",
+  "woman4.png",
+  "panda.png",
+  "teacher.png",
+  "woman.png",
+  "woman2.png",
+  "woman3.png",
+  "man.png",
+  "man2.png",
+  "man3.png",
+  "girl2.png",
+  "gamer.png",
+  "girl.png",
+  "boy2.png",
+  "businessman.png",
+  "chicken.png",
+  "dog.png",
+  "empathy.png",
+  "boy.png",
 ];
 
 export const AvatarSelectionPopup = ({
@@ -112,7 +119,7 @@ export const AvatarSelectionPopup = ({
                   }`}
                 >
                   <img
-                    src={avatar}
+                    src={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${avatar}`}
                     alt={`Avatar ${index + 1}`}
                     className="w-full h-full object-cover"
                   />
