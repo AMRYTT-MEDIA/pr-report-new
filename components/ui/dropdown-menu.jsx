@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarUrl } from "@/lib/utils";
+import Image from "next/image";
 
 export default function DropdownMenu({
   trigger,
@@ -102,12 +103,23 @@ export default function DropdownMenu({
               <div className="flex items-center space-x-3 px-4 py-3">
                 <div className="relative">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {profileData.avatar ? (
-                      <img
-                        src={profileData.avatar}
-                        alt="User Avatar"
-                        className="w-full h-full object-cover"
-                      />
+                    {profileData.avatar &&
+                    profileData.avatar !== "" &&
+                    getAvatarUrl(profileData.avatar) ? (
+                      (() => {
+                        let src = "";
+                        src = getAvatarUrl(profileData.avatar);
+                        return (
+                          <Image
+                            src={src}
+                            alt="User Avatar"
+                            className="w-full h-full object-cover"
+                            width={32}
+                            height={32}
+                            unoptimized={true}
+                          />
+                        );
+                      })()
                     ) : profileData.name ? (
                       <span className="text-blue-600 font-semibold text-lg">
                         {profileData.name.charAt(0).toUpperCase()}

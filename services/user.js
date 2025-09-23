@@ -124,12 +124,14 @@ export const userService = {
         requestBody.confirmPassword = profileData.confirmPassword;
       }
 
-      // Add avatar filename if provided
-      if (profileData.avatar) {
-        if (profileData.avatar instanceof File) {
-          requestBody.avatar = profileData.avatar.name;
-        } else if (typeof profileData.avatar === "string") {
-          requestBody.avatar = profileData.avatar;
+      // Add avatar even when empty string is intended to clear it
+      if (Object.prototype.hasOwnProperty.call(profileData, "avatar")) {
+        const value = profileData.avatar;
+        // If a File is passed, send its name; otherwise pass through strings (including "")
+        if (typeof File !== "undefined" && value instanceof File) {
+          requestBody.avatar = value.name;
+        } else if (typeof value === "string") {
+          requestBody.avatar = value; // may be "" to clear on backend
         }
       }
 

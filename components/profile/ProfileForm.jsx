@@ -12,13 +12,14 @@ import {
   getProfileInitialValues,
   transformProfileValues,
 } from "@/lib/validations/profileSchema";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarUrl } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { userService } from "@/services/user";
 import { toast } from "sonner";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import Loading from "../ui/loading";
 import AvatarSelectionPopup from "./AvatarSelectionPopup";
+import Image from "next/image";
 
 /**
  * Optimized Profile Form Component using Formik and Yup
@@ -154,7 +155,7 @@ export const ProfileForm = ({ className = "" }) => {
 
   // Memoized cancel handler
   const handleCancel = useCallback(() => {
-    formik.resetForm();
+    // formik.resetForm();
     router.back(); // Navigate to the previous page
   }, [formik, router]);
 
@@ -167,9 +168,39 @@ export const ProfileForm = ({ className = "" }) => {
   );
 
   // Handle delete picture - show default avatar
-  const handleDeletePicture = useCallback(() => {
-    formik.setFieldValue("avatar", null);
-  }, [formik]);
+  const handleDeletePicture = useCallback(async () => {
+    try {
+      const current = formik.values?.avatar || user?.avatar;
+      // Derive filename if URL/path provided
+      const filename =
+        typeof current === "string" && current.includes("/")
+          ? current.split("/").pop()
+          : current;
+
+      if (filename) {
+        // Delete from server folder
+        await fetch(
+          `/api/profile/delete-avatar?filename=${encodeURIComponent(filename)}`,
+          {
+            method: "DELETE",
+          }
+        );
+      }
+
+      // Update backend user to clear avatar
+      await userService.updateProfile({ avatar: "" });
+
+      // Clear local form state and user context avatar if present
+      formik.setFieldValue("avatar", null);
+      if (user?.avatar) {
+        setUser({ ...user, avatar: null });
+      }
+      toast.success("Profile picture removed");
+    } catch (err) {
+      console.error("Delete avatar error:", err);
+      toast.error("Failed to delete profile picture");
+    }
+  }, [formik, user, setUser]);
 
   return (
     <div className={cn("p-[10px] sm:p-[15px]", className)}>
@@ -192,11 +223,19 @@ export const ProfileForm = ({ className = "" }) => {
                       <div className="flex flex-col items-center space-y-5">
                         <div className="relative">
                           <div className="w-[110px] h-[110px] rounded-full overflow-hidden bg-slate-100">
-                            {user?.avatar ? (
-                              <img
-                                src={user.avatar}
+                            {user?.avatar &&
+                            user?.avatar !== "" &&
+                            getAvatarUrl(user.avatar) ? (
+                              <Image
+                                src={
+                                  getAvatarUrl(user.avatar) ||
+                                  "/placeholder.svg"
+                                }
                                 alt="Profile"
                                 className="w-full h-full object-cover"
+                                width={110}
+                                height={110}
+                                unoptimized={true}
                               />
                             ) : (
                               <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 text-2xl font-semibold">

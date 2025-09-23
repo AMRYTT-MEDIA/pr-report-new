@@ -3,10 +3,12 @@
 import { useState } from "react";
 import { X, Upload, Save, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { userService } from "@/services/user";
+import Image from "next/image";
 
 const AVATAR_IMAGES = [
-  "woman5.png",
-  "znouser.png",
+  // "woman5.png",
+  // "znouser.png",
   "woman4.png",
   "panda.png",
   "teacher.png",
@@ -36,9 +38,15 @@ export const AvatarSelectionPopup = ({
 }) => {
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isDeleteRequested, setIsDeleteRequested] = useState(false);
 
   const handleAvatarSelect = (avatarPath) => {
+    // Selecting a default avatar clears any staged upload and delete flag
     setSelectedAvatar(avatarPath);
+    setUploadedFile(null);
+    setSelectedFile(null);
+    setIsDeleteRequested(false);
   };
 
   const handleFileUpload = (event) => {
@@ -47,15 +55,73 @@ export const AvatarSelectionPopup = ({
       const reader = new FileReader();
       reader.onload = (e) => {
         setUploadedFile(e.target.result);
-        setSelectedAvatar(e.target.result);
+        setSelectedAvatar(null);
+        setSelectedFile(file);
+        setIsDeleteRequested(false);
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = () => {
-    onSelectAvatar(selectedAvatar);
-    onClose();
+  const handleSave = async () => {
+    try {
+      // If user requested delete, delete (if existing) and send empty string to backend
+      if (isDeleteRequested) {
+        const current = currentAvatar;
+        if (current) {
+          const filename =
+            typeof current === "string" && current.includes("/")
+              ? current.split("/").pop()
+              : current;
+          if (filename) {
+            try {
+              await fetch(
+                `/api/profile/delete-avatar?filename=${encodeURIComponent(
+                  filename
+                )}`,
+                { method: "DELETE" }
+              );
+            } catch {}
+          }
+        }
+        await userService.updateProfile({ avatar: "" });
+        onSelectAvatar("");
+        onClose();
+        return;
+      }
+
+      // If a new file was chosen, upload it first
+      if (selectedFile) {
+        const formData = new FormData();
+        formData.append("avatar", selectedFile);
+        formData.append("filename", selectedFile.name);
+        if (currentAvatar) {
+          formData.append("existingAvatar", currentAvatar);
+        }
+
+        const res = await fetch("/api/profile/upload-avatar", {
+          method: "POST",
+          body: formData,
+        });
+        const data = await res.json();
+        if (!res.ok || !data?.filename) {
+          throw new Error(data?.error || "Upload failed");
+        }
+        // Persist to backend user profile, then update selection locally
+        await userService.updateProfile({ avatar: data.filename });
+        onSelectAvatar(data.filename);
+      } else {
+        // Picking from pre-defined list
+        if (selectedAvatar) {
+          await userService.updateProfile({ avatar: selectedAvatar });
+        }
+        onSelectAvatar(selectedAvatar || null);
+      }
+      onClose();
+    } catch (err) {
+      console.error("Avatar upload/update error:", err);
+      // swallow in popup; parent can add toast if needed
+    }
   };
 
   const handleCancel = () => {
@@ -65,8 +131,11 @@ export const AvatarSelectionPopup = ({
   };
 
   const handleDelete = () => {
+    // Mark delete intent; clear any staged choices
     setSelectedAvatar(null);
     setUploadedFile(null);
+    setSelectedFile(null);
+    setIsDeleteRequested(true);
   };
 
   if (!isOpen) return null;
@@ -80,10 +149,18 @@ export const AvatarSelectionPopup = ({
             <div className="flex items-center gap-5">
               <div className="w-11 h-11 rounded-full overflow-hidden bg-slate-100">
                 {currentAvatar ? (
-                  <img
-                    src={currentAvatar}
+                  <Image
+                    src={
+                      currentAvatar?.startsWith("http") ||
+                      currentAvatar?.startsWith("data:")
+                        ? currentAvatar
+                        : `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${currentAvatar}`
+                    }
                     alt="Current Avatar"
                     className="w-full h-full object-cover"
+                    width={110}
+                    height={110}
+                    unoptimized={true}
                   />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 text-lg font-semibold">
@@ -118,10 +195,13 @@ export const AvatarSelectionPopup = ({
                       : "hover:scale-105"
                   }`}
                 >
-                  <img
+                  <Image
                     src={`${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${avatar}`}
                     alt={`Avatar ${index + 1}`}
                     className="w-full h-full object-cover"
+                    width={60}
+                    height={60}
+                    unoptimized={true}
                   />
                 </button>
                 {selectedAvatar === avatar && (
@@ -140,10 +220,13 @@ export const AvatarSelectionPopup = ({
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-100">
                     {uploadedFile ? (
-                      <img
+                      <Image
                         src={uploadedFile}
                         alt="Uploaded"
                         className="w-full h-full object-cover"
+                        width={8}
+                        height={80}
+                        unoptimized={true}
                       />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-slate-400">
@@ -152,7 +235,9 @@ export const AvatarSelectionPopup = ({
                     )}
                   </div>
                   <span className="text-sm font-semibold text-slate-600">
-                    {uploadedFile ? "Uploaded Image" : "IMAGE.png"}
+                    {uploadedFile
+                      ? selectedFile?.name || "IMAGE.png"
+                      : "IMAGE.png"}
                   </span>
                 </div>
                 <label className="bg-indigo-50 text-slate-600 px-3 py-2 rounded-md text-sm font-semibold cursor-pointer hover:bg-indigo-100 transition-colors">
