@@ -3,7 +3,7 @@ import { ReportPageClient } from "@/components/report";
 import { verifyEmailAndGetReport } from "@/components/report/actions";
 
 // Cache configuration - revalidate every 5 minutes (300 seconds)
-export const revalidate = 300;
+export const revalidate = 3600;
 
 // Server-side data fetching function
 async function getReportData(reportId) {

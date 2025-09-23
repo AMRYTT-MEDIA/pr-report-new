@@ -14,7 +14,7 @@ import {
   Settings,
   Eye,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { cn, getAvatarUrl } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import CommonBreadcrumb from "./CommonBreadcrumb";
 import { useState, useRef, useEffect } from "react";
@@ -125,11 +125,16 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                 {/* User Avatar with Online Status */}
                 <div className="relative">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {user?.avatar ? (
-                      <img
-                        src={user.avatar}
+                    {user?.avatar &&
+                    user?.avatar !== "" &&
+                    getAvatarUrl(user.avatar) ? (
+                      <Image
+                        src={getAvatarUrl(user.avatar) || "/placeholder.svg"}
                         alt="User Avatar"
                         className="w-full h-full object-cover"
+                        width={32}
+                        height={32}
+                        unoptimized={true}
                       />
                     ) : user?.fullName ? (
                       <span className="text-blue-600 font-semibold text-sm">

@@ -37,3 +37,7 @@ deploy.js
 # Logo uploads - don't commit to git, but keep folder structure
 /public/websites-logos/*
 !/public/websites-logos/.gitkeep
+# /public/uploads/websites-logos/*
+# !/public/uploads/websites-logos/.gitkeep
+# /public/uploads/profile/*
+# !/public/uploads/profile/.gitkeep

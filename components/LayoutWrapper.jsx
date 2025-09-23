@@ -5,6 +5,7 @@ import Sidebar from "./Sidebar";
 import NavBar from "./NavBar";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";
 import GlobalRouteGuard from "./GlobalRouteGuard";
+import { cn } from "@/lib/utils";
 
 const LayoutWrapper = ({ children }) => {
   const pathname = usePathname();
@@ -24,7 +25,7 @@ const LayoutWrapper = ({ children }) => {
 
           {/* Page Content */}
           <main>
-            <div className={"m-[10px] sm:m-[15px]"}>{children}</div>
+            <div className={cn("m-[10px] sm:m-[15px]")}>{children}</div>
           </main>
         </div>
       </div>
