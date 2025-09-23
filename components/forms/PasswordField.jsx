@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeClosed } from "lucide-react";
 import FormField from "./FormField";
 
 /**
@@ -44,7 +44,7 @@ export const PasswordField = ({
           tabIndex={-1}
         >
           {showPassword ? (
-            <EyeOff className="w-4 h-4" />
+            <EyeClosed className="w-4 h-4" />
           ) : (
             <Eye className="w-4 h-4" />
           )}

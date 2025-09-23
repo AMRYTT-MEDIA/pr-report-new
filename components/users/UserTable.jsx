@@ -2,9 +2,8 @@
 
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { CustomSwitch } from "@/components/ui/custom-switch";
-import { Plus, Edit, Trash2, PencilLine } from "lucide-react";
+import { Plus, PencilLine, KeyRound } from "lucide-react";
 import { userService } from "@/services/user";
 import { toast } from "sonner";
 import { CommonTable } from "@/components/common";
@@ -13,6 +12,7 @@ import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import DeactivateUserDialog from "./DeactivateUserDialog";
 import UserDialog from "./UserDialog";
 import DeleteUserDialog from "./DeleteUserDialog";
+import ChangePasswordDialog from "./ChangePasswordDialog";
 
 const UserTable = ({ loading = false }) => {
   // Set breadcrumb
@@ -166,18 +166,8 @@ const UserTable = ({ loading = false }) => {
     setShowUserDialog(true);
   };
 
-  const handleDelete = (user) => {
-    setSelectedUser(user);
-    setShowDeleteModal(true);
-  };
-
   const handleAddNew = () => {
     setSelectedUser(null);
-    setShowUserDialog(true);
-  };
-
-  const handleEditUser = (user) => {
-    setSelectedUser(user);
     setShowUserDialog(true);
   };
 
@@ -224,9 +214,11 @@ const UserTable = ({ loading = false }) => {
     fetchUsers(1, newItemsPerPage);
   };
 
-  const handleGoToPage = (page) => {
-    setCurrentPage(page);
-    fetchUsers(page, itemsPerPage);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+
+  const handleChangePassword = (user) => {
+    setSelectedUser(user);
+    setShowChangePassword(true);
   };
 
   // Define table columns with minimum widths for responsive behavior
@@ -378,6 +370,15 @@ const UserTable = ({ loading = false }) => {
             showTooltip: true,
             tooltipText: "Edit",
           },
+          {
+            label: "",
+            onClick: handleChangePassword,
+            className:
+              "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ml-2",
+            icon: KeyRound,
+            showTooltip: true,
+            tooltipText: "Change Password",
+          },
         ]}
       />
 
@@ -407,6 +408,14 @@ const UserTable = ({ loading = false }) => {
         user={selectedUser}
         roles={roles}
         rolesLoading={rolesLoading}
+      />
+
+      {/* Change Password Modal */}
+      <ChangePasswordDialog
+        open={showChangePassword}
+        onClose={() => setShowChangePassword(false)}
+        user={selectedUser}
+        onSuccess={fetchUsers}
       />
     </>
   );

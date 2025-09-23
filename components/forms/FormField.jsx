@@ -34,10 +34,7 @@ export const FormField = ({
             {label && (
               <Label
                 htmlFor={name}
-                className={cn(
-                  "text-sm font-semibold text-slate-800",
-                  hasError && "text-red-600"
-                )}
+                className="text-sm font-semibold text-slate-800"
               >
                 {label}
                 {required && <span className="text-rose-600 ml-1">*</span>}
