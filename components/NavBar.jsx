@@ -76,7 +76,6 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
       <div className="flex justify-between items-center h-14 mx-[15px]">
         {/* Left: Logo on mobile/tablet, breadcrumb on desktop */}
         <div className="flex items-center">
-          {/* Logo (mobile/tablet only) */}
           <Image
             src="/guestpost-link.webp"
             alt="GUESTPOSTLINKS"
