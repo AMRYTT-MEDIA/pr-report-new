@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { X, Upload, Save, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { userService } from "@/services/user";
 import Image from "next/image";
+import { useAuth } from "@/lib/auth";
+import { toast } from "sonner";
 
 const AVATAR_IMAGES = [
   // "woman5.png",
@@ -41,7 +43,32 @@ export const AvatarSelectionPopup = ({
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDeleteRequested, setIsDeleteRequested] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const { user, setUser } = useAuth();
 
+  // Reset state when dialog opens
+  useEffect(() => {
+    if (isOpen) {
+      setSelectedAvatar(currentAvatar);
+      setUploadedFile(null);
+      setSelectedFile(null);
+      setIsDeleteRequested(false);
+      setIsDragging(false);
+    }
+  }, [isOpen, currentAvatar]);
+
+  // Check if there are any changes made
+  const hasChanges = () => {
+    // Check if avatar selection changed
+    if (selectedAvatar !== currentAvatar) return true;
+
+    // Check if file was uploaded
+    if (uploadedFile || selectedFile) return true;
+
+    // Check if delete was requested
+    if (isDeleteRequested) return true;
+
+    return false;
+  };
   const handleAvatarSelect = (avatarPath) => {
     // Selecting a default avatar clears any staged upload and delete flag
     setSelectedAvatar(avatarPath);
@@ -51,6 +78,7 @@ export const AvatarSelectionPopup = ({
   };
 
   const handleFileUpload = (event) => {
+    event.preventDefault();
     const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -61,6 +89,14 @@ export const AvatarSelectionPopup = ({
         setIsDeleteRequested(false);
       };
       reader.readAsDataURL(file);
+    }
+  };
+
+  const handleDivClick = () => {
+    // Trigger the file input when clicking on the div
+    const fileInput = document.querySelector('input[type="file"]');
+    if (fileInput) {
+      fileInput.click();
     }
   };
 
@@ -95,6 +131,8 @@ export const AvatarSelectionPopup = ({
 
   const handleSave = async () => {
     try {
+      let newAvatar = null;
+
       // If user requested delete, delete (if existing) and send empty string to backend
       if (isDeleteRequested) {
         const current = currentAvatar;
@@ -114,8 +152,16 @@ export const AvatarSelectionPopup = ({
             } catch {}
           }
         }
-        await userService.updateProfile({ avatar: "" });
+        const response = await userService.updateProfile({ avatar: "" });
+        newAvatar = "";
         onSelectAvatar("");
+
+        // Update user context
+        if (response.user) {
+          setUser(response.user);
+        }
+
+        toast.success("Profile picture removed successfully!");
         onClose();
         return;
       }
@@ -138,25 +184,47 @@ export const AvatarSelectionPopup = ({
           throw new Error(data?.error || "Upload failed");
         }
         // Persist to backend user profile, then update selection locally
-        await userService.updateProfile({ avatar: data.filename });
+        const response = await userService.updateProfile({
+          avatar: data.filename,
+        });
+        newAvatar = data.filename;
         onSelectAvatar(data.filename);
+
+        // Update user context
+        if (response.user) {
+          setUser(response.user);
+        }
+
+        toast.success("Profile picture updated successfully!");
       } else {
         // Picking from pre-defined list
         if (selectedAvatar) {
-          await userService.updateProfile({ avatar: selectedAvatar });
+          const response = await userService.updateProfile({
+            avatar: selectedAvatar,
+          });
+          newAvatar = selectedAvatar;
+
+          // Update user context
+          if (response.user) {
+            setUser(response.user);
+          }
+
+          toast.success("Profile picture updated successfully!");
         }
         onSelectAvatar(selectedAvatar || null);
       }
       onClose();
     } catch (err) {
       console.error("Avatar upload/update error:", err);
-      // swallow in popup; parent can add toast if needed
+      toast.error("Failed to update profile picture. Please try again.");
     }
   };
 
   const handleCancel = () => {
     setSelectedAvatar(currentAvatar);
     setUploadedFile(null);
+    setSelectedFile(null);
+    setIsDeleteRequested(false);
     onClose();
   };
 
@@ -172,7 +240,7 @@ export const AvatarSelectionPopup = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-[620px] max-h-[90vh] overflow-hidden border-gray-scale-30 border">
+      <div className="bg-white rounded-2xl shadow-2xl w-[95%] md:w-[620px] max-h-[90vh] overflow-hidden border-gray-scale-30 border">
         {/* Header */}
         <div className="bg-white p-5">
           <div className="flex items-center justify-between">
@@ -214,14 +282,14 @@ export const AvatarSelectionPopup = ({
 
         {/* Avatar Grid */}
         <div className="p-5  border-2 border-t-0 border-slate-200 rounded-b-2xl">
-          <div className="flex flex-wrap gap-4 justify-center">
+          <div className="flex flex-wrap gap-4 justify-center w-full">
             {AVATAR_IMAGES.map((avatar, index) => (
               <div key={index} className="relative">
                 <button
                   onClick={() => handleAvatarSelect(avatar)}
                   className={`w-[60px] h-[60px] rounded-full overflow-hidden transition-all duration-200 ${
                     selectedAvatar === avatar
-                      ? "ring-4 ring-indigo-500 ring-offset-2"
+                      ? "ring-4 ring-indigo-500 "
                       : "hover:scale-105"
                   }`}
                 >
@@ -244,21 +312,22 @@ export const AvatarSelectionPopup = ({
           </div>
 
           {/* File Upload Section */}
-          <div className="mt-5 flex gap-4 items-center justify-center">
+          <div className="mt-5 flex flex-col md:flex-row gap-4 items-center justify-center">
             <div
-              className={`flex-1 border-2 border-dashed rounded-lg p-3 transition-colors ${
+              className={`flex-1 border-2 border-dashed w-full rounded-lg p-3 transition-colors cursor-pointer ${
                 isDragging
                   ? "border-indigo-400 bg-indigo-50"
-                  : "border-slate-300"
+                  : "border-slate-300 hover:border-indigo-300"
               }`}
               onDragOver={handleDragOver}
               onDragEnter={handleDragOver}
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
+              onClick={handleDivClick}
             >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-md overflow-hidden bg-slate-100">
+              <div className="flex flex-col md:flex-row  w-full items-center justify-between">
+                <div className="flex flex-col w-full md:w-auto md:flex-row items-center gap-3">
+                  <div className="w-8 h-8 rounded-md overflow-hidden">
                     {uploadedFile ? (
                       <Image
                         src={uploadedFile}
@@ -282,7 +351,10 @@ export const AvatarSelectionPopup = ({
                       : "Drag & drop or click to upload"}
                   </span>
                 </div>
-                <label className="bg-indigo-50 text-slate-600 px-3 py-2 rounded-md text-sm font-semibold cursor-pointer hover:bg-indigo-100 transition-colors">
+                <label
+                  className="bg-indigo-50 text-slate-600 px-3 py-2 rounded-md text-sm font-semibold cursor-pointer hover:bg-indigo-100 transition-colors"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   Browse File
                   <input
                     type="file"
@@ -317,7 +389,8 @@ export const AvatarSelectionPopup = ({
             <Button
               type="button"
               onClick={handleSave}
-              className="rounded-full px-4 py-2 h-10 bg-indigo-500 hover:bg-indigo-600 text-white"
+              disabled={!hasChanges()}
+              className="rounded-full px-4 py-2 h-10 bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <Save className="w-4 h-4" />
               Save

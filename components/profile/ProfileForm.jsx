@@ -345,7 +345,6 @@ export const ProfileForm = ({ className = "" }) => {
                               label="Current Password"
                               placeholder="Enter current password"
                               required
-                              autoComplete="current-password"
                             />
                           </div>
 
@@ -356,7 +355,6 @@ export const ProfileForm = ({ className = "" }) => {
                               label="New Password"
                               placeholder="Enter new password"
                               required
-                              autoComplete="new-password"
                             />
                           </div>
 
@@ -367,7 +365,6 @@ export const ProfileForm = ({ className = "" }) => {
                               label="Confirm Password"
                               placeholder="Confirm new password"
                               required
-                              autoComplete="new-password"
                             />
                           </div>
                         </div>
