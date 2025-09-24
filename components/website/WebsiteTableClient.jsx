@@ -184,7 +184,6 @@ const WebsiteTableClient = ({
     setWebsiteToDelete(null);
   };
 
-  // Clear search function
   const handleClearSearch = () => {
     setSearchQuery("");
     setCurrentPage(1);
