@@ -7,6 +7,7 @@ import { userService } from "@/services/user";
 import Image from "next/image";
 import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
+import { getAvatarUrl } from "@/lib/utils";
 
 const AVATAR_IMAGES = [
   // "woman5.png",
@@ -45,10 +46,33 @@ export const AvatarSelectionPopup = ({
   const [isDragging, setIsDragging] = useState(false);
   const { user, setUser } = useAuth();
 
+  // Helper: extract filename from a path or URL
+  const extractFilename = (value) => {
+    if (!value || typeof value !== "string") return null;
+    return value.includes("/") ? value.split("/").pop() : value;
+  };
+
+  // Helper: if stored filename is a copied predefined avatar like
+  // 1723456789012-woman4.png -> map back to base name "woman4.png"
+  const mapToPredefinedBase = (filename) => {
+    if (!filename) return null;
+    // Already a direct predefined name
+    if (AVATAR_IMAGES.includes(filename)) return filename;
+    // Try removing first hyphen-delimited timestamp/prefix
+    const dashIndex = filename.indexOf("-");
+    if (dashIndex > 0) {
+      const candidate = filename.slice(dashIndex + 1);
+      if (AVATAR_IMAGES.includes(candidate)) return candidate;
+    }
+    return null;
+  };
+
   // Reset state when dialog opens
   useEffect(() => {
     if (isOpen) {
-      setSelectedAvatar(currentAvatar);
+      const filename = extractFilename(currentAvatar);
+      const basePredefined = mapToPredefinedBase(filename);
+      setSelectedAvatar(basePredefined);
       setUploadedFile(null);
       setSelectedFile(null);
       setIsDeleteRequested(false);
@@ -58,8 +82,10 @@ export const AvatarSelectionPopup = ({
 
   // Check if there are any changes made
   const hasChanges = () => {
-    // Check if avatar selection changed
-    if (selectedAvatar !== currentAvatar) return true;
+    // Compare normalized predefined base of current vs selected
+    const currentFilename = extractFilename(currentAvatar);
+    const currentBase = mapToPredefinedBase(currentFilename);
+    if (selectedAvatar !== currentBase) return true;
 
     // Check if file was uploaded
     if (uploadedFile || selectedFile) return true;
@@ -199,10 +225,25 @@ export const AvatarSelectionPopup = ({
       } else {
         // Picking from pre-defined list
         if (selectedAvatar) {
-          const response = await userService.updateProfile({
-            avatar: selectedAvatar,
+          // First copy the predefined avatar to user's profile directory
+          const copyResponse = await fetch("/api/profile/copy-avatar", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ avatarName: selectedAvatar }),
           });
-          newAvatar = selectedAvatar;
+
+          const copyData = await copyResponse.json();
+          if (!copyResponse.ok || !copyData?.filename) {
+            throw new Error(copyData?.error || "Failed to copy avatar");
+          }
+
+          // Then update the user profile with the copied avatar filename
+          const response = await userService.updateProfile({
+            avatar: copyData.filename,
+          });
+          newAvatar = copyData.filename;
 
           // Update user context
           if (response.user) {
@@ -211,7 +252,7 @@ export const AvatarSelectionPopup = ({
 
           toast.success("Profile picture updated successfully!");
         }
-        onSelectAvatar(selectedAvatar || null);
+        onSelectAvatar(newAvatar || null);
       }
       onClose();
     } catch (err) {
@@ -221,7 +262,9 @@ export const AvatarSelectionPopup = ({
   };
 
   const handleCancel = () => {
-    setSelectedAvatar(currentAvatar);
+    const filename = extractFilename(currentAvatar);
+    const basePredefined = mapToPredefinedBase(filename);
+    setSelectedAvatar(basePredefined);
     setUploadedFile(null);
     setSelectedFile(null);
     setIsDeleteRequested(false);
@@ -252,7 +295,7 @@ export const AvatarSelectionPopup = ({
                       currentAvatar?.startsWith("http") ||
                       currentAvatar?.startsWith("data:")
                         ? currentAvatar
-                        : `${process.env.NEXT_PUBLIC_FRONTEND_URL}/profile/${currentAvatar}`
+                        : getAvatarUrl(currentAvatar)
                     }
                     alt="Current Avatar"
                     className="w-full h-full object-cover"
