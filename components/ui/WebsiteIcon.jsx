@@ -62,7 +62,7 @@ const WebsiteIcon = ({
   if (logoUrl) {
     return (
       <div
-        className={`relative flex items-center justify-center justify-self-center ${
+        className={`relative flex items-center justify-start justify-self-start ${
           size !== "custom" ? currentSize.container : ""
         } ${containerClassName}`}
       >
@@ -87,7 +87,9 @@ const WebsiteIcon = ({
 
   // Fallback to WebsiteAvatar if no logo
   return (
-    <div className={`${containerClassName} flex items-center justify-center`}>
+    <div
+      className={`${containerClassName} flex max-w-[137px] items-center justify-center`}
+    >
       <WebsiteAvatar
         websiteName={websiteName}
         size={size === "custom" ? "default" : size}

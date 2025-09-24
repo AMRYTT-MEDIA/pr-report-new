@@ -758,13 +758,11 @@ const PRReportViewer = ({
               <Table>
                 <TableHeader className="sticky top-0 z-10">
                   <TableRow className="w-full">
-                    <TableHead className="min-w-[200px]">Outlet</TableHead>
+                    <TableHead className="w-[200px]">Outlet</TableHead>
                     <TableHead className="min-w-[400px]">Website</TableHead>
-                    <TableHead className="min-w-[160px]">
-                      Potential Reach
-                    </TableHead>
+                    <TableHead className="w-[160px]">Potential Reach</TableHead>
                     {!isPublic && (
-                      <TableHead className="w-[140px]">Actions</TableHead>
+                      <TableHead className="w-[100px]">Actions</TableHead>
                     )}
                   </TableRow>
                 </TableHeader>
@@ -786,7 +784,7 @@ const PRReportViewer = ({
 
                     return (
                       <TableRow key={index}>
-                        <TableCell className="flex items-center gap-3 min-w-[200px]">
+                        <TableCell className="flex items-center gap-3 max-w-[200px]">
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
                             <WebsiteIcon
                               logoFilename={outlet.logo}
@@ -820,7 +818,7 @@ const PRReportViewer = ({
                         </TableCell>
 
                         {!isPublic && (
-                          <TableCell className="font-medium w-[140px]">
+                          <TableCell className="font-medium w-[100px]">
                             <div className="pl-2 flex gap-8 items-center">
                               <CustomTooltip
                                 content="Edit"

@@ -68,7 +68,7 @@ const WebsiteAvatar = ({
   if (!websiteName) {
     return (
       <div
-        className={`${currentSize.container} rounded-full flex items-center justify-center border-2 text-gray-700 border-gray-300 bg-gray-50 ${className}`}
+        className={`${currentSize.container} rounded-full flex items-center w-[137px] justify-center border-2 text-gray-700 border-gray-300 bg-gray-50 ${className}`}
       >
         <span className={`font-bold tracking-wide ${currentSize.text}`}>-</span>
       </div>
@@ -93,7 +93,7 @@ const WebsiteAvatar = ({
 
   return (
     <div
-      className={`${currentSize.container} rounded-full flex items-center justify-center border-2 font-bold tracking-wide ${colorClass} ${className}`}
+      className={`${currentSize.container}   rounded-full flex items-center justify-center border-2 font-bold tracking-wide ${colorClass} ${className}`}
     >
       <span className={currentSize.text}>{firstChar}</span>
     </div>

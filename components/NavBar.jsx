@@ -151,12 +151,12 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                 {/* User Info (desktop only) */}
                 <div className="hidden lg:block text-left">
                   <div className="text-sm font-semibold text-gray-900">
-                    {user?.fullName
-                      ? `${user.fullName.substring(0, 10)}...`
-                      : "Publish rt..."}
+                    {user?.fullName && user.fullName.length > 20
+                      ? `${user.fullName.substring(0, 20)}...`
+                      : user?.fullName || "Unknown"}
                   </div>
                   <div className="text-xss text-gray-500">
-                    {user?.role?.name || "Test"}
+                    {user?.role?.name || "Unknown"}
                   </div>
                 </div>
 

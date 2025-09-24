@@ -458,7 +458,7 @@ export default function BlockUrlsClient() {
                         aria-label="Select all URLs"
                       />
                     </TableHead>
-                    <TableHead className="w-60 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="w-[200px] py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
                       Website Icon
                     </TableHead>
                     <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
@@ -479,7 +479,7 @@ export default function BlockUrlsClient() {
                   {loading ? (
                     <TableRow>
                       <TableCell
-                        colSpan={5}
+                        colSpan={6}
                         className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
                       >
                         <Loading size="lg" />
@@ -503,7 +503,10 @@ export default function BlockUrlsClient() {
                     </TableRow>
                   ) : (
                     blockUrls?.map((url, index) => (
-                      <TableRow key={url._id} className="hover:bg-gray-50">
+                      <TableRow
+                        key={url._id}
+                        className="hover:bg-gray-50 w-[200px]"
+                      >
                         <TableCell>
                           <SimpleCheckbox
                             checked={selectedUrls.has(url._id)}
@@ -513,7 +516,7 @@ export default function BlockUrlsClient() {
                             aria-label={`Select ${url.websiteName}`}
                           />
                         </TableCell>
-                        <TableCell>
+                        <TableCell className="w-[200px]">
                           <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
                             <WebsiteIcon
                               logoFilename={url?.website_id?.logo}

@@ -308,10 +308,10 @@ const WebsiteTableClient = ({
               <table className="w-full divide-y divide-slate-200 table-auto">
                 <thead className="bg-slate-50 w-full sticky top-0 z-10">
                   <tr className="w-full">
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[10%]">
+                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[4%]">
                       {WebsiteConstants.no}
                     </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[15%] whitespace-nowrap">
+                    <th className="px-6 py-3.5  text-sm font-semibold text-slate-800 w-[15%] text-left whitespace-nowrap">
                       {WebsiteConstants.websiteIcon}
                     </th>
                     <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[25%] whitespace-nowrap">
@@ -395,7 +395,7 @@ const WebsiteTableClient = ({
                           />
                         </td>
                         <td className="px-6 py-3">
-                          {needsTruncation(website.name, "name") ? (
+                          {/* {needsTruncation(website.name, "name") ? (
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
@@ -418,11 +418,14 @@ const WebsiteTableClient = ({
                             <p className="text-sm font-medium text-gray-scale-60">
                               {website.name || "-"}
                             </p>
-                          )}
+                          )} */}
+                          <p className="text-sm font-medium text-gray-scale-60">
+                            {website.name || "-"}
+                          </p>
                         </td>
                         <td className="px-6 py-3">
                           <div className="flex-1 min-w-0">
-                            {needsTruncation(website.domain, "url") ? (
+                            {/* {needsTruncation(website.domain, "url") ? (
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
@@ -445,7 +448,10 @@ const WebsiteTableClient = ({
                               <p className="text-sm font-medium text-gray-scale-60">
                                 {website.domain || "-"}
                               </p>
-                            )}
+                            )} */}
+                            <p className="text-sm font-medium text-gray-scale-60">
+                              {website.domain || "-"}
+                            </p>
                           </div>
                         </td>
                         {canManageWebsite(user) && (
