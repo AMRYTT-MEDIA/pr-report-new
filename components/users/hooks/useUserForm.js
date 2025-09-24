@@ -41,9 +41,17 @@ export const useUserForm = (
         ? Yup.string()
             .min(6, "Password must be at least 6 characters")
             .max(50, "Password must be less than 50 characters")
+            .matches(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
+              "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+            )
         : Yup.string()
             .min(6, "Password must be at least 6 characters")
             .max(50, "Password must be less than 50 characters")
+            .matches(
+              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
+              "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+            )
             .required("Password is required"),
     }),
     onSubmit: async (values) => {
