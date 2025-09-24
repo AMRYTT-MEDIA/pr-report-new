@@ -30,6 +30,10 @@ export const useUserForm = (
       fullName: Yup.string()
         .min(2, "Name must be at least 2 characters")
         .max(50, "Name must be less than 50 characters")
+        .matches(
+          /^[A-Za-z._ -]+$/,
+          "Only letters, spaces, dots, hyphens, and underscores allowed."
+        )
         .required("Name is required"),
       email: isEdit
         ? Yup.string().email("Invalid email address")
