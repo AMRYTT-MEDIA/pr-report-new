@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { writeFile, mkdir, unlink } from "fs/promises";
 import path from "path";
 import { existsSync } from "fs";
+import { generateDomainUuidFilename } from "@/lib/utils";
 
 export async function POST(request) {
   try {
@@ -9,6 +10,8 @@ export async function POST(request) {
     const file = formData.get("logo");
     const filename = formData.get("filename");
     const existingLogo = formData.get("existingLogo");
+    const websiteUrl = formData.get("websiteUrl");
+    const websiteName = formData.get("websiteName");
 
     if (!file) {
       return NextResponse.json({ error: "No file received." }, { status: 400 });
@@ -45,8 +48,42 @@ export async function POST(request) {
       await mkdir(logoDir, { recursive: true });
     }
 
-    // Use provided filename or generate one
-    const finalFilename = filename || `${Date.now()}-${file.name}`;
+    // Generate filename with domain + UUID format
+    let finalFilename;
+
+    if (existingLogo) {
+      // For edits, reuse the same filename (domain + UUID)
+      const existingFilename = existingLogo.includes("/")
+        ? existingLogo.split("/").pop()
+        : existingLogo;
+
+      // Extract the UUID from existing filename (format: domain-uuid.ext)
+      const filenameWithoutExt = existingFilename.replace(/\.[^/.]+$/, "");
+      const parts = filenameWithoutExt.split("-");
+
+      if (parts.length >= 2) {
+        // Keep the same UUID, just update extension if needed
+        const fileExtension = file.name.split(".").pop().toLowerCase();
+        const uuid = parts[parts.length - 1]; // Last part should be UUID
+        const domain = parts.slice(0, -1).join("-"); // Everything except last part
+        finalFilename = `${domain}-${uuid}.${fileExtension}`;
+      } else {
+        // Fallback: generate new filename
+        finalFilename = generateDomainUuidFilename(
+          websiteUrl,
+          websiteName,
+          file.name
+        );
+      }
+    } else {
+      // For new uploads, generate domain + UUID filename
+      finalFilename = generateDomainUuidFilename(
+        websiteUrl,
+        websiteName,
+        file.name
+      );
+    }
+
     const filePath = path.join(logoDir, finalFilename);
 
     // If updating existing logo, try to delete the old file first
