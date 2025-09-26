@@ -275,22 +275,22 @@ export default function PRReportsListClient() {
   }
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-slate-500">
       <div className="mx-auto">
-        <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
+        <div className="bg-white shadow-sm border rounded-lg border-slate-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-6 py-4 flex justify-between items-center border-b border-gray-200">
+          <div className="px-6 py-4 flex justify-between items-center border-b border-slate-200">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">
                 All PR Reports
               </h1>
-              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
+              <div className="text-sm text-indigo-600 px-3 py-0.5 border border-indigo-600 rounded-full">
                 {totalCount}
               </div>
             </div>
             <Button
               onClick={() => setImportDialogOpen(true)}
-              className="text-white px-6 py-3 flex items-center gap-2 bg-primary-50 rounded-3xl hover:bg-primary-60"
+              className="text-white px-6 py-3 flex items-center gap-2 bg-indigo-500 rounded-3xl hover:bg-indigo-600"
             >
               <ImportIcon color="#fff" width={20} height={20} />
               <span className="hidden sm:inline">Import</span>
@@ -300,8 +300,8 @@ export default function PRReportsListClient() {
           <div className="overflow-x-auto">
             {/* Table Section */}
             <div className="max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
-              <table className="w-full divide-y divide-gray-200 table-auto">
-                <thead className="bg-gray-50 w-full">
+              <table className="w-full divide-y divide-slate-200 table-auto">
+                <thead className="bg-slate-500 w-full">
                   <tr className="w-full ">
                     <th className="px-6 py-4 text-left text-sm font-semibold w-[60%] min-w-[220px] whitespace-nowrap">
                       Full Name
@@ -315,14 +315,14 @@ export default function PRReportsListClient() {
                   </tr>
                 </thead>
                 {reports?.length > 0 && (
-                  <tbody className="bg-white divide-y divide-gray-200 max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
+                  <tbody className="bg-white divide-y divide-slate-200 max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
                     {reports.map((report, index) => {
                       const tooltipPosition =
                         reports?.length === index + 1 ? "top" : "bottom";
                       return (
                         <tr
                           key={report.grid_id || report._id}
-                          className="hover:bg-gray-50"
+                          className="hover:bg-slate-500"
                         >
                           <td className="px-6 py-3">
                             <div className="flex items-center gap-4">
@@ -330,19 +330,19 @@ export default function PRReportsListClient() {
                                 <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
                                   CSV
                                 </p>
-                                <File className="w-10 h-10 text-gray-scale-20" />
+                                <File className="w-10 h-10 text-slate-200" />
                               </div>
                               <div className="flex-1 min-w-0">
                                 {needsTruncation(report.report_title) ? (
                                   <TooltipProvider>
                                     <Tooltip>
                                       <TooltipTrigger asChild>
-                                        <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                        <p className="text-sm font-medium text-slate-600 truncate cursor-help">
                                           {formatTitle(report.report_title)}
                                         </p>
                                       </TooltipTrigger>
                                       <TooltipContent
-                                        className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                        className="max-w-sm bg-slate-900 text-white border-slate-700"
                                         side="top"
                                         align="start"
                                       >
@@ -353,25 +353,25 @@ export default function PRReportsListClient() {
                                     </Tooltip>
                                   </TooltipProvider>
                                 ) : (
-                                  <p className="text-sm font-medium text-gray-scale-60">
+                                  <p className="text-sm font-medium text-slate-600">
                                     {report?.report_title || "Untitled Report"}
                                   </p>
                                 )}
-                                <div className="flex items-center mt-1 text-sm text-gray-500">
+                                <div className="flex items-center mt-1 text-sm text-slate-500">
                                   <TooltipProvider>
                                     <Tooltip>
                                       <TooltipContent
-                                        className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                        className="max-w-sm bg-slate-900 text-white border-slate-700"
                                         side="top"
                                         align="start"
                                       >
                                         <div className="text-center">
                                           <p className="font-medium mb-1">
                                             {report.is_private
-                                              ? "🔒 Private Report"
-                                              : "🌐 Public Report"}
+                                              ? "?? Private Report"
+                                              : "?? Public Report"}
                                           </p>
-                                          <p className="text-sm text-gray-300">
+                                          <p className="text-sm text-slate-300">
                                             {report.is_private
                                               ? "Only you and people you specifically share with can view this report."
                                               : "Anyone with the link can view this report."}
@@ -385,10 +385,10 @@ export default function PRReportsListClient() {
                             </div>
                           </td>
                           <td className="px-6 py-3">
-                            <p className="text-sm text-gray-scale-60 font-semibold mb-1">
+                            <p className="text-sm text-slate-600 font-semibold mb-1">
                               {report?.uploaded_by?.name || "-"}
                             </p>
-                            <p className="text-gray-scale-50 text-nowrap font-medium text-sm">
+                            <p className="text-slate-500 text-nowrap font-medium text-sm">
                               {formatDate(report?.createdAt || "-")}
                             </p>
                           </td>
@@ -403,7 +403,7 @@ export default function PRReportsListClient() {
                                     `/view-pr/${report.grid_id || report._id}`
                                   )
                                 }
-                                className="text-gray-scale-60 hover:text-gray-scale-80"
+                                className="text-slate-600 hover:text-slate-800"
                               >
                                 <Eye className="w-4 h-4" />
                               </button>
@@ -414,7 +414,7 @@ export default function PRReportsListClient() {
                             >
                               <button
                                 onClick={() => openShareDialog(report)}
-                                className="text-gray-scale-60 hover:text-gray-scale-80"
+                                className="text-slate-600 hover:text-slate-800"
                               >
                                 {report?.is_private &&
                                 (report?.sharedEmails?.length ?? 0) > 0 ? (
@@ -434,7 +434,7 @@ export default function PRReportsListClient() {
                                   disabled={deletingReports.has(
                                     report.grid_id || report._id
                                   )}
-                                  className="text-danger-60 hover:text-danger-50"
+                                  className="text-red-600 hover:text-red-500"
                                 >
                                   {deletingReports.has(
                                     report.grid_id || report._id
@@ -455,10 +455,10 @@ export default function PRReportsListClient() {
               </table>
             </div>
             {reports?.length === 0 && (
-              <div className="flex items-center justify-center h-full min-h-[calc(100dvh-206px)] lg:min-h-[calc(100dvh-214px)]  w-full border-t border-gray-200">
+              <div className="flex items-center justify-center h-full min-h-[calc(100dvh-206px)] lg:min-h-[calc(100dvh-214px)]  w-full border-t border-slate-200">
                 <div className="flex flex-col items-center justify-center gap-2">
                   <NoDataFound />
-                  <p className="text-gray-scale-80 text-sm font-semibold">
+                  <p className="text-slate-800 text-sm font-semibold">
                     No Data Found...
                   </p>
                 </div>

@@ -31,7 +31,7 @@ const DeleteUserDialog = ({
       <Button
         variant="default"
         onClick={onClose}
-        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-20 text-gray-scale-60 hover:text-primary-60 rounded-3xl font-semibold w-full sm:w-auto"
+        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-20 text-slate-600 hover:text-indigo-600 rounded-3xl font-semibold w-full sm:w-auto"
       >
         <CircleXIcon className="h-4 w-4" />
         Cancel
@@ -40,7 +40,7 @@ const DeleteUserDialog = ({
         variant="default"
         onClick={handleConfirm}
         disabled={loading}
-        className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold w-full sm:w-auto"
+        className="gap-1.5 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl font-semibold w-full sm:w-auto"
       >
         <Trash2 className="h-4 w-4" />
         Delete
@@ -66,8 +66,8 @@ const DeleteUserDialog = ({
 
         {/* User Details */}
         <div className="flex items-center gap-2 py-[6px] px-[10px] rounded-md border border-yellow-200 bg-yellow-50">
-          <Info className="w-5 h-5 text-warning-60" />
-          <p className="text-sm font-medium text-warning-60 capitalize">
+          <Info className="w-5 h-5 text-yellow-600" />
+          <p className="text-sm font-medium text-yellow-600 capitalize">
             If you Delete, User is permanent Delete User.
           </p>
         </div>

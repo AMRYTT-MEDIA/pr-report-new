@@ -177,7 +177,7 @@ const Sidebar = () => {
       {/* Sidebar */}
       <div
         className={cn(
-          "fixed left-0 top-0 h-full border-r bg-white lg:bg-gray-scale-10 border-slate-200 lg:border-[#E2E8F0] z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
+          "fixed left-0 top-0 h-full border-r bg-white lg:bg-slate-100 border-slate-200 lg:border-[#E2E8F0] z-50 w-[250px] transition-transform duration-300 ease-in-out lg:translate-x-0",
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         )}
         id="app-sidebar"
@@ -212,7 +212,7 @@ const Sidebar = () => {
                     className={cn(
                       "self-stretch  h-[41px] px-3 py-2 rounded-full inline-flex justify-start items-center gap-2 overflow-hidden transition-all duration-200 outline-none focus:outline-none focus-visible:outline-none active:outline-none focus:ring-0 active:ring-0",
                       active
-                        ? "bg-gray-scale-20 border border-slate-200"
+                        ? "bg-slate-200 border border-slate-200"
                         : "hover:bg-slate-100/50 border border-transparent"
                     )}
                     aria-current={active ? "page" : undefined}
@@ -222,13 +222,13 @@ const Sidebar = () => {
                       <div className="w-5 h-5 relative flex items-center justify-center">
                         <Icon
                           className={
-                            active ? "text-gray-scale-80" : "text-gray-scale-50"
+                            active ? "text-slate-800" : "text-slate-500"
                           }
                         />
                       </div>
 
                       {/* Text */}
-                      <div className="flex-1 justify-start text-gray-scale-80 text-sm font-medium">
+                      <div className="flex-1 justify-start text-slate-800 text-sm font-medium">
                         {item.name}
                       </div>
                     </div>
@@ -256,7 +256,7 @@ const Sidebar = () => {
         <button
           type="button"
           aria-label="Close sidebar"
-          className="lg:hidden fixed top-4 left-[260px] p-2 rounded-xl border border-gray-200 bg-white shadow-md z-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
+          className="lg:hidden fixed top-4 left-[260px] p-2 rounded-xl border border-slate-200 bg-white shadow-md z-50 focus:outline-none focus:ring-2 focus:ring-slate-300"
           onClick={() => {
             setIsSidebarOpen(false);
             try {
@@ -267,7 +267,7 @@ const Sidebar = () => {
             );
           }}
         >
-          <X className="h-5 w-5 text-gray-700" />
+          <X className="h-5 w-5 text-slate-700" />
         </button>
       )}
     </>

@@ -5,9 +5,9 @@ export const dynamic = "force-dynamic";
 
 export default function GlobalError({ error, reset }) {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
+    <div className="min-h-screen flex items-center justify-center bg-slate-500">
       <div className="text-center">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+        <h2 className="text-2xl font-bold text-slate-900 mb-4">
           Something went wrong!
         </h2>
         <button

@@ -168,7 +168,7 @@ const ForgotPasswordForm = () => {
                         >
                           <div className="absolute bg-white bottom-0 left-0 right-0 rounded-[6px] top-0 border border-[#dbe2ed] hover:border-indigo-300 transition-colors">
                             <div className="overflow-clip relative size-full">
-                              <div className="absolute content-stretch flex gap-[7px] items-center justify-center top-1/2 translate-x-[-50%] translate-y-[-50%] left-1/2">
+                              <div className="absolute content-stretch flex gap-[7px] items-center justify-center top-1/2 trangray-x-[-50%] trangray-y-[-50%] left-1/2">
                                 <div className="overflow-clip relative shrink-0 size-6">
                                   <Image
                                     src={provider.icon}
@@ -194,7 +194,7 @@ const ForgotPasswordForm = () => {
 
                   {/* Divider Line */}
                   <div className="h-0 relative shrink-0 w-full">
-                    <div className="absolute border-b-2 border-dashed border-gray-200 left-0 right-0 top-[-2px]">
+                    <div className="absolute border-b-2 border-dashed border-slate-200 left-0 right-0 top-[-2px]">
                       <div className="w-full bg-slate-200"></div>
                     </div>
                   </div>
@@ -308,7 +308,7 @@ const ForgotPasswordForm = () => {
                         className={`bg-white h-10 relative rounded-[6px] shrink-0 w-full ${
                           formik.touched.email && formik.errors.email
                             ? "border border-rose-600"
-                            : "border border-gray-200"
+                            : "border border-slate-200"
                         }`}
                       >
                         <div className="box-border content-stretch flex gap-2 h-10 items-center justify-start overflow-clip px-3.5 py-2.5 relative w-full">

@@ -40,13 +40,14 @@ const CommonModal = ({
   className = "",
   headerClassName = "",
   contentClassName = "",
-  footerClassName = "",
+  footerClassName = "bg-slate-100",
   closeOnOverlayClick = true,
   closeOnEscape = true,
   preventClose = false,
   subtitle = "",
   subtitle2 = "",
   noScroll = false, // Prevent scrolling in modal content
+  isBorderShow = true,
 }) => {
   // Handle modal close
   const handleClose = () => {
@@ -91,10 +92,17 @@ const CommonModal = ({
     "2xl": "sm:max-w-[1000px]",
   };
 
+  // Check if custom className overrides default sizing
+  const hasCustomSizing =
+    className.includes("max-w-") || className.includes("w-");
+  const defaultSizing = hasCustomSizing ? "" : "max-w-[90vw] sm:max-w-[550px]";
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        className={`${sizeClasses[size]} bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px] ${className}`}
+        className={`${
+          hasCustomSizing ? "" : sizeClasses[size]
+        } bg-gray-100 border border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 gap-0 ${defaultSizing} ${className}`}
         onPointerDownOutside={handleOverlayClick}
         showCloseButton={false}
         style={{
@@ -108,7 +116,7 @@ const CommonModal = ({
       >
         {/* Main Content Container */}
         <div
-          className={`flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white ${
+          className={`flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white ${
             noScroll ? "" : "overflow-y-auto scrollbar-custom"
           }`}
         >
@@ -123,7 +131,7 @@ const CommonModal = ({
                 className="p-1 "
                 disabled={preventClose}
               >
-                <X className="w-[24px] h-[24px] text-gray-scale-60" />
+                <X className="w-[24px] h-[24px] text-slate-600" />
               </button>
             )}
           </div>
@@ -131,16 +139,16 @@ const CommonModal = ({
           {/* Title Section */}
           <div className="flex flex-col gap-1">
             <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-            <p className="text-font-h2-5 text-sm font-medium">
+            <p className="text-font-h2-5 text-sm font-medium ">
               {subtitle}{" "}
               {subtitle2 && (
-                <span className="text-gray-scale-70 opacity-50 text-sm font-bold">
-                  {subtitle2}
-                </span>
+                <span className="text-slate-700  text-sm ">{subtitle2}</span>
               )}
             </p>
           </div>
-          <div className="border-b-2 border-dashed border-gray-scale-20" />
+          {isBorderShow && (
+            <div className="border-b-2 border-dashed border-slate-200" />
+          )}
           {/* Dynamic Content */}
           <div className={`${contentClassName}`}>{children}</div>
         </div>

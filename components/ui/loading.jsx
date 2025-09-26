@@ -17,11 +17,11 @@ const Loading = ({
   };
 
   const colorClasses = {
-    primary: "border-primary-60",
+    primary: "border-indigo-600",
     white: "border-white",
-    gray: "border-gray-400",
+    gray: "border-slate-400",
     purple: "border-purple-600",
-    danger: "border-danger-60",
+    danger: "border-red-600",
   };
 
   // Special case for purple to match the original design
@@ -33,19 +33,19 @@ const Loading = ({
       return "border-b-2 border-white";
     }
     if (color === "primary") {
-      return "border-b-2 border-primary-60";
+      return "border-b-2 border-indigo-600";
     }
     if (color === "danger") {
-      return "border-b-2 border-danger-60";
+      return "border-b-2 border-red-600";
     }
-    return `border-2 border-gray-200 ${colorClasses[color]} border-t-transparent`;
+    return `border-2 border-slate-200 ${colorClasses[color]} border-t-transparent`;
   };
 
   const textColorClasses = {
     white: "text-white",
     black: "text-black",
-    gray: "text-gray-600",
-    primary: "text-primary-60",
+    gray: "text-slate-600",
+    primary: "text-indigo-600",
   };
 
   // Handle different text positions

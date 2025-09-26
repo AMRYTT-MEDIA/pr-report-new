@@ -38,12 +38,12 @@ const FormField = ({
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
-            className={`text-gray-scale-60 text-input-field ${
+            className={`text-slate-600 text-input-field ${
               readOnly
-                ? "bg-gray-50 text-gray-600 cursor-not-allowed"
+                ? "bg-slate-500 text-slate-600 cursor-not-allowed"
                 : touched && error
-                ? "border-danger-scale-60"
-                : "border-gray-scale-30"
+                ? "border-red-600"
+                : "border-slate-300"
             } ${className}`}
           />
         )}

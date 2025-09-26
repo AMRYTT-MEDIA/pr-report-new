@@ -54,13 +54,13 @@ export default function Dropdown({
             type="button"
             className={cn(
               "h-10 rounded-[6px] px-3.5 py-2.5 border w-full flex items-center justify-between",
-              error ? "border-danger-scale-60" : "border-gray-scale-30",
+              error ? "border-red-600" : "border-slate-300",
               loading ? "opacity-50 cursor-not-allowed" : "",
               disabled ? "opacity-50 cursor-not-allowed" : ""
             )}
             disabled={disabled || loading}
           >
-            <span className="text-gray-scale-60" style={{ opacity: 0.7 }}>
+            <span className="text-slate-600" style={{ opacity: 0.7 }}>
               {value || placeholder}
             </span>
             <svg
@@ -92,10 +92,10 @@ export default function Dropdown({
           "origin-top",
           align === "right" && "right-0 top-full",
           align === "left" && "left-0 top-full",
-          align === "center" && "left-1/2 top-full transform -translate-x-1/2",
+          align === "center" && "left-1/2 top-full transform -trangray-x-1/2",
           isOpen
-            ? "opacity-100 scale-100 translate-y-0"
-            : "opacity-0 scale-95 translate-y-0 pointer-events-none",
+            ? "opacity-100 scale-100 trangray-y-0"
+            : "opacity-0 scale-95 trangray-y-0 pointer-events-none",
           className
         )}
       >

@@ -65,7 +65,7 @@ const UserDialog = ({
         isEdit ? (
           <PencilLine className="w-7 h-7 text-slate-600" />
         ) : (
-          <Plus className="w-7 h-7 text-gray-scale-100" />
+          <Plus className="w-7 h-7 text-slate-900" />
         )
       }
       footer={footer}

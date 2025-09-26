@@ -144,7 +144,7 @@ const CommonTable = ({
                         if (input) input.indeterminate = someSelected;
                       }}
                       onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="rounded border-gray-300"
+                      className="rounded border-slate-300"
                     />
                   </TableHead>
                 )}
@@ -237,7 +237,7 @@ const CommonTable = ({
                           onChange={(e) =>
                             handleRowSelect(row, e.target.checked)
                           }
-                          className="rounded border-gray-300"
+                          className="rounded border-slate-300"
                         />
                       </TableCell>
                     )}
@@ -250,7 +250,7 @@ const CommonTable = ({
                         {column.render ? (
                           column.render(row[column.key], row, index)
                         ) : (
-                          <div className="font-medium text-gray-scale-60 text-sm whitespace-nowrap">
+                          <div className="font-medium text-slate-600 text-sm whitespace-nowrap">
                             {row[column.key]}
                           </div>
                         )}

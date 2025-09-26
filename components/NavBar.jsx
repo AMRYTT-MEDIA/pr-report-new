@@ -72,7 +72,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   if (isViewPRPage) return null;
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-30 ">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-30 ">
       <div className="flex justify-between items-center h-14 mx-[15px]">
         {/* Left: Logo on mobile/tablet, breadcrumb on desktop */}
         <div className="flex items-center">
@@ -150,12 +150,12 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
 
                 {/* User Info (desktop only) */}
                 <div className="hidden lg:block text-left">
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-slate-900">
                     {user?.fullName && user.fullName.length > 20
                       ? `${user.fullName.substring(0, 20)}...`
                       : user?.fullName || "Unknown"}
                   </div>
-                  <div className="text-xss text-gray-500">
+                  <div className="text-xss text-slate-500">
                     {user?.role?.name || "Unknown"}
                   </div>
                 </div>
@@ -174,11 +174,11 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
           />
 
           {/* Divider between user and hamburger (mobile/tablet) */}
-          <div className="lg:hidden w-px h-8 bg-gray-200" />
+          <div className="lg:hidden w-px h-8 bg-slate-200" />
 
           {/* Mobile hamburger to toggle sidebar, positioned after avatar */}
           <button
-            className="lg:hidden p-2 hover:bg-gray-50"
+            className="lg:hidden p-2 hover:bg-slate-500"
             aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
             onClick={toggleSidebar}
           >

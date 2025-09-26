@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Label } from "../ui/label";
 import { X, Plus, Save, PencilLine } from "lucide-react";
@@ -10,6 +9,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import WebsiteConstants from "../website/constans";
 import { viewReportsService } from "@/services/viewReports";
+import CommonModal from "@/components/common/CommonModal";
 
 const AddUpdateWebsite = ({
   onWebsiteAdded,
@@ -283,85 +283,28 @@ const AddUpdateWebsite = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
-        showCloseButton={false}
-      >
-        <form onSubmit={formik.handleSubmit} className="flex flex-col h-full">
-          <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-            {/* Header */}
-            <div className="pb-5 border-b-2 border-dashed border-gray-200">
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                  {initialUrls ? (
-                    <PencilLine className="w-7 h-7 text-slate-700" />
-                  ) : (
-                    <Plus className="w-7 h-7 text-slate-700" />
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="mt-5">
-                <h2 className="text-lg font-semibold text-slate-800 mb-1">
-                  <span>{isEditMode ? "Edit" : "Bulk Add"} </span>
-                  Website {isEditMode ? "URL" : "URLs"}
-                </h2>
-                <p className="text-sm font-medium text-slate-600">
-                  <span>
-                    {isEditMode
-                      ? "Edit the website URL below"
-                      : "Enter multiple website URLs separated by commas to create them in bulk"}
-                  </span>
-                </p>
-              </div>
-            </div>
-
-            {/* Form Fields - Only Website URLs */}
-            <div className="flex flex-col gap-5">
-              {/* Website URLs Field */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-slate-700">
-                  Website {isEditMode ? "URL" : "URLs"}{" "}
-                  <span className="text-red-500">*</span>
-                </Label>
-                <textarea
-                  name="websiteUrls"
-                  placeholder={
-                    isEditMode
-                      ? "Enter website URL..."
-                      : "Enter website URLs..."
-                  }
-                  value={formik.values.websiteUrls}
-                  onChange={handleTextareaChange}
-                  onKeyDown={handleKeyDown}
-                  onPaste={handlePaste}
-                  onBlur={formik.handleBlur}
-                  rows={isEditMode ? 3 : 8}
-                  className={`w-full rounded-lg border border-gray-scale-30 text-gray-scale-70 placeholder:text-gray-scale-40 p-3 resize-none focus:outline-none focus:border-primary-50 ${
-                    formik.errors.websiteUrls && formik.touched.websiteUrls
-                      ? "border-red-300 focus:border-red-500"
-                      : ""
-                  }`}
-                />
-                {formik.errors.websiteUrls && formik.touched.websiteUrls && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {formik.errors.websiteUrls}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Buttons */}
-          <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
+    <form onSubmit={formik.handleSubmit}>
+      <CommonModal
+        open={isOpen}
+        onClose={handleClose}
+        title={`${isEditMode ? "Edit" : "Bulk Add"} Website ${
+          isEditMode ? "URL" : "URLs"
+        }`}
+        subtitle={
+          isEditMode
+            ? "Edit the website URL below"
+            : "Enter multiple website URLs separated by commas to create them in bulk"
+        }
+        icon={
+          initialUrls ? (
+            <PencilLine className="w-7 h-7 text-slate-700" />
+          ) : (
+            <Plus className="w-7 h-7 text-slate-700" />
+          )
+        }
+        size="lg"
+        footer={
+          <>
             <Button
               type="button"
               variant="outline"
@@ -379,10 +322,43 @@ const AddUpdateWebsite = ({
               <Save className="w-5 h-5" />
               {isLoading ? "Saving..." : "Save"}
             </Button>
+          </>
+        }
+      >
+        {/* Form Fields - Only Website URLs */}
+        <div className="flex flex-col gap-5">
+          {/* Website URLs Field */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-700">
+              Website {isEditMode ? "URL" : "URLs"}{" "}
+              <span className="text-red-500">*</span>
+            </Label>
+            <textarea
+              name="websiteUrls"
+              placeholder={
+                isEditMode ? "Enter website URL..." : "Enter website URLs..."
+              }
+              value={formik.values.websiteUrls}
+              onChange={handleTextareaChange}
+              onKeyDown={handleKeyDown}
+              onPaste={handlePaste}
+              onBlur={formik.handleBlur}
+              rows={isEditMode ? 3 : 8}
+              className={`w-full rounded-lg border border-slate-300 text-slate-700 placeholder:text-slate-400 p-3 resize-none focus:outline-none focus:border-indigo-500 ${
+                formik.errors.websiteUrls && formik.touched.websiteUrls
+                  ? "border-red-300 focus:border-red-500"
+                  : ""
+              }`}
+            />
+            {formik.errors.websiteUrls && formik.touched.websiteUrls && (
+              <p className="text-red-500 text-xs mt-1">
+                {formik.errors.websiteUrls}
+              </p>
+            )}
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </CommonModal>
+    </form>
   );
 };
 

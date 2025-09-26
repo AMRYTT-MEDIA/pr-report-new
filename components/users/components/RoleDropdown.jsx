@@ -52,13 +52,13 @@ const RoleDropdown = ({
     >
       {rolesLoading ? (
         <div className="flex items-center justify-center py-4 px-3">
-          <Loader2 className="w-4 h-4 animate-spin text-gray-500" />
-          <span className="ml-2 text-sm text-gray-500">Loading...</span>
+          <Loader2 className="w-4 h-4 animate-spin text-slate-500" />
+          <span className="ml-2 text-sm text-slate-500">Loading...</span>
         </div>
       ) : roles.length > 0 ? (
         <RoleList roles={roles} selectedRole={value} onSelect={onSelect} />
       ) : (
-        <div className="px-3 py-2 text-sm text-gray-500">
+        <div className="px-3 py-2 text-sm text-slate-500">
           No roles available
         </div>
       )}

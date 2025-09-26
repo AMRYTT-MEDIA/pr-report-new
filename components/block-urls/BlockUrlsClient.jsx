@@ -360,16 +360,16 @@ export default function BlockUrlsClient() {
     selectedUrls.size > 0 && selectedUrls.size < blockUrls.length;
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-white">
       <div className="mx-auto">
-        <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
+        <div className="bg-white shadow-sm border rounded-lg border-slate-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-gray-200 gap-3.5">
+          <div className="px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 gap-3.5">
             <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">
                 Block URLs
               </h1>
-              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
+              <div className="text-sm text-indigo-600 px-3 py-0.5 border border-indigo-600 rounded-full">
                 {totalCount}
               </div>
             </div>
@@ -383,12 +383,12 @@ export default function BlockUrlsClient() {
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-primary-50 placeholder:text-gray-scale-60 placeholder:opacity-50"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500  placeholder:opacity-50"
                 />
                 {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
                     <X
-                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                      className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
                       onClick={handleClearSearch}
                     />
                   </div>
@@ -435,7 +435,7 @@ export default function BlockUrlsClient() {
                 {/* Block URL Button */}
                 <button
                   onClick={() => setBlockUrlDialogOpen(true)}
-                  className="font-semibold text-sm text-danger-60 whitespace-nowrap bg-danger-10 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-danger-20 transition-colors"
+                  className="font-semibold text-sm text-red-600 whitespace-nowrap bg-red-100 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-red-200 transition-colors"
                 >
                   <Plus className="w-5 h-5" />{" "}
                   <span className="hidden lg:block">Block URL</span>
@@ -448,9 +448,9 @@ export default function BlockUrlsClient() {
             {/* Table Section */}
             <div className="max-h-[calc(100dvh-400px)] sm:max-h-[calc(100dvh-290px)] xl:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
               <Table>
-                <TableHeader className="sticky top-0 bg-gray-50 z-10">
-                  <TableRow>
-                    <TableHead className="w-16 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800">
+                <TableHeader className="sticky top-0 bg-slate-500 z-10">
+                  <TableRow className="text-slate-900">
+                    <TableHead className="w-16 py-3.5 px-6 text-left font-semibold ">
                       <SimpleCheckbox
                         checked={isAllSelected}
                         indeterminate={isPartiallySelected}
@@ -458,19 +458,19 @@ export default function BlockUrlsClient() {
                         aria-label="Select all URLs"
                       />
                     </TableHead>
-                    <TableHead className="w-[200px] py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="w-[200px] py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
                       Website Icon
                     </TableHead>
-                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
                       Website Name
                     </TableHead>
-                    <TableHead className="py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
                       Website URL
                     </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="w-24 py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
                       Status
                     </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left bg-gray-50 font-semibold text-gray-800 whitespace-nowrap">
+                    <TableHead className="w-24 py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
                       Actions
                     </TableHead>
                   </TableRow>
@@ -505,7 +505,7 @@ export default function BlockUrlsClient() {
                     blockUrls?.map((url, index) => (
                       <TableRow
                         key={url._id}
-                        className="hover:bg-gray-50 w-[200px]"
+                        className="hover:bg-slate-50 w-[200px]"
                       >
                         <TableCell>
                           <SimpleCheckbox
@@ -529,12 +529,12 @@ export default function BlockUrlsClient() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="font-medium text-gray-900">
+                          <div className="font-medium text-slate-900">
                             {url?.website_id?.name || "-"}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-gray-600 truncate max-w-xs">
+                          <div className="text-slate-600 truncate max-w-xs">
                             {url.domain}
                           </div>
                         </TableCell>

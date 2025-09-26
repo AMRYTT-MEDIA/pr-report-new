@@ -206,7 +206,7 @@ const LoginForm = ({ searchParams }) => {
 
   return (
     <div className="min-h-dvh bg-background flex items-center justify-center p-4">
-      <Card className="w-full max-w-[607px] rounded-3xl border border-gray-200 bg-white/99 shadow-login-card p-[45px]">
+      <Card className="w-full max-w-[607px] rounded-3xl border border-slate-200 bg-white/99 shadow-login-card p-[45px]">
         <CardHeader className="text-center p-0">
           <div className="flex justify-center items-center">
             <Image
@@ -291,9 +291,9 @@ const LoginForm = ({ searchParams }) => {
                   onClick={() => setShowPassword(!showPassword)}
                 >
                   {showPassword ? (
-                    <EyeClosed className="h-5 w-5 text-gray-scale-100" />
+                    <EyeClosed className="h-5 w-5 text-slate-900" />
                   ) : (
-                    <Eye className="h-5 w-5 text-gray-scale-100" />
+                    <Eye className="h-5 w-5 text-slate-900" />
                   )}
                 </button>
               </div>
@@ -303,7 +303,7 @@ const LoginForm = ({ searchParams }) => {
               <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-medium text-brand-scale-60"
+                  className="text-sm font-medium text-indigo-500-60"
                 >
                   Forgot Password?
                 </Link>
@@ -328,7 +328,7 @@ const LoginForm = ({ searchParams }) => {
             </div>
             <Button
               type="submit"
-              className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full rounded-[1234px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors border border-indigo-400 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={
                 loading || !isVerified || !formik.isValid || !formik.dirty
               }

@@ -32,16 +32,14 @@ const PasswordField = ({
             autoCorrect="off"
             autoCapitalize="off"
             spellCheck="false"
-            className={`pr-10 text-gray-scale-60 text-input-field ${
-              touched && error
-                ? "border-danger-scale-60"
-                : "border-gray-scale-30"
+            className={`pr-10 text-slate-600 text-input-field ${
+              touched && error ? "border-red-600" : "border-slate-300"
             }`}
           />
           <button
             type="button"
             onClick={onTogglePassword}
-            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+            className="absolute right-3 top-1/2 transform -trangray-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
           >
             {showPassword ? (
               <EyeOff className="w-5 h-5" />

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Ban, CheckCircle, CircleCheck, CircleX, X } from "lucide-react";
 import { toast } from "sonner";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import CommonModal from "@/components/common/CommonModal";
 import { blockUrlsService } from "@/services/blockUrls";
 
 export default function StatusToggleDialog({
@@ -74,52 +74,38 @@ export default function StatusToggleDialog({
   if (!isBulkOperation && !urlData) return null;
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent
-        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
-        showCloseButton={false}
-      >
-        <div className="bg-white rounded-[14px] border border-slate-300 p-5 space-y-5">
-          {/* Header */}
-          <div className="flex items-start justify-between">
-            <div className="bg-white rounded-[10px] border border-slate-300 w-12 h-12 flex items-center justify-center">
-              {isActivating ? (
-                <CircleCheck className="w-7 h-7 text-slate-600" />
-              ) : (
-                <CircleX className="w-7 h-7 text-slate-600" />
-              )}
+    <CommonModal
+      open={isOpen}
+      onClose={handleCancel}
+      title={isActivating ? "Enable Confirmation" : "Disable Confirmation"}
+      isBorderShow={false}
+      subtitle2={
+        isBulkOperation ? (
+          <>
+            <div className="text-slate-400 text-sm">
+              Are you sure you want {actionText.toLowerCase()}{" "}
+              <span className="font-bold">{selectedCount} URL(s)</span> ?
             </div>
-            <button
-              onClick={handleCancel}
-              className="text-slate-600 hover:text-slate-800 transition-colors"
-            >
-              <X className="w-6 h-6" />
-            </button>
-          </div>
-
-          {/* Title and Description */}
-          <div className="space-y-1">
-            <h2 className="text-lg font-semibold text-[#263145]">
-              {isActivating ? "Enable Confirmation" : "Disable Confirmation"}
-            </h2>
-            <p className="text-sm font-medium text-[#263145] opacity-50">
-              {isBulkOperation ? (
-                <>
-                  Are you sure you want {actionText.toLowerCase()}{" "}
-                  <span className="font-bold">{selectedCount} URL(s)</span>?
-                </>
-              ) : (
-                <>
-                  Are you sure you want {actionText.toLowerCase()}{" "}
-                  <span className="font-bold">{urlData?.domain}</span>?
-                </>
-              )}
-            </p>
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="p-5 flex justify-end gap-2.5">
+          </>
+        ) : (
+          <>
+            <div className="text-slate-400 text-sm">
+              Are you sure you want {actionText.toLowerCase()}{" "}
+              <span className="font-bold">{urlData?.domain}</span> ?
+            </div>
+          </>
+        )
+      }
+      icon={
+        isActivating ? (
+          <CircleCheck className="w-7 h-7 text-slate-600" />
+        ) : (
+          <CircleX className="w-7 h-7 text-slate-600" />
+        )
+      }
+      size="md"
+      footer={
+        <>
           <button
             onClick={handleCancel}
             disabled={loading}
@@ -141,8 +127,8 @@ export default function StatusToggleDialog({
             )}
             {loading ? `${actionText}ing...` : actionText}
           </button>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </>
+      }
+    ></CommonModal>
   );
 }

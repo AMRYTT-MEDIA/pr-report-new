@@ -77,7 +77,7 @@ const UserForm = ({
         <div className="w-full md:flex-1">
           <div className="space-y-3">
             <label className="text-slate-600">
-              Role <span className="text-danger-scale-60">*</span>
+              Role <span className="text-red-600">*</span>
             </label>
             <DropdownV2
               name="role"

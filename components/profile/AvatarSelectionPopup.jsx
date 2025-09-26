@@ -283,7 +283,7 @@ export const AvatarSelectionPopup = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-[95%] md:w-[620px] max-h-[90vh] overflow-hidden border-gray-scale-30 border">
+      <div className="bg-white rounded-2xl shadow-2xl w-[95%] md:w-[620px] max-h-[90vh] overflow-hidden border-slate-300 border">
         {/* Header */}
         <div className="bg-white p-5">
           <div className="flex items-center justify-between">
@@ -320,7 +320,7 @@ export const AvatarSelectionPopup = ({
               <X className="w-5 h-5 text-slate-600" />
             </button>
           </div>
-          <div className="w-full border-b-2 border-dashed border-gray-scale-30 mt-5"></div>
+          <div className="w-full border-b-2 border-dashed border-slate-300 mt-5"></div>
         </div>
 
         {/* Avatar Grid */}

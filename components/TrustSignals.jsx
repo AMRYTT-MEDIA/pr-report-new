@@ -28,15 +28,15 @@ const TrustSignals = () => {
           {trustSignals.map((media, index) => (
             <div
               key={index}
-              className="flex items-center justify-center p-3 sm:p-4 lg:p-6 xl:p-8 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-300"
+              className="flex items-center justify-center p-3 sm:p-4 lg:p-6 xl:p-8 bg-slate-500 rounded-lg hover:bg-slate-900 transition-colors duration-300"
             >
               <div className="text-center">
                 <div className="w-16 h-6 sm:w-20 sm:h-8 lg:w-24 lg:h-10 xl:w-28 xl:h-12 2xl:w-32 2xl:h-14 bg-gradient-to-r from-primary/20 to-accent/20 rounded flex items-center justify-center mb-2">
-                  <span className="text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-gray-600">
+                  <span className="text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl font-semibold text-slate-600">
                     {media.name.split(" ")[0]}
                   </span>
                 </div>
-                <span className="text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl text-gray-500 font-medium">
+                <span className="text-xs sm:text-sm lg:text-base xl:text-lg 2xl:text-xl text-slate-500 font-medium">
                   {media.name}
                 </span>
               </div>

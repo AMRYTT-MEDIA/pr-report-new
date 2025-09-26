@@ -89,15 +89,15 @@ const CustomTooltip = React.memo(
 
       switch (position) {
         case "top":
-          return `${baseClasses} -translate-x-1/2 -translate-y-full`;
+          return `${baseClasses} -trangray-x-1/2 -trangray-y-full`;
         case "bottom":
-          return `${baseClasses} -translate-x-1/2`;
+          return `${baseClasses} -trangray-x-1/2`;
         case "left":
-          return `${baseClasses} -translate-y-1/2 -translate-x-full`;
+          return `${baseClasses} -trangray-y-1/2 -trangray-x-full`;
         case "right":
-          return `${baseClasses} -translate-y-1/2`;
+          return `${baseClasses} -trangray-y-1/2`;
         default:
-          return `${baseClasses} -translate-x-1/2 -translate-y-full`;
+          return `${baseClasses} -trangray-x-1/2 -trangray-y-full`;
       }
     }, [position]);
 
@@ -107,15 +107,15 @@ const CustomTooltip = React.memo(
 
       switch (position) {
         case "top":
-          return `${baseArrowClasses} top-full left-1/2 transform -translate-x-1/2 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white`;
+          return `${baseArrowClasses} top-full left-1/2 transform -trangray-x-1/2 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white`;
         case "bottom":
-          return `${baseArrowClasses} bottom-full left-1/2 transform -translate-x-1/2 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white`;
+          return `${baseArrowClasses} bottom-full left-1/2 transform -trangray-x-1/2 border-l-[6px] border-r-[6px] border-b-[6px] border-l-transparent border-r-transparent border-b-white`;
         case "left":
-          return `${baseArrowClasses} left-full top-1/2 transform -translate-y-1/2 border-t-[6px] border-b-[6px] border-l-[6px] border-t-transparent border-b-transparent border-l-white`;
+          return `${baseArrowClasses} left-full top-1/2 transform -trangray-y-1/2 border-t-[6px] border-b-[6px] border-l-[6px] border-t-transparent border-b-transparent border-l-white`;
         case "right":
-          return `${baseArrowClasses} right-full top-1/2 transform -translate-y-1/2 border-t-[6px] border-b-[6px] border-r-[6px] border-t-transparent border-b-transparent border-r-white`;
+          return `${baseArrowClasses} right-full top-1/2 transform -trangray-y-1/2 border-t-[6px] border-b-[6px] border-r-[6px] border-t-transparent border-b-transparent border-r-white`;
         default:
-          return `${baseArrowClasses} top-full left-1/2 transform -translate-x-1/2 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white`;
+          return `${baseArrowClasses} top-full left-1/2 transform -trangray-x-1/2 border-l-[6px] border-r-[6px] border-t-[6px] border-l-transparent border-r-transparent border-t-white`;
       }
     }, [position]);
 

@@ -109,15 +109,15 @@ const DropdownV2 = ({
         disabled={disabled || loading}
         className={cn(
           "w-full h-10 px-3.5 py-2.5 rounded-[6px] border flex items-center justify-between",
-          "text-gray-scale-60 text-input-field transition-colors",
+          "text-slate-600 text-input-field transition-colors",
 
           error && touched && !isOpen
-            ? "border-danger-scale-60 focus:ring-danger-scale-60"
-            : "border-gray-scale-30 focus:ring-indigo-500",
+            ? "border-red-600 focus:ring-red-600"
+            : "border-slate-300 focus:ring-indigo-500",
           focused && !error ? "border-indigo-500" : "",
           disabled || loading
-            ? "opacity-50 cursor-not-allowed bg-gray-50"
-            : "hover:border-gray-scale-40 cursor-pointer",
+            ? "opacity-50 cursor-not-allowed bg-slate-50"
+            : "hover:border-slate-400 cursor-pointer",
           className
         )}
       >
@@ -126,7 +126,7 @@ const DropdownV2 = ({
         </span>
 
         {loading ? (
-          <div className="w-4 h-4 border-2 border-gray-300 border-t-indigo-500 rounded-full animate-spin" />
+          <div className="w-4 h-4 border-2 border-slate-300 border-t-indigo-500 rounded-full animate-spin" />
         ) : (
           <ChevronDown
             className={cn(
@@ -149,7 +149,7 @@ const DropdownV2 = ({
           )}
         >
           {options.length === 0 ? (
-            <div className="px-3 py-2 text-sm text-gray-500">
+            <div className="px-3 py-2 text-sm text-slate-500">
               No options available
             </div>
           ) : (
@@ -161,11 +161,11 @@ const DropdownV2 = ({
                   onClick={() => handleSelect(option.value)}
                   className={cn(
                     "w-full px-3 py-2 text-left text-sm transition-colors",
-                    "hover:bg-gray-50 focus:bg-gray-50 focus:outline-none",
+                    "hover:bg-slate-50 focus:bg-slate-50 focus:outline-none",
                     "flex items-center justify-between",
                     value === option.value
                       ? "bg-indigo-50 text-indigo-700"
-                      : "text-gray-700"
+                      : "text-slate-700"
                   )}
                 >
                   <span className="truncate">{option.label}</span>

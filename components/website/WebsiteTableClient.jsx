@@ -232,16 +232,16 @@ const WebsiteTableClient = ({
   };
 
   return (
-    <div className="bg-gray-50">
+    <div className="bg-slate-500">
       <div className="mx-auto">
-        <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
+        <div className="bg-white shadow-sm border rounded-lg border-slate-200 overflow-hidden">
           {/* Header Section */}
-          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center border-b border-gray-200">
+          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center border-b border-slate-200">
             <div className="items-center gap-2 hidden sm:flex">
-              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">
                 {WebsiteConstants.allWebsites}
               </h1>
-              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
+              <div className="text-sm text-indigo-600 px-3 py-0.5 border border-indigo-600 rounded-full">
                 {totalCount}
               </div>
             </div>
@@ -253,12 +253,12 @@ const WebsiteTableClient = ({
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-primary-50 placeholder:text-gray-scale-60 placeholder:opacity-50"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:text-slate-600 placeholder:opacity-50"
                 />
                 {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                  <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
                     <X
-                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                      className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
                       onClick={handleClearSearch}
                     />
                   </div>
@@ -266,7 +266,7 @@ const WebsiteTableClient = ({
               </div>
               <div className="flex order-1 sm:order-2 justify-between w-full sm:w-auto">
                 <div className="items-center gap-2 flex sm:hidden">
-                  <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
+                  <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">
                     {WebsiteConstants.allWebsites}
                   </h1>
                 </div>
@@ -285,7 +285,7 @@ const WebsiteTableClient = ({
                       </Button>
                       <Button
                         onClick={handleAddNewWebsite}
-                        className="text-white px-4 py-2.5 flex items-center gap-2 bg-primary-50 hover:bg-primary-60 rounded-[39px]"
+                        className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 rounded-[39px]"
                       >
                         <Plus className="w-4 h-4 text-white" />
                         <span className="hidden md:inline">
@@ -379,7 +379,7 @@ const WebsiteTableClient = ({
                     filteredWebsites?.map((website, index) => (
                       <tr
                         key={website._id || website.id || index}
-                        className="hover:bg-gray-50"
+                        className="hover:bg-slate-500"
                       >
                         <td className="px-6 py-3">
                           <p className="text-sm font-medium text-slate-600">
@@ -399,12 +399,12 @@ const WebsiteTableClient = ({
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help ">
+                                  <p className="text-sm font-medium text-slate-600 truncate cursor-help ">
                                     {formatTitle(website.name, "name")}
                                   </p>
                                 </TooltipTrigger>
                                 <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                  className="max-w-sm bg-slate-900 text-white border-slate-700"
                                   side="top"
                                   align="start"
                                 >
@@ -415,11 +415,11 @@ const WebsiteTableClient = ({
                               </Tooltip>
                             </TooltipProvider>
                           ) : (
-                            <p className="text-sm font-medium text-gray-scale-60">
+                            <p className="text-sm font-medium text-slate-600">
                               {website.name || "-"}
                             </p>
                           )} */}
-                          <p className="text-sm font-medium text-gray-scale-60">
+                          <p className="text-sm font-medium text-slate-600">
                             {website.name || "-"}
                           </p>
                         </td>
@@ -429,12 +429,12 @@ const WebsiteTableClient = ({
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                    <p className="text-sm font-medium text-slate-600 truncate cursor-help">
                                       {formatTitle(website.domain, "url")}
                                     </p>
                                   </TooltipTrigger>
                                   <TooltipContent
-                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                    className="max-w-sm bg-slate-900 text-white border-slate-700"
                                     side="top"
                                     align="start"
                                   >
@@ -445,11 +445,11 @@ const WebsiteTableClient = ({
                                 </Tooltip>
                               </TooltipProvider>
                             ) : (
-                              <p className="text-sm font-medium text-gray-scale-60">
+                              <p className="text-sm font-medium text-slate-600">
                                 {website.domain || "-"}
                               </p>
                             )} */}
-                            <p className="text-sm font-medium text-gray-scale-60">
+                            <p className="text-sm font-medium text-slate-600">
                               {website.domain || "-"}
                             </p>
                           </div>

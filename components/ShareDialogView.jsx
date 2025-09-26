@@ -131,7 +131,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
   return (
     <Dialog open={isOpen} onOpenChange={onClose} onClose={onClose}>
       <DialogContent
-        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] max-h-[90vh] h-auto overflow-hidden flex flex-col"
+        className="sm:max-w-1xl bg-white border border-slate-200 shadow-2xl z-[10000] max-h-[90vh] h-auto overflow-hidden flex flex-col"
         // onPointerDownOutside={(e) => e.preventDefault()}
         // onInteractOutside={(e) => e.preventDefault()}
         showCloseButton={false}
@@ -144,7 +144,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
           pointerEvents: "auto",
         }}
       >
-        <DialogHeader className="p-0 pb-0 flex-shrink-0 bg-white border-b border-gray-100">
+        <DialogHeader className="p-0 pb-0 flex-shrink-0 bg-white border-b border-slate-900">
           <div className="flex items-center justify-between w-full">
             <div className="flex items-center gap-3">
               <Share2 className="h-5 w-5 text-purple-600" />
@@ -163,7 +163,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="h-8 w-8 p-0 hover:bg-gray-100 focus:ring-0 focus:ring-offset-0 border-0"
+              className="h-8 w-8 p-0 hover:bg-slate-900 focus:ring-0 focus:ring-offset-0 border-0"
             >
               <X className="h-4 w-4" />
             </Button>
@@ -175,7 +175,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
           <div className="space-y-3">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-gray-700">
+                <span className="text-sm text-slate-700">
                   Anyone with the Email can view
                 </span>
                 <Button
@@ -188,7 +188,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
                   <Lock className="h-3 w-3 ml-1" />
                 </Button>
               </div>
-              <div className="text-sm text-gray-500 break-all">{shareUrl}</div>
+              <div className="text-sm text-slate-500 break-all">{shareUrl}</div>
             </div>
           </div>
 
@@ -221,7 +221,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
                 <Label className="text-sm font-medium">
                   People With Access
                 </Label>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-slate-500">
                   Email addresses at these domains are allowed.
                 </p>
                 {report?.sharedEmails && report.sharedEmails.length > 0 && (
@@ -242,7 +242,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
                       placeholder="Enter email address"
                       value={email}
                       onChange={(e) => handleEmailChange(index, e.target.value)}
-                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none border-gray-300 focus:border-gray-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
+                      className="flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none border-slate-300 focus:border-slate-300 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none"
                     />
                     {emails.length > 1 && (
                       <Button
@@ -278,7 +278,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
         </div>
 
         {/* Footer Buttons */}
-        <div className="flex gap-3 p-0 pt-4 flex-shrink-0 bg-white border-t border-gray-100">
+        <div className="flex gap-3 p-0 pt-4 flex-shrink-0 bg-white border-t border-slate-900">
           <Button variant="outline" onClick={copyLink} className="flex-1">
             <Copy className="h-4 w-4 mr-2" />
             Copy Link

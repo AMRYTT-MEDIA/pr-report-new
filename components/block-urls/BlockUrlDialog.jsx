@@ -144,7 +144,7 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
+        className="sm:max-w-1xl bg-slate-100 border border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0  gap-0 max-w-[90vw] sm:max-w-[550px]"
       >
         <form onSubmit={formik.handleSubmit}>
           <div className="bg-white rounded-xl border border-slate-300 p-5 space-y-5">
@@ -172,7 +172,7 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
             </div>
 
             {/* Divider */}
-            <div className="w-full border-b-2 border-dashed border-gray-scale-30"></div>
+            <div className="w-full border-b-2 border-dashed border-slate-300"></div>
 
             {/* Input Section */}
             <div className="flex flex-col gap-2">
@@ -188,14 +188,14 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
                 onBlur={formik.handleBlur}
                 placeholder="Enter website URLs..."
                 rows={8}
-                className={`w-full rounded-lg border border-gray-scale-30 text-gray-scale-70 placeholder:text-gray-scale-40 p-3 resize-none focus:outline-none focus:border-primary-50 ${
+                className={`w-full rounded-lg border border-slate-300 text-slate-700 placeholder:text-slate-400 p-3 resize-none focus:outline-none focus:border-indigo-500 ${
                   formik.errors.websiteUrls && formik.touched.websiteUrls
                     ? "border-red-300 focus:border-red-500"
                     : ""
                 }`}
               />
               {formik.errors.websiteUrls && formik.touched.websiteUrls && (
-                <p className="text-danger-60 text-sm font-medium flex items-center gap-2">
+                <p className="text-rose-600 text-sm font-medium flex items-center gap-2">
                   <Info className="w-4 h-4" /> {formik.errors.websiteUrls}
                 </p>
               )}

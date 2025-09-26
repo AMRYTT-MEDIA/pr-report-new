@@ -136,7 +136,7 @@ export default function ReportPageClient({
   return (
     <>
       {report && !showEmailDialog && (
-        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
           <div className="container mx-auto">
             <div className="flex justify-center items-center h-16">
               <Image
@@ -164,7 +164,7 @@ export default function ReportPageClient({
 
           {/* Email Dialog for Private Reports */}
           {showEmailDialog && (
-            <div className="mb-8 mx-auto max-w-[90vw] sm:max-w-[550px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+            <div className="mb-8 mx-auto max-w-[90vw] sm:max-w-[550px] absolute top-1/2 left-1/2 -trangray-x-1/2 -trangray-y-1/2">
               <div className="bg-slate-100 content-stretch flex flex-col items-start justify-start relative rounded-[14px] size-full">
                 <div
                   aria-hidden="true"
@@ -183,13 +183,13 @@ export default function ReportPageClient({
                         aria-hidden="true"
                         className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px]"
                       />
-                      <div className="absolute left-1/2 size-7 top-1/2 translate-x-[-50%] translate-y-[-50%]">
+                      <div className="absolute left-1/2 size-7 top-1/2 trangray-x-[-50%] trangray-y-[-50%]">
                         <Mail className="w-7 h-7 text-slate-600" />
                       </div>
                     </div>
                     {/* <button
                       onClick={() => setShowEmailDialog(false)}
-                      className="relative shrink-0 size-6 hover:bg-gray-100 rounded"
+                      className="relative shrink-0 size-6 hover:bg-slate-900 rounded"
                     >
                       <X className="w-6 h-6 text-slate-600" />
                     </button> */}

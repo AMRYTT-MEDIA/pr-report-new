@@ -95,7 +95,7 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 bg-primary-50 hover:bg-primary-60 text-white">
+        <Button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white">
           <Plus className="w-4 h-4" />
           Add New
         </Button>
@@ -154,7 +154,7 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
             <Button
               type="submit"
               disabled={loading}
-              className="bg-primary-50 hover:bg-primary-60 text-white"
+              className="bg-indigo-500 hover:bg-indigo-600 text-white"
             >
               {loading ? "Adding..." : "Add URL"}
             </Button>

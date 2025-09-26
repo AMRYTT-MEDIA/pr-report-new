@@ -93,7 +93,7 @@ export default function DropdownMenu({
             align === "right" && "right-0 top-full mt-0",
             align === "left" && "left-0 top-full mt-2",
             align === "center" &&
-              "left-1/2 top-full mt-2 transform -translate-x-1/2",
+              "left-1/2 top-full mt-2 transform -trangray-x-1/2",
             className
           )}
         >
@@ -133,10 +133,10 @@ export default function DropdownMenu({
                   )}
                 </div>
                 <div className="text-left">
-                  <div className="text-base font-bold text-gray-900">
+                  <div className="text-base font-bold text-slate-900">
                     {profileData.name || "Main Text"}
                   </div>
-                  <div className="text-sm text-gray-500">
+                  <div className="text-sm text-slate-500">
                     {profileData.role || "Test"}
                   </div>
                 </div>
@@ -169,13 +169,13 @@ export default function DropdownMenu({
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "w-full flex items-center space-x-3 py-[6px] text-left text-sm text-gray-scale-60 font-medium  transition-colors",
+                    "w-full flex items-center space-x-3 py-[6px] text-left text-sm text-slate-600 font-medium  transition-colors",
                     item.className
                   )}
                   disabled={item.disabled}
                 >
                   {item.icon && (
-                    <item.icon className="w-[18px] h-[18px] text-gray-scale-60" />
+                    <item.icon className="w-[18px] h-[18px] text-slate-600" />
                   )}
                   <span>{item.label}</span>
                   {item.badge && (

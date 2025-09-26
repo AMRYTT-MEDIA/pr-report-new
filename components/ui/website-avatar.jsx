@@ -68,7 +68,7 @@ const WebsiteAvatar = ({
   if (!websiteName) {
     return (
       <div
-        className={`${currentSize.container} rounded-full flex items-center w-[137px] justify-center border-2 text-gray-700 border-gray-300 bg-gray-50 ${className}`}
+        className={`${currentSize.container} rounded-full flex items-center w-[137px] justify-center border-2 text-slate-700 border-slate-300 bg-slate-500 ${className}`}
       >
         <span className={`font-bold tracking-wide ${currentSize.text}`}>-</span>
       </div>

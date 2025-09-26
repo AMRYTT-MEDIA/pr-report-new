@@ -115,12 +115,12 @@ export default function ProfileOverlay({
         {/* User Info (desktop only) */}
         {showUserInfo && (
           <div className="hidden lg:block text-left">
-            <div className="text-sm font-semibold text-gray-900">
+            <div className="text-sm font-semibold text-slate-900">
               {user?.fullName
                 ? `${user.fullName.substring(0, 10)}...`
                 : "Publish rt..."}
             </div>
-            <div className="text-xs text-gray-500">
+            <div className="text-xs text-slate-500">
               {user?.role?.name || "Admin"}
             </div>
           </div>
@@ -129,7 +129,7 @@ export default function ProfileOverlay({
         {/* Dropdown Chevron */}
         <ChevronDown
           className={cn(
-            "h-4 w-4 text-gray-500 transition-transform duration-200",
+            "h-4 w-4 text-slate-500 transition-transform duration-200",
             isOpen && "rotate-180"
           )}
         />
@@ -145,7 +145,7 @@ export default function ProfileOverlay({
             isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95",
             align === "right" && "right-0",
             align === "left" && "left-0",
-            align === "center" && "left-1/2 transform -translate-x-1/2"
+            align === "center" && "left-1/2 transform -trangray-x-1/2"
           )}
         >
           {/* Profile Header */}
@@ -160,10 +160,10 @@ export default function ProfileOverlay({
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-gray-900 truncate">
+                <div className="text-sm font-semibold text-slate-900 truncate">
                   {user?.fullName || "Main User"}
                 </div>
-                <div className="text-xs text-gray-500 truncate">
+                <div className="text-xs text-slate-500 truncate">
                   {user?.email || "user@example.com"}
                 </div>
                 <div className="text-xs text-indigo-600 font-medium">
@@ -178,17 +178,17 @@ export default function ProfileOverlay({
           <div className="py-2">
             <button
               onClick={handleProfileClick}
-              className="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-slate-50 transition-colors"
+              className="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              <User className="w-4 h-4 text-gray-500" />
+              <User className="w-4 h-4 text-slate-500" />
               <span>View Profile</span>
             </button>
 
             <button
               onClick={handleSettingsClick}
-              className="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm text-gray-700 hover:bg-slate-50 transition-colors"
+              className="w-full flex items-center space-x-3 px-4 py-2 text-left text-sm text-slate-700 hover:bg-slate-50 transition-colors"
             >
-              <Settings className="w-4 h-4 text-gray-500" />
+              <Settings className="w-4 h-4 text-slate-500" />
               <span>Settings</span>
             </button>
 

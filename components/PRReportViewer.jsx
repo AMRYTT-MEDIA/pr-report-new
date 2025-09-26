@@ -580,15 +580,15 @@ const PRReportViewer = ({
     <div className="">
       {/* Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
-        <Card className="bg-primary-5">
+        <Card className="bg-indigo-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-gray-scale-70">
+              <div className="text-base pb-2 font-medium text-slate-700">
                 Total Publications
               </div>
-              <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
+              <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-slate-800">
                 {report.total_outlets || 0}
-                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   / Media outlets
                 </p>
               </div>
@@ -607,12 +607,12 @@ const PRReportViewer = ({
         <Card className="bg-orange-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-gray-scale-70">
+              <div className="text-base pb-2 font-medium text-slate-700">
                 Total Reach
               </div>
-              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end gap-2 text-gray-scale-80">
+              <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end gap-2 text-slate-800">
                 {formatNumber(report.total_semrush_traffic)}
-                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   / Potential audience
                 </p>
               </div>
@@ -631,10 +631,10 @@ const PRReportViewer = ({
         <Card className="bg-lime-5">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-gray-scale-70">
+              <div className="text-base pb-2 font-medium text-slate-700">
                 Report Status
               </div>
-              <div className="flex flex-col xl:flex-row items-start xl:items-end gap-2 text-gray-scale-80">
+              <div className="flex flex-col xl:flex-row items-start xl:items-end gap-2 text-slate-800">
                 <Badge
                   className="capitalize text-[#65A30D] bg-[#65A30D1A] py-2 px-3 text-sm"
                   variant={
@@ -643,7 +643,7 @@ const PRReportViewer = ({
                 >
                   {report?.status || "Completed"}
                 </Badge>
-                <p className="text-sm font-medium text-gray-scale-50 mb-1">
+                <p className="text-sm font-medium text-slate-500 mb-1">
                   {report?.date_created
                     ? `Created ${formatDate(report.date_created)}`
                     : "/ Distribution complete"}
@@ -667,24 +667,24 @@ const PRReportViewer = ({
               <p className={`${isPublic && "xl:inline-block"} hidden`}>
                 PR Report :
               </p>
-              <span className="block text-primary-50 max-w-[294px] truncate overflow-hidden">
+              <span className="block text-indigo-500 max-w-[294px] truncate overflow-hidden">
                 {report.title}
               </span>
             </CardTitle>
             <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -trangray-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search outlets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-full rounded-3xl min-w-[100%] md:min-w-[300px] border-gray-scale-30 focus:border-primary-50"
+                    className="pl-10 w-full rounded-3xl min-w-[100%] md:min-w-[300px] border-slate-300 focus:border-indigo-500"
                   />
                   {searchTerm && (
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                    <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
                       <X
-                        className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                        className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
                         onClick={() => setSearchTerm("")}
                       />
                     </div>
@@ -694,7 +694,7 @@ const PRReportViewer = ({
               <div className="flex items-center gap-2">
                 {/* <button
                   onClick={() => handleDownload("badge")}
-                  className="px-4 py-2.5 text-sm border font-semibold border-Gray-20 rounded-3xl flex items-center gap-2 transition-colors  text-Gray-60"
+                  className="px-4 py-2.5 text-sm border font-semibold border-slate-200 rounded-3xl flex items-center gap-2 transition-colors  text-slate-600"
                 >
                   <Plus className="h-4 w-4" />
                   <span className="hidden xl:inline-block">Create badge</span>
@@ -702,7 +702,7 @@ const PRReportViewer = ({
                 {!isPublic && (
                   <button
                     onClick={handleAddOutlet}
-                    className="px-4 py-2.5 text-sm border font-semibold border-Gray-30 rounded-3xl flex items-center gap-2 transition-colors text-gray-scale-60 hover:bg-gray-scale-10 hover:text-gray-scale-80"
+                    className="px-4 py-2.5 text-sm border font-semibold border-slate-300 rounded-3xl flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-900 hover:text-slate-800"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="hidden xl:inline-block">Add</span>
@@ -710,7 +710,7 @@ const PRReportViewer = ({
                 )}
                 <button
                   onClick={() => handleDownload("csv")}
-                  className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
+                  className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
                   <FileSpreadsheet className="h-4 w-4" />
                   <span className="hidden xl:inline-block">CSV</span>
@@ -718,7 +718,7 @@ const PRReportViewer = ({
                 <button
                   onClick={() => handleDownload("pdf")}
                   disabled={isGeneratingPDF}
-                  className={`px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white ${
+                  className={`px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-indigo-600 hover:bg-indigo-700 text-white ${
                     isGeneratingPDF
                       ? "opacity-50 cursor-not-allowed bg-none"
                       : ""
@@ -742,7 +742,7 @@ const PRReportViewer = ({
                 {!isPublic && (
                   <button
                     onClick={() => setShowShareDialog(true)}
-                    className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-primary-60 hover:bg-primary-70 text-white"
+                    className="px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     <Share2 className="h-4 w-4" />
                     <span className="hidden xl:inline-block">Share</span>
@@ -806,9 +806,9 @@ const PRReportViewer = ({
                             <URLTableCell
                               url={outlet.published_url}
                               textMaxWidth="max-w-[300px] sm:max-w-[300px] md:max-w-[400px] lg:max-w-[500px] xl:max-w-[650px] 2xl:max-w-[900px]"
-                              textColor="text-primary-50"
+                              textColor="text-indigo-500"
                               iconSize="h-4 w-4"
-                              iconColor="text-primary-50"
+                              iconColor="text-indigo-500"
                             />
                           </div>
                         </TableCell>

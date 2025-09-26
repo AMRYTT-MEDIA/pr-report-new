@@ -229,11 +229,11 @@ const Pagination = ({
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center justify-between bg-white border border-gray-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-gray-700 focus:border-gray-400 hover:border-gray-400 transition-all duration-200 cursor-pointer"
+                className="flex items-center justify-between bg-white border border-slate-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-slate-700 focus:border-slate-400 hover:border-slate-400 transition-all duration-200 cursor-pointer"
               >
                 <span>{localRowsPerPage}</span>
                 <svg
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                  className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
                     isDropdownOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
@@ -251,16 +251,16 @@ const Pagination = ({
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-slate-300 rounded-lg shadow-lg z-10">
                   {rowsPerPageOptions.map((option) => (
                     <button
                       key={option}
                       type="button"
                       onClick={() => handleRowsPerPageChange(option)}
-                      className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                      className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-500 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
                         option === localRowsPerPage
                           ? "bg-blue-50 text-blue-700 font-medium"
-                          : "text-gray-700"
+                          : "text-slate-700"
                       }`}
                     >
                       {option}
@@ -281,7 +281,7 @@ const Pagination = ({
               value={goToPage}
               onChange={(e) => setGoToPage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="text-center bg-white max-w-[50px] max-h-[40px] border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-primary-50"
+              className="text-center bg-white max-w-[50px] max-h-[40px] border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-indigo-500"
             />
           </div>
         )}

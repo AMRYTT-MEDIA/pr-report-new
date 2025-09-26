@@ -504,7 +504,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
         className="max-w-[1570px] w-[95vw] max-h-[880px] bg-slate-100 border border-slate-200 shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)] p-[5px]"
         showCloseButton={false}
       >
-        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-gray-scale-30">
+        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-slate-300">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center items-start justify-between gap-2 sm:px-6 px-4 py-4 border-b border-slate-200">
             <div className="flex items-center gap-4">
@@ -523,12 +523,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-primary-50"
+                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-indigo-500"
               />
               {searchTerm && (
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
+                <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
                   <X
-                    className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                    className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
                     onClick={() => setSearchTerm("")}
                   />
                 </div>
@@ -673,7 +673,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                       >
                         <td className="px-6 py-[15px]">
                           <div className="flex items-center gap-[15px]">
-                            <GripVertical className="h-5 w-5 text-gray-scale-60 cursor-grab active:cursor-grabbing" />
+                            <GripVertical className="h-5 w-5 text-slate-600 cursor-grab active:cursor-grabbing" />
                             <SimpleCheckbox
                               checked={selectedWebsites.has(website._id)}
                               onChange={(checked) =>
@@ -692,7 +692,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                             onChange={(e) => handlePositionChange(e, index)}
                             onBlur={(e) => handlePositionBlur(e, index)}
                             onKeyDown={(e) => handlePositionKeyDown(e, index)}
-                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[42px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-primary-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[42px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             min="1"
                             max={websites.length}
                           />
@@ -712,12 +712,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
+                                  <p className="text-sm font-medium text-slate-600 truncate cursor-help max-w-[150px]">
                                     {formatTitle(website.name, "name")}
                                   </p>
                                 </TooltipTrigger>
                                 <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                  className="max-w-sm bg-slate-900 text-white border-slate-700"
                                   side="top"
                                   align="start"
                                 >
@@ -728,7 +728,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                               </Tooltip>
                             </TooltipProvider>
                           ) : (
-                            <p className="text-sm font-medium text-gray-scale-60 truncate">
+                            <p className="text-sm font-medium text-slate-600 truncate">
                               {website.name || "-"}
                             </p>
                           )}
@@ -739,7 +739,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                    <p className="text-sm font-medium text-slate-600 truncate cursor-help">
                                       {formatTitle(website.url, "url")}
                                     </p>
                                   </TooltipTrigger>
@@ -755,7 +755,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                                 </Tooltip>
                               </TooltipProvider>
                             ) : (
-                              <p className="text-sm font-medium text-gray-scale-60">
+                              <p className="text-sm font-medium text-slate-600">
                                 {website.url || "-"}
                               </p>
                             )}
@@ -790,7 +790,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                   placeholder="#"
                   value={bulkMovePosition}
                   onChange={(e) => setBulkMovePosition(e.target.value)}
-                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-primary-50 leading-4"
+                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-indigo-500 leading-4"
                 />
                 <button
                   onClick={handleBulkMove}
@@ -808,10 +808,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       {/* Warning Dialog */}
       <Dialog open={showWarningDialog} onOpenChange={() => {}}>
         <DialogContent
-          className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
+          className="sm:max-w-1xl bg-white boder border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-slate-900 border-slate-900 gap-0 max-w-[90vw] sm:max-w-[550px]"
           showCloseButton={false}
         >
-          <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
+          <div className="flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
             {/* Header */}
             <div className="flex flex-col gap-5">
               <div className="flex items-start justify-between">
@@ -860,7 +860,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
               onClick={
                 warningType === "cancel" ? handleSaveAndClose : handleSave
               }
-              className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
+              className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
               Save

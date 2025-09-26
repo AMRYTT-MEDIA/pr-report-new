@@ -12,10 +12,10 @@ const WebsiteDeleteDialog = ({
   return (
     <Dialog open={isOpen}>
       <DialogContent
-        className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
+        className="sm:max-w-1xl bg-white border border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 gap-0 max-w-[90vw] sm:max-w-[550px]"
         showCloseButton={false}
       >
-        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
+        <div className="flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
           {/* Header */}
           <div className="flex flex-col gap-5">
             <div className="flex items-start justify-between">
@@ -35,17 +35,17 @@ const WebsiteDeleteDialog = ({
                 Delete Confirmation
               </h2>
               <p className="text-font-h2-5 text-sm font-medium">
-                Are you sure you want to Delete{" "}
+                Are you sure you want to Delete{" "}
                 <span className="font-bold">{website?.name || "this"}</span>{" "}
                 website?
               </p>
             </div>
 
-            <div className="flex items-center gap-2 bg-warning-5 rounded-lg py-1.5 px-2.5 border border-warning-10">
+            <div className="flex items-center gap-2 bg-yellow-50 rounded-lg py-1.5 px-2.5 border border-yellow-100">
               <div>
-                <Info className="w-5 h-5 text-warning-60" />
+                <Info className="w-5 h-5 text-yellow-600" />
               </div>
-              <p className="text-warning-60 text-sm font-semibold">
+              <p className="text-yellow-600 text-sm font-semibold">
                 If you Delete this Website, it will be permanently removed.
               </p>
             </div>
@@ -65,7 +65,7 @@ const WebsiteDeleteDialog = ({
           <Button
             type="button"
             onClick={confirmDelete}
-            className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
+            className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
           >
             <Trash2 className="w-5 h-5" />
             Delete

@@ -50,7 +50,7 @@ export const FormField = ({
             <div className="relative">
               {/* Left Element */}
               {leftElement && (
-                <div className="absolute left-3 top-1/2 -translate-y-1/2 z-10">
+                <div className="absolute left-3 top-1/2 -trangray-y-1/2 z-10">
                   {leftElement}
                 </div>
               )}
@@ -75,7 +75,7 @@ export const FormField = ({
 
               {/* Right Element */}
               {rightElement && (
-                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                <div className="absolute right-3 top-1/2 -trangray-y-1/2">
                   {rightElement}
                 </div>
               )}
