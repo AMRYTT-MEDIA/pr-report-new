@@ -251,7 +251,7 @@ const Pagination = ({
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-slate-300 rounded-lg shadow-lg z-10">
+                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-slate-300 rounded-lg shadow-lg z-20">
                   {rowsPerPageOptions.map((option) => (
                     <button
                       key={option}

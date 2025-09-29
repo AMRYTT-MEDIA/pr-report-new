@@ -6,19 +6,13 @@ import { toast } from "sonner";
 import { Input } from "@/components/ui/input";
 import { CustomSwitch } from "@/components/ui/custom-switch";
 import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+// Using CommonTable instead of raw table components
 import { useAuth } from "@/lib/auth";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import Pagination from "@/components/Pagination";
+import { CommonTable } from "@/components/common";
 import Loading from "@/components/ui/loading";
-import { NoDataFound } from "@/components/icon";
+// Empty state handled by CommonTable
 import CustomTooltip from "@/components/ui/custom-tooltip";
 
 import { blockUrlsService } from "@/services/blockUrls";
@@ -122,22 +116,21 @@ export default function BlockUrlsClient() {
     setCurrentPage(1);
   };
 
-  // Handle select all
-  const handleSelectAll = (checked) => {
-    if (checked) {
+  // Selection handlers for CommonTable
+  const handleSelectAll = (isSelected) => {
+    if (isSelected) {
       setSelectedUrls(new Set(blockUrls.map((url) => url._id)));
     } else {
       setSelectedUrls(new Set());
     }
   };
 
-  // Handle individual select
-  const handleSelect = (urlId, checked) => {
+  const handleRowSelect = (row, isSelected) => {
     const newSelected = new Set(selectedUrls);
-    if (checked) {
-      newSelected.add(urlId);
+    if (isSelected) {
+      newSelected.add(row._id);
     } else {
-      newSelected.delete(urlId);
+      newSelected.delete(row._id);
     }
     setSelectedUrls(newSelected);
   };
@@ -354,228 +347,193 @@ export default function BlockUrlsClient() {
     return null;
   }
 
-  const isAllSelected =
-    blockUrls.length > 0 && selectedUrls.size === blockUrls.length;
-  const isPartiallySelected =
-    selectedUrls.size > 0 && selectedUrls.size < blockUrls.length;
+  const selectedRows = blockUrls.filter((u) => selectedUrls.has(u._id));
+
+  // Define CommonTable columns preserving widths
+  const columns = [
+    {
+      key: "websiteIcon",
+      label: "Website Icon",
+      width: "200px",
+      render: (value, row) => (
+        <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
+          <WebsiteIcon
+            logoFilename={row?.website_id?.logo}
+            websiteName={row?.website_id?.name || row?.domain || "-"}
+            size="default"
+            alt={row?.website_id?.name || row?.domain}
+          />
+        </div>
+      ),
+    },
+    {
+      key: "name",
+      label: "Website Name",
+      width: "25%",
+      render: (value, row) => (
+        <div className="font-medium text-slate-900">
+          {row?.website_id?.name || "-"}
+        </div>
+      ),
+    },
+    {
+      key: "domain",
+      label: "Website URL",
+      width: "40%",
+      render: (value, row) => (
+        <div className="text-slate-600 truncate max-w-xs">{row.domain}</div>
+      ),
+    },
+    {
+      key: "status",
+      label: "Status",
+      width: "10%",
+      render: (value, row) => (
+        <CustomSwitch
+          checked={row.isActive}
+          onChange={(checked) => handleToggleStatus(row._id, checked)}
+          size="default"
+        />
+      ),
+    },
+  ];
+
+  // Header actions (search + bulk buttons)
+  const headerActions = (
+    <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-2 w-full sm:w-auto">
+      <div className="relative w-full sm:max-w-[400px] order-2 sm:order-1">
+        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
+        <Input
+          placeholder="Search..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="w-full pl-9 pr-9 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:opacity-50"
+        />
+        {searchQuery && (
+          <button
+            type="button"
+            onClick={handleClearSearch}
+            className="absolute right-2 top-1/2 -translate-y-1/2"
+          >
+            <X className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1" />
+          </button>
+        )}
+      </div>
+
+      <div className="flex items-center gap-2 order-1 sm:order-2">
+        <button
+          onClick={handleBulkActivate}
+          disabled={selectedUrls.size === 0}
+          className="relative rounded-full border border-slate-300 disabled:opacity-50"
+        >
+          <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+            <CheckCircle className="w-5 h-5 text-slate-600" />
+            <span className="hidden lg:block">Enable</span>
+          </div>
+        </button>
+
+        <button
+          onClick={handleBulkDeactivate}
+          disabled={selectedUrls.size === 0}
+          className="relative rounded-full border border-slate-300 disabled:opacity-50"
+        >
+          <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+            <XCircle className="w-5 h-5 text-slate-600" />
+            <span className="hidden lg:block">Disable</span>
+          </div>
+        </button>
+
+        <button
+          onClick={handleBulkDelete}
+          disabled={selectedUrls.size === 0}
+          className="relative rounded-full border border-slate-300 disabled:opacity-50"
+        >
+          <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
+            <Trash2 className="w-5 h-5 text-slate-600" />
+            <span className="hidden lg:block">Delete</span>
+          </div>
+        </button>
+
+        <button
+          onClick={() => setBlockUrlDialogOpen(true)}
+          className="font-semibold text-sm text-red-600 whitespace-nowrap bg-red-100 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-red-200 transition-colors"
+        >
+          <Plus className="w-5 h-5" />{" "}
+          <span className="hidden lg:block">Block URL</span>
+        </button>
+      </div>
+    </div>
+  );
+
+  // Pagination component
+  const paginationComponent = (
+    <Pagination
+      totalItems={totalCount}
+      currentPage={currentPage}
+      rowsPerPage={pageSize}
+      onPageChange={handlePageChange}
+      onRowsPerPageChange={handlePageSizeChange}
+    />
+  );
 
   return (
     <div className="bg-white">
       <div className="mx-auto">
-        <div className="bg-white shadow-sm border rounded-lg border-slate-200 overflow-hidden">
-          {/* Header Section */}
-          <div className="px-4 md:px-6 py-4 flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-slate-200 gap-3.5">
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold text-slate-900 whitespace-nowrap">
-                Block URLs
-              </h1>
-              <div className="text-sm text-indigo-600 px-3 py-0.5 border border-indigo-600 rounded-full">
-                {totalCount}
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-2 w-full sm:w-auto">
-              {/* Search Input */}
-              <div className="flex items-center gap-2 w-full relative max-w-full sm:max-w-[400px] order-2 sm:order-1">
-                <Search className="w-4 h-4 absolute left-4 text-slate-600" />
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500  placeholder:opacity-50"
-                />
-                {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                    <X
-                      className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
-                      onClick={handleClearSearch}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center gap-2 order-1 sm:order-2">
-                {/* Enable Button */}
-                <button
-                  onClick={handleBulkActivate}
-                  disabled={selectedUrls.size === 0}
-                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
-                >
-                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
-                    <CheckCircle className="w-5 h-5 text-slate-600" />
-                    <span className="hidden lg:block">Enable</span>
-                  </div>
-                </button>
-
-                {/* Disable Button */}
-                <button
-                  onClick={handleBulkDeactivate}
-                  disabled={selectedUrls.size === 0}
-                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
-                >
-                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
-                    <XCircle className="w-5 h-5 text-slate-600" />
-                    <span className="hidden lg:block">Disable</span>
-                  </div>
-                </button>
-
-                {/* Delete Button */}
-                <button
-                  onClick={handleBulkDelete}
-                  disabled={selectedUrls.size === 0}
-                  className="relative rounded-full border border-slate-300 disabled:opacity-50"
-                >
-                  <div className="flex gap-2 items-center justify-center px-4 py-2.5 font-inter font-semibold text-sm text-slate-600 whitespace-nowrap">
-                    <Trash2 className="w-5 h-5 text-slate-600" />
-                    <span className="hidden lg:block">Delete</span>
-                  </div>
-                </button>
-
-                {/* Block URL Button */}
-                <button
-                  onClick={() => setBlockUrlDialogOpen(true)}
-                  className="font-semibold text-sm text-red-600 whitespace-nowrap bg-red-100 flex gap-2 items-center px-4 py-2.5 rounded-full hover:bg-red-200 transition-colors"
-                >
-                  <Plus className="w-5 h-5" />{" "}
-                  <span className="hidden lg:block">Block URL</span>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto">
-            {/* Table Section */}
-            <div className="max-h-[calc(100dvh-400px)] sm:max-h-[calc(100dvh-290px)] xl:max-h-[calc(100dvh-230px)] overflow-y-auto scrollbar-custom">
-              <Table>
-                <TableHeader className="sticky top-0 bg-slate-500 z-10">
-                  <TableRow className="text-slate-900">
-                    <TableHead className="w-16 py-3.5 px-6 text-left font-semibold ">
-                      <SimpleCheckbox
-                        checked={isAllSelected}
-                        indeterminate={isPartiallySelected}
-                        onChange={handleSelectAll}
-                        aria-label="Select all URLs"
-                      />
-                    </TableHead>
-                    <TableHead className="w-[200px] py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
-                      Website Icon
-                    </TableHead>
-                    <TableHead className="py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
-                      Website Name
-                    </TableHead>
-                    <TableHead className="py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
-                      Website URL
-                    </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
-                      Status
-                    </TableHead>
-                    <TableHead className="w-24 py-3.5 px-6 text-left  font-semibold  whitespace-nowrap">
-                      Actions
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {loading ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={6}
-                        className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
-                      >
-                        <Loading size="lg" />
-                      </TableCell>
-                    </TableRow>
-                  ) : blockUrls?.length === 0 ? (
-                    <TableRow className="hover:bg-white">
-                      <TableCell
-                        colSpan={5}
-                        className="text-center h-[calc(100dvh-450px)] sm:h-[calc(100dvh-340px)] xl:h-[calc(100dvh-280px)]"
-                      >
-                        <div className="flex flex-col items-center justify-center space-y-3 h-full">
-                          <NoDataFound width={105} height={130} />
-                          <div>
-                            <h3 className="text-lg font-medium text-slate-900">
-                              No Block URLs Found...
-                            </h3>
-                          </div>
-                        </div>
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    blockUrls?.map((url, index) => (
-                      <TableRow
-                        key={url._id}
-                        className="hover:bg-slate-50 w-[200px]"
-                      >
-                        <TableCell>
-                          <SimpleCheckbox
-                            checked={selectedUrls.has(url._id)}
-                            onChange={(checked) =>
-                              handleSelect(url._id, checked)
-                            }
-                            aria-label={`Select ${url.websiteName}`}
-                          />
-                        </TableCell>
-                        <TableCell className="w-[200px]">
-                          <div className="w-[120px] sm:w-[137px] h-[38px] flex items-center justify-center">
-                            <WebsiteIcon
-                              logoFilename={url?.website_id?.logo}
-                              websiteName={
-                                url?.website_id?.name || url?.domain || "-"
-                              }
-                              size="default"
-                              alt={url?.website_id?.name || url?.domain}
-                            />
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="font-medium text-slate-900">
-                            {url?.website_id?.name || "-"}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-slate-600 truncate max-w-xs">
-                            {url.domain}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <CustomSwitch
-                            checked={url.isActive}
-                            onChange={(checked) =>
-                              handleToggleStatus(url._id, checked)
-                            }
-                            size="default"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <div className="flex items-center gap-2">
-                            <CustomTooltip content="Delete" position="top">
-                              <button
-                                onClick={() => handleDeleteClick(url)}
-                                className="text-red-600 hover:text-red-800 p-1"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </CustomTooltip>
-                          </div>
-                        </TableCell>
-                      </TableRow>
-                    ))
-                  )}
-                </TableBody>
-              </Table>
-            </div>
-          </div>
-
-          {/* Pagination */}
-          <Pagination
-            totalItems={totalCount}
-            currentPage={currentPage}
-            rowsPerPage={pageSize}
-            onPageChange={handlePageChange}
-            onRowsPerPageChange={handlePageSizeChange}
-          />
-        </div>
+        <CommonTable
+          columns={columns}
+          data={blockUrls}
+          isLoading={false}
+          isLoadingBody={loading}
+          title="Block URLs"
+          badgeCount={totalCount}
+          headerActions={headerActions}
+          headerInnerClassName="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3.5"
+          showCheckbox={true}
+          selectedRows={selectedRows}
+          onRowSelect={handleRowSelect}
+          onSelectAll={handleSelectAll}
+          renderSelectAllCheckbox={({ checked, indeterminate, onChange }) => (
+            <SimpleCheckbox
+              checked={checked}
+              indeterminate={indeterminate}
+              onChange={onChange}
+              aria-label="Select all URLs"
+            />
+          )}
+          renderRowCheckbox={({ row, checked, onChange }) => (
+            <SimpleCheckbox
+              checked={checked}
+              onChange={(isSel) => onChange(isSel)}
+              aria-label={`Select ${
+                row?.website_id?.name || row?.domain || "URL"
+              }`}
+            />
+          )}
+          showActions={true}
+          actionColumnLabel="Actions"
+          customActions={[
+            {
+              label: "",
+              onClick: (row) => handleDeleteClick(row),
+              className:
+                "text-red-600 hover:text-red-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
+              icon: Trash2,
+              showTooltip: true,
+              tooltipText: "Delete",
+            },
+          ]}
+          noDataText="No Block URLs Found..."
+          className="rounded-[10px]"
+          pagination={
+            <Pagination
+              totalItems={totalCount}
+              currentPage={currentPage}
+              rowsPerPage={pageSize}
+              onPageChange={handlePageChange}
+              onRowsPerPageChange={handlePageSizeChange}
+            />
+          }
+        />
 
         {/* Block URL Dialog */}
         <BlockUrlDialog

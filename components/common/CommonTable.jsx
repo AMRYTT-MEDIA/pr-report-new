@@ -37,13 +37,21 @@ const CommonTable = ({
   actionColumnLabel = "Actions",
   showActions = true,
   customActions = [],
+  // Optional custom renderer for the entire actions cell
+  renderActions,
+  // Optional width override for actions column
+  actionColumnWidth = "10%",
   emptyStateAction,
   emptyStateActionText = "Add New",
   title = "",
   subtitle = "",
   badgeCount = null,
   headerActions = null,
+  headerInnerClassName = "flex items-center justify-between",
   pagination = null,
+  // Custom checkbox renderers to match consumer UI
+  renderSelectAllCheckbox,
+  renderRowCheckbox,
 }) => {
   // Handle row selection
   const handleRowSelect = (row, isSelected) => {
@@ -59,10 +67,21 @@ const CommonTable = ({
     }
   };
 
+  // Normalize selection to a Set of IDs for accurate checks
+  const selectedIdSet = React.useMemo(() => {
+    if (!Array.isArray(selectedRows)) return new Set();
+    return new Set(
+      selectedRows.map((r) => r?._id ?? r?.id ?? r) // allow array of rows or ids
+    );
+  }, [selectedRows]);
+
   // Check if all rows are selected
-  const allSelected = data.length > 0 && selectedRows.length === data.length;
+  const allSelected =
+    data.length > 0 &&
+    selectedIdSet.size > 0 &&
+    selectedIdSet.size === data.length;
   const someSelected =
-    selectedRows.length > 0 && selectedRows.length < data.length;
+    selectedIdSet.size > 0 && selectedIdSet.size < data.length;
 
   // Render loading state
   if (isLoading) {
@@ -108,7 +127,7 @@ const CommonTable = ({
         <div
           className={`px-6 py-4 border-b border-slate-200 ${headerClassName}`}
         >
-          <div className="flex items-center justify-between">
+          <div className={headerInnerClassName}>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
               {badgeCount !== null && (
@@ -137,15 +156,23 @@ const CommonTable = ({
                     className="bg-slate-50 px-6 py-3.5 text-slate-800 font-semibold text-sm whitespace-nowrap"
                     style={{ width: "5%" }}
                   >
-                    <input
-                      type="checkbox"
-                      checked={allSelected}
-                      ref={(input) => {
-                        if (input) input.indeterminate = someSelected;
-                      }}
-                      onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="rounded border-slate-300"
-                    />
+                    {renderSelectAllCheckbox ? (
+                      renderSelectAllCheckbox({
+                        checked: allSelected,
+                        indeterminate: someSelected,
+                        onChange: handleSelectAll,
+                      })
+                    ) : (
+                      <input
+                        type="checkbox"
+                        checked={allSelected}
+                        ref={(input) => {
+                          if (input) input.indeterminate = someSelected;
+                        }}
+                        onChange={(e) => handleSelectAll(e.target.checked)}
+                        className="rounded border-slate-300"
+                      />
+                    )}
                   </TableHead>
                 )}
                 {columns.map((column) => (
@@ -159,7 +186,8 @@ const CommonTable = ({
                   </TableHead>
                 ))}
                 {showActions &&
-                  (onEdit ||
+                  (renderActions ||
+                    onEdit ||
                     onDelete ||
                     onToggle ||
                     onView ||
@@ -168,7 +196,7 @@ const CommonTable = ({
                     <TableHead
                       sticky={true}
                       className="bg-slate-50 px-6 py-3 text-slate-800 font-semibold text-sm min-h-12 whitespace-nowrap"
-                      style={{ width: "10%" }}
+                      style={{ width: actionColumnWidth }}
                     >
                       {actionColumnLabel}
                     </TableHead>
@@ -228,17 +256,23 @@ const CommonTable = ({
                         className="px-6 py-3 min-h-[72px] whitespace-nowrap"
                         style={{ width: "5%" }}
                       >
-                        <input
-                          type="checkbox"
-                          checked={selectedRows.some(
-                            (selected) =>
-                              selected._id === row._id || selected.id === row.id
-                          )}
-                          onChange={(e) =>
-                            handleRowSelect(row, e.target.checked)
-                          }
-                          className="rounded border-slate-300"
-                        />
+                        {renderRowCheckbox ? (
+                          renderRowCheckbox({
+                            row,
+                            checked: selectedIdSet.has(row._id ?? row.id),
+                            onChange: (isSelected) =>
+                              handleRowSelect(row, isSelected),
+                          })
+                        ) : (
+                          <input
+                            type="checkbox"
+                            checked={selectedIdSet.has(row._id ?? row.id)}
+                            onChange={(e) =>
+                              handleRowSelect(row, e.target.checked)
+                            }
+                            className="rounded border-slate-300"
+                          />
+                        )}
                       </TableCell>
                     )}
                     {columns.map((column) => (
@@ -257,7 +291,8 @@ const CommonTable = ({
                       </TableCell>
                     ))}
                     {showActions &&
-                      (onEdit ||
+                      (renderActions ||
+                        onEdit ||
                         onDelete ||
                         onToggle ||
                         onView ||
@@ -265,94 +300,98 @@ const CommonTable = ({
                         customActions.length > 0) && (
                         <TableCell
                           className="px-6 py-3 min-h-[72px] whitespace-nowrap"
-                          style={{ width: "9%" }}
+                          style={{ width: actionColumnWidth }}
                         >
-                          <div className="flex items-center gap-2">
-                            {onView && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onView(row)}
-                                className="bg-blue-50 hover:bg-blue-100 text-blue-600 border-0 rounded-full px-4 py-2.5 h-10"
-                              >
-                                <Eye className="w-4 h-4 mr-2" />
-                                View
-                              </Button>
-                            )}
-                            {onEdit && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onEdit(row)}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-600 border-0 rounded-full px-4 py-2.5 h-10"
-                              >
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </Button>
-                            )}
-                            {onToggle && (
-                              <button
-                                onClick={() => onToggle(row, !row.isActive)}
-                                className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                  row.isActive
-                                    ? "bg-indigo-500"
-                                    : "bg-slate-600"
-                                }`}
-                              >
-                                <span
-                                  className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform ${
+                          {renderActions ? (
+                            renderActions(row, index)
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              {onView && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onView(row)}
+                                  className="p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
+                                >
+                                  <Eye className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {onEdit && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onEdit(row)}
+                                  className="p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
+                                >
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {onToggle && (
+                                <button
+                                  onClick={() => onToggle(row, !row.isActive)}
+                                  className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
                                     row.isActive
-                                      ? "translate-x-1"
-                                      : "translate-x-4"
+                                      ? "bg-indigo-500"
+                                      : "bg-slate-600"
                                   }`}
-                                />
-                              </button>
-                            )}
-                            {onDelete && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onDelete(row)}
-                                className="bg-red-50 hover:bg-red-100 text-red-600 border-0 rounded-full px-4 py-2.5 h-10"
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                            )}
-                            {customActions.map((action, actionIndex) => {
-                              const buttonElement = (
-                                <CustomTooltip content={action.tooltipText}>
-                                  <Button
-                                    key={actionIndex}
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => action.onClick(row)}
-                                    className={
-                                      action.className ||
-                                      "bg-slate-100 hover:bg-slate-200 text-slate-600 border-0 rounded-full px-4 py-2.5 h-10"
-                                    }
+                                >
+                                  <span
+                                    className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform ${
+                                      row.isActive
+                                        ? "translate-x-1"
+                                        : "translate-x-4"
+                                    }`}
+                                  />
+                                </button>
+                              )}
+                              {onDelete && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onDelete(row)}
+                                  className="p-0 bg-transparent border-0 hover:bg-transparent text-red-600 hover:text-red-500"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              )}
+                              {customActions?.map((action, actionIndex) => {
+                                const buttonElement = (
+                                  <CustomTooltip
+                                    content={action.tooltipText}
+                                    key={action?.actionIndex}
                                   >
-                                    {action.icon && (
-                                      <action.icon className="w-4 h-4 mr-2" />
-                                    )}
-                                    {action.label}
-                                  </Button>
-                                </CustomTooltip>
-                              );
+                                    <Button
+                                      key={actionIndex}
+                                      variant="ghost"
+                                      size="icon"
+                                      onClick={() => action.onClick(row)}
+                                      className={
+                                        action.className ||
+                                        "p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
+                                      }
+                                    >
+                                      {action.icon && (
+                                        <action.icon className="w-4 h-4" />
+                                      )}
+                                      {action.label}
+                                    </Button>
+                                  </CustomTooltip>
+                                );
 
-                              return buttonElement;
-                            })}
-                            {onMore && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() => onMore(row)}
-                                className="bg-slate-100 hover:bg-slate-200 text-slate-600 border-0 rounded-full px-4 py-2.5 h-10"
-                              >
-                                <MoreHorizontal className="w-4 h-4" />
-                              </Button>
-                            )}
-                          </div>
+                                return buttonElement;
+                              })}
+                              {onMore && (
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => onMore(row)}
+                                  className="p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
+                                >
+                                  <MoreHorizontal className="w-4 h-4" />
+                                </Button>
+                              )}
+                            </div>
+                          )}
                         </TableCell>
                       )}
                   </TableRow>
