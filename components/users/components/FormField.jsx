@@ -40,7 +40,7 @@ const FormField = ({
             spellCheck="false"
             className={`text-slate-600 text-input-field ${
               readOnly
-                ? "bg-slate-500 text-slate-600 cursor-not-allowed"
+                ? "bg-slate-50 text-slate-600 cursor-not-allowed"
                 : touched && error
                 ? "border-red-600"
                 : "border-slate-300"

@@ -13,6 +13,7 @@ import WebsiteConstants from "./constans";
 import { websitesService } from "@/services/websites";
 import { getLogoUrl } from "@/lib/utils";
 import CommonModal from "@/components/common/CommonModal";
+import ErrorMessage from "../ui/error-message";
 
 const AddNewWebsiteDialog = ({
   onWebsiteAdded,
@@ -323,14 +324,15 @@ const AddNewWebsiteDialog = ({
               onBlur={formik.handleBlur}
               className={`h-10 rounded-lg border-slate-200 text-slate-700 placeholder:text-slate-400 ${
                 formik.errors.websiteName && formik.touched.websiteName
-                  ? "border-red-300 focus:border-red-500"
+                  ? "border-red-500 focus:border-red-600"
                   : ""
               }`}
             />
             {formik.errors.websiteName && formik.touched.websiteName && (
-              <p className="text-red-500 text-xs mt-1">
-                {formik.errors.websiteName}
-              </p>
+              <ErrorMessage
+                message={formik.errors.websiteName}
+                className="mt-1"
+              />
             )}
           </div>
 
@@ -358,21 +360,22 @@ const AddNewWebsiteDialog = ({
                 className={`flex-1 rounded-lg border-slate-200 text-slate-600 placeholder:text-slate-400
                           ${
                             editWebsite
-                              ? "bg-slate-500 pointer-events-none cursor-not-allowed"
+                              ? "bg-slate-50 pointer-events-none cursor-not-allowed"
                               : "bg-white"
                           }
                           ${
                             formik.errors.websiteUrl &&
                             formik.touched.websiteUrl
-                              ? "border-red-300 focus:border-red-500"
+                              ? "border-red-500 focus:border-red-600"
                               : ""
                           }`}
               />
             </div>
             {formik.errors.websiteUrl && formik.touched.websiteUrl && (
-              <p className="text-red-500 text-xs mt-1">
-                {formik.errors.websiteUrl}
-              </p>
+              <ErrorMessage
+                message={formik.errors.websiteUrl}
+                className="mt-1"
+              />
             )}
           </div>
 

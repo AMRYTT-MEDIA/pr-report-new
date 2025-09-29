@@ -145,7 +145,7 @@ export default function ProfileOverlay({
             isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95",
             align === "right" && "right-0",
             align === "left" && "left-0",
-            align === "center" && "left-1/2 transform -trangray-x-1/2"
+            align === "center" && "left-1/2 transform -translate-x-1/2"
           )}
         >
           {/* Profile Header */}

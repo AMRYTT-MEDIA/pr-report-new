@@ -93,7 +93,7 @@ export default function DropdownMenu({
             align === "right" && "right-0 top-full mt-0",
             align === "left" && "left-0 top-full mt-2",
             align === "center" &&
-              "left-1/2 top-full mt-2 transform -trangray-x-1/2",
+              "left-1/2 top-full mt-2 transform -translate-x-1/2",
             className
           )}
         >

@@ -175,6 +175,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       subtitle="Invite your client or team member by adding their email address below."
       icon={<Share2 className="h-7 w-7" />}
       size="lg"
+      isBorderShow={false}
       footer={
         <>
           <Button
@@ -197,14 +198,14 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
         </>
       }
     >
-      <div className="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg gap-4 bg-slate-500">
+      <div className="flex items-center justify-between p-2.5 border border-slate-200 rounded-lg gap-4 bg-slate-50">
         <div className="flex items-center gap-3.5">
-          <div className="border border-slate-200 rounded-lg p-2.5 bg-slate-200">
+          <div className="border border-slate-200 rounded-lg p-2.5 bg-slate-100">
             <Link2 className="h-5 w-5" />
           </div>
           <div className="flex flex-col gap-1 relative dropdown-container">
             <div
-              className="flex items-center gap-1 text-sm text-font-h2 font-semibold cursor-pointer hover:opacity-80"
+              className="flex items-center gap-1 text-sm text-slate-600 font-semibold cursor-pointer hover:opacity-80"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
               <span>
@@ -221,37 +222,37 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
               <div className="absolute top-7 left-0 bg-white border border-slate-200 rounded-md shadow-lg z-10 p-2 min-w-max">
                 <div
                   onClick={() => handlePrivacyChange("private")}
-                  className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-slate-500 first:rounded-t-md border-b border-slate-200"
+                  className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-slate-50 first:rounded-t-md border-b border-slate-200"
                 >
                   {/* <Lock className="h-4 w-4" /> */}
                   Restricted
                 </div>
                 <div
                   onClick={() => handlePrivacyChange("public")}
-                  className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-slate-500 last:rounded-b-md"
+                  className="flex items-center gap-2 px-3 py-1 text-sm cursor-pointer hover:bg-slate-50 last:rounded-b-md"
                 >
                   {/* <LockKeyholeOpen className="h-4 w-4" /> */}
                   Anyone with the link
                 </div>
               </div>
             )}
-            <p className="text-sm text-slate-500 text-font-h2 opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[138px] sm:max-w-[332px]">
+            <p className="text-sm text-slate-500  opacity-50 break-all truncate w-full whitespace-nowrap overflow-hidden text-ellipsis max-w-[138px] sm:max-w-[332px]">
               {shareUrl || "-"}
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-1 rounded-md py-1 px-2 border border-border-gray">
+        <div className="flex items-center gap-1 rounded-md py-1 px-2 border border-slate-200">
           {isPrivate ? (
             <>
-              <LockKeyhole className="h-5 w-4 text-gray-secondary" />
-              <p className="text-xs font-medium text-gray-secondary mt-0.5">
+              <LockKeyhole className="h-5 w-4 text-slate-600" />
+              <p className="text-xs font-medium text-slate-600 mt-0.5">
                 Private
               </p>
             </>
           ) : (
             <>
-              <LockKeyholeOpen className="h-5 w-4 text-gray-secondary" />
-              <p className="text-xs font-medium text-gray-secondary mt-0.5">
+              <LockKeyholeOpen className="h-5 w-4 text-slate-600" />
+              <p className="text-xs font-medium text-slate-600 mt-0.5">
                 Public
               </p>
             </>
@@ -260,25 +261,23 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       </div>
 
       {/* People With Access Section - Only show for private */}
-      <div className="">
-        <div className="flex flex-col gap-1">
-          <Label className="text-base text-font-h2 font-semibold">
-            Authorized Email Addresses
-          </Label>
-          <p className="text-sm text-font-h2 opacity-50 font-medium">
-            Only emails from approved domains are allowed.
-          </p>
-          {report?.sharedEmails &&
-            report.sharedEmails.length > 0 &&
-            isPrivate && (
-              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
-                <p className="text-xs text-blue-700">
-                  ?? {report.sharedEmails.length} email(s) already shared with
-                  this report
-                </p>
-              </div>
-            )}
-        </div>
+      <div className="flex flex-col gap-1 pt-5">
+        <Label className="text-base text-slate-600 font-semibold">
+          Authorized Email Addresses
+        </Label>
+        <p className="text-sm text-slate-600 opacity-50 font-medium">
+          Only emails from approved domains are allowed.
+        </p>
+        {report?.sharedEmails &&
+          report.sharedEmails.length > 0 &&
+          isPrivate && (
+            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md ">
+              <p className="text-xs text-blue-700">
+                📧 {report.sharedEmails.length} email(s) already shared with
+                this report
+              </p>
+            </div>
+          )}
       </div>
 
       <Formik
@@ -308,10 +307,10 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                         {...field}
                         type="email"
                         placeholder="Enter email address"
-                        className={`flex-1 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none ${
+                        className={`flex-1 mt-5 focus:ring-0 focus:ring-offset-0 focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:outline-none ${
                           meta.touched && meta.error
                             ? "border-red-600 focus:border-red-600"
-                            : "border-slate-300 focus:border-slate-300"
+                            : "border-slate-300 focus:border-slate-500"
                         }`}
                         disabled={!isPrivate}
                         onKeyPress={(e) => {
@@ -322,7 +321,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                         }}
                       />
                       <div
-                        className={`text-xs text-slate-800 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-slate-900 rounded-sm px-2 py-1 font-medium cursor-pointer border border-slate-200 ${
+                        className={`text-xs text-slate-800 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-slate-200 rounded-sm px-2 py-1 font-medium cursor-pointer border border-slate-200 ${
                           isPrivate
                             ? "opacity-100"
                             : "opacity-0 cursor-not-allowed pointer-events-none"
@@ -346,7 +345,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       </Formik>
 
       {emails.length > 0 && isPrivate && (
-        <div className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-3.5 pt-5">
           <Label className="text-sm font-medium">People With Access</Label>
           <div className="flex flex-col gap-2.5 max-h-[90px] overflow-y-auto scrollbar-custom">
             {emails.map((email, index) => (

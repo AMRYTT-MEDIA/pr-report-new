@@ -604,7 +604,7 @@ const PRReportViewer = ({
           </CardHeader>
         </Card>
 
-        <Card className="bg-orange-5">
+        <Card className="bg-orange-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
               <div className="text-base pb-2 font-medium text-slate-700">
@@ -628,7 +628,7 @@ const PRReportViewer = ({
           </CardHeader>
         </Card>
 
-        <Card className="bg-lime-5">
+        <Card className="bg-lime-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
               <div className="text-base pb-2 font-medium text-slate-700">
@@ -652,7 +652,7 @@ const PRReportViewer = ({
             </CardTitle>
             <div className="relative">
               <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
-                <FileSpreadsheetIcon className="text-lime-60 w-[50px] h-[50px]" />
+                <FileSpreadsheetIcon className="text-lime-600 w-[50px] h-[50px]" />
               </div>
             </div>
           </CardHeader>
@@ -674,7 +674,7 @@ const PRReportViewer = ({
             <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center gap-2 w-full sm:w-auto">
                 <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-3 top-1/2 transform -trangray-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                   <Input
                     placeholder="Search outlets..."
                     value={searchTerm}
@@ -682,9 +682,9 @@ const PRReportViewer = ({
                     className="pl-10 w-full rounded-3xl min-w-[100%] md:min-w-[300px] border-slate-300 focus:border-indigo-500"
                   />
                   {searchTerm && (
-                    <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
+                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                       <X
-                        className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
+                        className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
                         onClick={() => setSearchTerm("")}
                       />
                     </div>
@@ -702,7 +702,7 @@ const PRReportViewer = ({
                 {!isPublic && (
                   <button
                     onClick={handleAddOutlet}
-                    className="px-4 py-2.5 text-sm border font-semibold border-slate-300 rounded-3xl flex items-center gap-2 transition-colors text-slate-600 hover:bg-slate-900 hover:text-slate-800"
+                    className="px-4 py-2.5 text-sm border font-semibold border-slate-300 rounded-3xl flex items-center gap-2 transition-colors text-slate-600  hover:text-slate-800"
                   >
                     <Plus className="h-4 w-4" />
                     <span className="hidden xl:inline-block">Add</span>

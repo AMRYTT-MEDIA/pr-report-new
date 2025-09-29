@@ -25,11 +25,13 @@ const DeleteDialog = ({
       open={open}
       onClose={onClose}
       title={title}
-      subtitle={<>{description} ?</>}
+      subtitle={description}
+      subtitle2={`${itemName} ?`}
       icon={<IconComponent className="w-5 h-5" />}
       size="md"
       className={className}
       showCloseButton={showCloseButton}
+      isBorderShow={false}
       footer={
         <>
           <Button

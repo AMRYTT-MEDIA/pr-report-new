@@ -257,7 +257,7 @@ const Pagination = ({
                       key={option}
                       type="button"
                       onClick={() => handleRowsPerPageChange(option)}
-                      className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-500 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                      className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-200 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
                         option === localRowsPerPage
                           ? "bg-blue-50 text-blue-700 font-medium"
                           : "text-slate-700"

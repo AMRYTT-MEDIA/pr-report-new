@@ -48,6 +48,8 @@ const CommonModal = ({
   subtitle2 = "",
   noScroll = false, // Prevent scrolling in modal content
   isBorderShow = true,
+  headerActions = null, // Additional actions in header (like Sample CSV button)
+  customHeaderLayout = false, // Use custom header layout for specific designs
 }) => {
   // Handle modal close
   const handleClose = () => {
@@ -102,7 +104,7 @@ const CommonModal = ({
       <DialogContent
         className={`${
           hasCustomSizing ? "" : sizeClasses[size]
-        } bg-gray-100 border border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 gap-0 ${defaultSizing} ${className}`}
+        }  border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-slate-100 border-gray-scale-10 gap-0 ${defaultSizing} ${className}`}
         onPointerDownOutside={handleOverlayClick}
         showCloseButton={false}
         style={{
@@ -117,35 +119,53 @@ const CommonModal = ({
         {/* Main Content Container */}
         <div
           className={`flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white ${
-            noScroll ? "" : "overflow-y-auto scrollbar-custom"
+            noScroll ? "" : "overflow-y-auto max-h-[80vh] scrollbar-custom"
           }`}
         >
           {/* Header Section */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center border border-purple-70 rounded-xl p-2.5">
+            <div className="flex items-center border border-purple-70 rounded-lg p-2.5">
               {icon}
             </div>
             {showCloseButton && (
               <button
                 onClick={handleClose}
-                className="p-1 "
+                className="p-1 hover:bg-gray-100 rounded"
                 disabled={preventClose}
               >
-                <X className="w-[24px] h-[24px] text-slate-600" />
+                <X className="w-5 h-5 text-gray-500" />
               </button>
             )}
           </div>
 
-          {/* Title Section */}
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-            <p className="text-font-h2-5 text-sm font-medium ">
-              {subtitle}{" "}
-              {subtitle2 && (
-                <span className="text-slate-700  text-sm ">{subtitle2}</span>
+          {/* Title Section with Custom Layout Support */}
+          {customHeaderLayout ? (
+            <div className="flex sm:items-center justify-between flex-col sm:flex-row gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
+                <p className="text-sm text-font-h2 opacity-50 font-semibold mt-1">
+                  {subtitle}
+                </p>
+              </div>
+              {headerActions && (
+                <div className="flex items-center gap-2 justify-end">
+                  {headerActions}
+                </div>
               )}
-            </p>
-          </div>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
+              <p className="text-slate-500 text-sm">
+                {subtitle}{" "}
+                {subtitle2 && (
+                  <span className="text-slate-500 font-semibold text-sm ">
+                    {subtitle2}
+                  </span>
+                )}
+              </p>
+            </div>
+          )}
           {isBorderShow && (
             <div className="border-b-2 border-dashed border-slate-200" />
           )}

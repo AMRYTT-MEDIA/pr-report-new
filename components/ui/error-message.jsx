@@ -8,9 +8,7 @@ const ErrorMessage = ({ message, className = "", showIcon = true }) => {
     <div
       className={`flex items-center gap-[7px] text-red-600 font-inter text-xs font-medium leading-normal ${className}`}
     >
-      {showIcon && (
-        <InfoIcon className="w-4 h-4 flex-shrink-0 text-red-600" />
-      )}
+      {showIcon && <InfoIcon className="w-4 h-4 flex-shrink-0 text-red-600" />}
       <span>{message}</span>
     </div>
   );

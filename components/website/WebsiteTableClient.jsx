@@ -5,13 +5,6 @@ import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import WebsiteAvatar from "@/components/ui/website-avatar";
 import CustomTooltip from "@/components/ui/custom-tooltip";
 import Pagination from "@/components/Pagination";
 import Loading from "@/components/ui/loading";
@@ -253,12 +246,12 @@ const WebsiteTableClient = ({
                   placeholder="Search..."
                   value={searchQuery}
                   onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:text-slate-600 placeholder:opacity-50"
+                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500  placeholder:opacity-50"
                 />
                 {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                     <X
-                      className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
+                      className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
                       onClick={handleClearSearch}
                     />
                   </div>

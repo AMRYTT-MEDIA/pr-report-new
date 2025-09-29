@@ -79,20 +79,16 @@ export default function StatusToggleDialog({
       onClose={handleCancel}
       title={isActivating ? "Enable Confirmation" : "Disable Confirmation"}
       isBorderShow={false}
-      subtitle2={
+      subtitle={
         isBulkOperation ? (
           <>
-            <div className="text-slate-400 text-sm">
-              Are you sure you want {actionText.toLowerCase()}{" "}
-              <span className="font-bold">{selectedCount} URL(s)</span> ?
-            </div>
+            Are you sure you want {actionText.toLowerCase()}{" "}
+            <span className="font-bold">{selectedCount} URL(s)</span> ?
           </>
         ) : (
           <>
-            <div className="text-slate-400 text-sm">
-              Are you sure you want {actionText.toLowerCase()}{" "}
-              <span className="font-bold">{urlData?.domain}</span> ?
-            </div>
+            Are you sure you want {actionText.toLowerCase()}{" "}
+            <span className="font-bold">{urlData?.domain}</span> ?
           </>
         )
       }

@@ -19,6 +19,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Dialog, DialogContent } from "../ui/dialog";
+import CommonModal from "@/components/common/CommonModal";
 import { Button } from "../ui/button";
 import { websitesService } from "@/services/websites";
 import { toast } from "sonner";
@@ -37,7 +38,7 @@ const SimpleCheckbox = ({ checked, onChange, className = "" }) => {
       } ${className}`}
       onClick={() => onChange(!checked)}
     >
-      {checked && <Check className="w-3 h-3" strokeWidth={4} />}
+      {checked && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
     </div>
   );
 };
@@ -526,9 +527,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                 className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-indigo-500"
               />
               {searchTerm && (
-                <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
+                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                   <X
-                    className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
+                    className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
                     onClick={() => setSearchTerm("")}
                   />
                 </div>
@@ -806,42 +807,20 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       </DialogContent>
 
       {/* Warning Dialog */}
-      <Dialog open={showWarningDialog} onOpenChange={() => {}}>
-        <DialogContent
-          className="sm:max-w-1xl bg-white boder border-slate-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-slate-900 border-slate-900 gap-0 max-w-[90vw] sm:max-w-[550px]"
-          showCloseButton={false}
-        >
-          <div className="flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-            {/* Header */}
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                  <TriangleAlert className="w-5 h-5" />
-                </div>
-                <button
-                  onClick={() => setShowWarningDialog(false)}
-                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-font-h2">
-                  {warningType === "cancel"
-                    ? "Unsaved Changes"
-                    : "Save Changes"}
-                </h2>
-                <p className="text-font-h2-5 text-sm font-medium">
-                  {warningType === "cancel"
-                    ? "Website order changed. Save or discard changes?"
-                    : "Website order has been modified. Do you want to save these changes?"}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Footer Buttons */}
-          <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
+      <CommonModal
+        open={showWarningDialog}
+        onClose={() => setShowWarningDialog(false)}
+        showCloseButton={true}
+        size="md"
+        title={warningType === "cancel" ? "Unsaved Changes" : "Save Changes"}
+        subtitle={
+          warningType === "cancel"
+            ? "Website order changed. Save or discard changes?"
+            : "Website order has been modified. Do you want to save these changes?"
+        }
+        icon={<TriangleAlert className="w-5 h-5" />}
+        footer={
+          <>
             <Button
               type="button"
               variant="outline"
@@ -865,9 +844,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
               <Save className="w-5 h-5" />
               Save
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+        isBorderShow={false}
+      />
     </Dialog>
   );
 };

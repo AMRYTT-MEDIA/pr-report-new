@@ -39,7 +39,7 @@ const PasswordField = ({
           <button
             type="button"
             onClick={onTogglePassword}
-            className="absolute right-3 top-1/2 transform -trangray-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
+            className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-500 hover:text-slate-700 transition-colors"
           >
             {showPassword ? (
               <EyeOff className="w-5 h-5" />

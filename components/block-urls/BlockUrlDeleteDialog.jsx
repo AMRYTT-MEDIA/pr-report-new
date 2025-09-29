@@ -34,11 +34,9 @@ const BlockUrlDeleteDialog = ({
       // return `Are you sure you want to delete ${selectedCount} URL(s)? This action cannot be undone.`;
       return (
         <>
-          <div className="text-slate-400">
-            Are you sure you want to delete{" "}
-            <span className="font-bold">{selectedCount} URL(s)</span> ? This
-            action cannot be undone.
-          </div>
+          Are you sure you want to delete{" "}
+          <span className="font-bold">{selectedCount} URL(s)</span> ? This
+          action cannot be undone.
         </>
       );
     }
@@ -85,14 +83,12 @@ const BlockUrlDeleteDialog = ({
       open={open}
       onClose={onClose}
       title={title}
-      // subtitle={getSubtitle()}
       subtitle={getSubtitle()}
       icon={<Trash2 className="w-5 h-5" />}
       footer={footer}
       showCloseButton={true}
       size="md"
       className="max-w-[90vw] sm:max-w-[550px]"
-      footerClassName="bg-white"
       noScroll={false}
       isBorderShow={false}
     ></CommonModal>

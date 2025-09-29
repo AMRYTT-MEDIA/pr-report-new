@@ -155,12 +155,23 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       subtitle="Are you sure you want to Import .CSV File?"
       icon={<CloudUpload className="h-7 w-7" />}
       size="lg"
+      customHeaderLayout={true}
+      isBorderShow={false}
+      headerActions={
+        <button
+          onClick={handleSampleCsvDownload}
+          className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-slate-600 font-semibold border border-border-gray rounded-md hover:bg-gray-100"
+        >
+          <Download className="w-4 h-4 font-semibold" />
+          Sample CSV
+        </button>
+      }
       footer={
         <>
           <Button
             variant="default"
             onClick={handleClose}
-            className="px-4 py-2.5 bg-white border border-slate-300 rounded-full flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-900 transition-colors"
+            className="px-4 py-2.5 bg-white border border-slate-300 rounded-full flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
             Cancel
@@ -174,7 +185,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
             {isUploading ? (
               <>
                 <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                Uploading...
+                Submit
               </>
             ) : (
               <>
@@ -186,24 +197,12 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
         </>
       }
     >
-      <div className="flex sm:items-center justify-between flex-col sm:flex-row gap-3">
-        <div className="flex items-center gap-2 justify-end">
-          <button
-            onClick={handleSampleCsvDownload}
-            className="flex items-center gap-1.5 px-3 py-1.5 text-xs text-gray-secondary font-semibold border border-border-gray rounded-md hover:bg-slate-900"
-          >
-            <Download className="w-4 h-4 font-semibold" />
-            Sample CSV
-          </button>
-        </div>
-      </div>
-
       {/* File Upload Area */}
       <div
         className={`flex flex-col items-center justify-center py-10 px-4 md:px-6 border-2 border-dashed rounded-lg transition-colors duration-300 ${
           isDragOver
             ? "border-blue-500 bg-blue-50"
-            : "border-slate-300 hover:border-indigo-500"
+            : "border-Gray-30 hover:border-primary-50"
         }`}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
@@ -216,12 +215,12 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
         <p className="text-slate-600 font-semibold mb-2.5">
           Choose a file or drag & drop it here
         </p>
-        <p className="text-sm text-font-h2-5 font-bold mb-3.5">
+        <p className="text-sm text-slate-400 font-bold mb-3.5">
           CSV formats, up to 50MB
         </p>
         <label
           htmlFor="file-upload"
-          className="px-6 py-2.5 border border-border-gray rounded-lg cursor-pointer hover:bg-slate-200 text-[#54575C] font-semibold transition-colors"
+          className="px-6 py-2.5 border border-border-gray rounded-lg cursor-pointer hover:bg-gray-200 text-[#54575C] font-semibold transition-colors"
         >
           Browse File
           <input
@@ -236,8 +235,8 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       </div>
 
       {/* PR Report Name Input */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5">
-        <label className="block text-md text-font-h2 font-semibold whitespace-nowrap">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pt-5">
+        <label className="block text-md text-slate-700 font-bold whitespace-nowrap">
           PR Report Name :
         </label>
         <input
@@ -245,13 +244,13 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
           value={reportTitle}
           onChange={(e) => setReportTitle(e.target.value)}
           placeholder="Enter PR Report Name..."
-          className="w-full px-3 py-1.5 border border-slate-200 text-slate-600 font-semibold rounded-md focus:outline-none focus:border-slate-500"
+          className="w-full px-3 py-1.5 border border-slate-300 text-slate-600 font-semibold rounded-md focus:outline-none focus:border-slate-500"
         />
       </div>
 
       {/* Selected File Info */}
       {selectedFile && (
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-3">
+        <div className="bg-blue-50 border border-blue-200 rounded-md p-3 mt-5">
           <div className="flex items-center">
             <FileText className="w-4 h-4 text-blue-600 mr-2" />
             <span className="text-sm font-medium text-blue-900 break-all whitespace-nowrap overflow-hidden text-ellipsis max-w-[204px] sm:max-w-[392px] block">

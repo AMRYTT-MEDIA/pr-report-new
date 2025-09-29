@@ -8,7 +8,7 @@ export const metadata = {
 
 export default function ProfilePage() {
   return (
-    <div className="fixed inset-0 bg-slate-500 overflow-y-auto pt-14 lg:left-[250px] ">
+    <div className="fixed inset-0 bg-slate-50 overflow-y-auto pt-14 lg:left-[250px] ">
       <ProfileForm />
     </div>
   );

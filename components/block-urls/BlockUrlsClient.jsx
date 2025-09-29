@@ -386,9 +386,9 @@ export default function BlockUrlsClient() {
                   className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500  placeholder:opacity-50"
                 />
                 {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -trangray-y-1/2 cursor-pointer">
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                     <X
-                      className="h-6 w-6 text-muted-foreground bg-slate-900 rounded-xl p-1"
+                      className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
                       onClick={handleClearSearch}
                     />
                   </div>

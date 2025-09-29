@@ -26,7 +26,7 @@ const DeactivateUserDialog = ({
       <Button
         variant="default"
         onClick={onClose}
-        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-20 text-slate-600 hover:text-indigo-600 rounded-3xl font-semibold w-full sm:w-auto"
+        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-200 text-slate-500 hover:text-slate-600 rounded-3xl font-semibold w-full sm:w-auto"
       >
         <CircleXIcon className="h-4 w-4" />
         Cancel

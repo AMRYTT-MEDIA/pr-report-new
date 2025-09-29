@@ -150,21 +150,21 @@ export default function ReportPageClient({
           </div>
         </nav>
       )}
-      <div className="bg-background">
-        <div
-          className="container mx-auto py-8 min-h-[calc(100vh-100px)] relative"
-          style={{ padding: "15px" }}
-        >
-          {/* <div className="mb-6">
+      <div
+        className="container  py-8 min-h-[calc(100vh-100px)] m-auto relative"
+        style={{ padding: "15px" }}
+      >
+        {/* <div className="mb-6">
             <h1 className="text-3xl font-bold tracking-tight">PR Report</h1>
             <p className="text-muted-foreground">
               This is a shared press release distribution report
             </p>
           </div> */}
 
-          {/* Email Dialog for Private Reports */}
-          {showEmailDialog && (
-            <div className="mb-8 mx-auto max-w-[90vw] sm:max-w-[550px] absolute top-1/2 left-1/2 -trangray-x-1/2 -trangray-y-1/2">
+        {/* Email Dialog for Private Reports */}
+        {showEmailDialog && (
+          <div className="flex items-center justify-center min-h-screen absolute inset-0 bg-white/80 backdrop-blur-sm z-50">
+            <div className="mb-8 w-full sm:max-w-[550px] mx-4">
               <div className="bg-slate-100 content-stretch flex flex-col items-start justify-start relative rounded-[14px] size-full">
                 <div
                   aria-hidden="true"
@@ -178,14 +178,12 @@ export default function ReportPageClient({
 
                   {/* Header Section */}
                   <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
-                    <div className="bg-white relative rounded-[10px] shrink-0 size-12">
+                    <div className="bg-white relative rounded-[10px] shrink-0 size-12 flex items-center justify-center">
                       <div
                         aria-hidden="true"
-                        className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px]"
+                        className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px] "
                       />
-                      <div className="absolute left-1/2 size-7 top-1/2 trangray-x-[-50%] trangray-y-[-50%]">
-                        <Mail className="w-7 h-7 text-slate-600" />
-                      </div>
+                      <Mail className="w-7 h-7 text-slate-600" />
                     </div>
                     {/* <button
                       onClick={() => setShowEmailDialog(false)}
@@ -276,15 +274,15 @@ export default function ReportPageClient({
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Report Content */}
-          {showFullReport && report && (
-            <div className="max-w-[1270px] mx-auto">
-              <PRReportViewer report={report} />
-            </div>
-          )}
-        </div>
+        {/* Report Content */}
+        {showFullReport && report && (
+          <div className="max-w-[1270px]  mx-auto">
+            <PRReportViewer report={report} />
+          </div>
+        )}
       </div>
     </>
   );

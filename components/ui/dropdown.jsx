@@ -92,7 +92,7 @@ export default function Dropdown({
           "origin-top",
           align === "right" && "right-0 top-full",
           align === "left" && "left-0 top-full",
-          align === "center" && "left-1/2 top-full transform -trangray-x-1/2",
+          align === "center" && "left-1/2 top-full transform -translate-x-1/2",
           isOpen
             ? "opacity-100 scale-100 trangray-y-0"
             : "opacity-0 scale-95 trangray-y-0 pointer-events-none",
