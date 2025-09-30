@@ -318,7 +318,7 @@ export default function PRReportsListClient() {
                   <tbody className="bg-white divide-y divide-gray-200 max-h-[368px] 2xl:max-h-[368px] 3xl:max-h-[580px] overflow-y-auto">
                     {reports.map((report, index) => {
                       const tooltipPosition =
-                        reports?.length === index + 1 ? "top" : "bottom";
+                        reports?.length === index + 1 ? "top" : "top";
                       return (
                         <tr
                           key={report.grid_id || report._id}

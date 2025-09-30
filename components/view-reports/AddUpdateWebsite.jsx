@@ -7,9 +7,13 @@ import { Label } from "../ui/label";
 import { X, Plus, Save, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import { useFormik } from "formik";
-import * as Yup from "yup";
 import WebsiteConstants from "../website/constans";
 import { viewReportsService } from "@/services/viewReports";
+import {
+  urlValidationSchemas,
+  parseAndNormalizeUrls,
+} from "@/lib/validations/urlSchema";
+import Loading from "../ui/loading";
 
 const AddUpdateWebsite = ({
   onWebsiteAdded,
@@ -17,6 +21,7 @@ const AddUpdateWebsite = ({
   onClose,
   initialUrls = "",
   report,
+  loading = false,
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
@@ -30,53 +35,20 @@ const AddUpdateWebsite = ({
     };
   };
 
+  // Check if the URL has changed from the original value (for edit mode)
+  const hasUrlChanged = () => {
+    if (!isEditMode) return true; // Always allow save for add mode
+    const currentValue = formik?.values?.websiteUrls?.trim() || "";
+    const originalValue = initialUrls?.trim() || "";
+    return currentValue !== originalValue;
+  };
+
   // Formik configuration - only Website URLs field
   const formik = useFormik({
     initialValues: getInitialValues(),
-    validationSchema: Yup.object().shape({
-      websiteUrls: Yup.string()
-        .trim()
-        .required("Website URL is required")
-        .test("valid-urls", "Please enter a valid URL", function (value) {
-          if (!value) return true; // Let required validation handle empty values
-
-          if (isEditMode) {
-            // In edit mode, only allow single URL
-            const urlPattern =
-              /^(https?:\/\/)?(www\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/;
-            if (!urlPattern.test(value.trim())) {
-              return this.createError({
-                message: "Please enter a valid URL",
-              });
-            }
-            return true;
-          } else {
-            // In add mode, allow multiple URLs
-            const urls = value
-              .split(/[,\n]/)
-              .map((url) => url.trim())
-              .filter((url) => url.length > 0);
-            // Check if all URLs are valid
-            const invalidUrls = urls.filter((url) => {
-              try {
-                // Basic URL validation - check if it starts with http/https or www
-                const urlPattern =
-                  /^(https?:\/\/)?(www\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/;
-                return !urlPattern.test(url);
-              } catch {
-                return true;
-              }
-            });
-
-            if (invalidUrls.length > 0) {
-              return this.createError({
-                message: `Invalid URLs found: ${invalidUrls.join(", ")}`,
-              });
-            }
-            return true;
-          }
-        }),
-    }),
+    validationSchema: isEditMode
+      ? urlValidationSchemas.singleUrl
+      : urlValidationSchemas.multipleUrls,
     onSubmit: async (values) => {
       setIsLoading(true);
       try {
@@ -86,11 +58,8 @@ const AddUpdateWebsite = ({
           // In edit mode, only process single URL
           urls = [values.websiteUrls.trim()];
         } else {
-          // In add mode, process multiple URLs
-          urls = values.websiteUrls
-            .split(/[,\n]/)
-            .map((url) => url.trim())
-            .filter((url) => url.length > 0);
+          // In add mode, process multiple URLs using shared utility
+          urls = parseAndNormalizeUrls(values.websiteUrls);
         }
 
         // Create websites for each URL
@@ -100,9 +69,7 @@ const AddUpdateWebsite = ({
         // Prepare data for API call
         const apiData = {
           grid_id: report?.grid_id || report?._id || report?.id,
-          urls: urls.map((url) =>
-            url.startsWith("http") ? url : `https://${url}`
-          ),
+          urls: urls,
         };
 
         if (isEditMode) {
@@ -133,11 +100,6 @@ const AddUpdateWebsite = ({
         }
 
         if (createdWebsites.length > 0) {
-          const message = isEditMode
-            ? "Website URL updated successfully!"
-            : `Successfully created ${createdWebsites.length} website(s)!`;
-          // toast.success(message);
-
           // Call the callback with the created websites
           if (onWebsiteAdded) {
             onWebsiteAdded({
@@ -155,7 +117,9 @@ const AddUpdateWebsite = ({
           toast.error(errorMessage);
         }
 
-        if (createdWebsites.length > 0) {
+        // For create mode, close modal automatically
+        // For edit mode, let parent component handle modal closing
+        if (createdWebsites.length > 0 && !isEditMode) {
           handleClose();
         }
       } catch (error) {
@@ -195,20 +159,16 @@ const AddUpdateWebsite = ({
   const handleTextareaChange = (e) => {
     const value = e.target.value;
 
-    if (isEditMode) {
-      // In edit mode, only allow single URL - no comma processing
-      formik.setFieldValue("websiteUrls", value);
-    } else {
-      // In add mode, process multiple URLs with comma handling
-      const cleanValue = value
-        .toLowerCase()
-        .replace(/\s+(?![,\s])/g, "")
-        .replace(/\s*,\s*/g, ", ");
-      formik.setFieldValue("websiteUrls", cleanValue);
-    }
+    // Don't interfere with user typing - let them type naturally
+    formik.setFieldValue("websiteUrls", value);
 
     // Trigger validation on change
     formik.setFieldTouched("websiteUrls", true);
+
+    // Trigger validation immediately while typing
+    setTimeout(() => {
+      formik.validateField("websiteUrls");
+    }, 0);
   };
 
   const handleKeyDown = (e) => {
@@ -222,23 +182,22 @@ const AddUpdateWebsite = ({
 
       const currentValue = formik.values.websiteUrls;
       const cursorPosition = e.target.selectionStart;
-
-      // Only add comma if there's content before cursor
       const beforeCursor = currentValue.substring(0, cursorPosition);
       const afterCursor = currentValue.substring(cursorPosition);
 
-      // Check if there's content before cursor and no comma already
-      const hasContentBeforeCursor = beforeCursor.trim().length > 0;
-      const endsWithComma =
-        beforeCursor.endsWith(",") || beforeCursor.endsWith(", ");
-      const needsComma = hasContentBeforeCursor && !endsWithComma;
+      // Always add comma and space when Enter is pressed (for URL separation)
+      const trimmedBefore = beforeCursor.trim();
+      const needsComma =
+        trimmedBefore.length > 0 && !trimmedBefore.endsWith(",");
 
-      const newValue = beforeCursor + (needsComma ? ", " : "") + afterCursor;
+      // Add comma and space, then move to new line
+      const newValue =
+        beforeCursor + (needsComma ? ", " : "") + "\n" + afterCursor;
       formik.setFieldValue("websiteUrls", newValue);
 
-      // Set cursor position after the comma and space
+      // Set cursor position after the comma, space, and newline
       setTimeout(() => {
-        const newCursorPosition = cursorPosition + (needsComma ? 2 : 0);
+        const newCursorPosition = cursorPosition + (needsComma ? 3 : 1); // +3 for ", \n" or +1 for "\n"
         e.target.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);
     }
@@ -252,12 +211,8 @@ const AddUpdateWebsite = ({
       // In edit mode, only allow single URL - replace current content
       formik.setFieldValue("websiteUrls", pastedText.trim());
     } else {
-      // In add mode, process multiple URLs with comma handling
-      const processedText = pastedText
-        .replace(/\n/g, ", ")
-        .toLowerCase()
-        .replace(/\s+(?![,\s])/g, "") // Remove spaces that are not after commas
-        .replace(/\s*,\s*/g, ", "); // Normalize comma spacing
+      // In add mode, keep newlines as-is for better URL separation
+      const processedText = pastedText;
 
       const currentValue = formik.values.websiteUrls;
       const cursorPosition = e.target.selectionStart;
@@ -265,9 +220,11 @@ const AddUpdateWebsite = ({
       const beforeCursor = currentValue.substring(0, cursorPosition);
       const afterCursor = currentValue.substring(cursorPosition);
 
-      // Add comma and space before pasted text if needed
+      // Only add comma if there's content before cursor and it doesn't end with comma or newline
       const needsComma =
-        beforeCursor.length > 0 && !beforeCursor.endsWith(", ");
+        beforeCursor.length > 0 &&
+        !beforeCursor.endsWith(", ") &&
+        !beforeCursor.endsWith("\n");
       const finalText =
         beforeCursor + (needsComma ? ", " : "") + processedText + afterCursor;
 
@@ -280,6 +237,14 @@ const AddUpdateWebsite = ({
         e.target.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);
     }
+
+    // Trigger validation immediately after pasting (for both edit and add modes)
+    formik.setFieldTouched("websiteUrls", true);
+
+    // Validate the field immediately
+    setTimeout(() => {
+      formik.validateField("websiteUrls");
+    }, 0);
   };
 
   return (
@@ -373,11 +338,18 @@ const AddUpdateWebsite = ({
             </Button>
             <Button
               type="submit"
-              disabled={isLoading || !formik.isValid}
+              disabled={
+                isLoading || !formik.isValid || loading || !hasUrlChanged()
+              }
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
-              <Save className="w-5 h-5" />
-              {isLoading ? "Saving..." : "Save"}
+              {isLoading || loading ? (
+                <Loading size="sm" color="white" showText={true} text="Save" />
+              ) : (
+                <>
+                  <Save className="w-5 h-5" /> {"Save"}
+                </>
+              )}
             </Button>
           </div>
         </form>

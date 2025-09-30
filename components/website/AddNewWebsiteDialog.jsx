@@ -76,7 +76,7 @@ const AddNewWebsiteDialog = ({
               allow_protocol_relative_urls: false,
               disallow_auth: true,
               allow_fragments: true,
-              allow_query_components: true,
+              allow_query_components: false,
             })
           ) {
             return false;
