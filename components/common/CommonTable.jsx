@@ -14,6 +14,7 @@ import {
 import { Edit, Trash2, Eye, MoreHorizontal } from "lucide-react";
 import Loading from "@/components/ui/loading";
 import CustomTooltip from "../ui/custom-tooltip";
+import EmptyState from "./EmptyState";
 
 const CommonTable = ({
   columns = [],
@@ -221,7 +222,7 @@ const CommonTable = ({
                   </TableCell>
                 </TableRow>
               ) : data.length === 0 ? (
-                <TableRow>
+                <TableRow className="bg-white hover:bg-white">
                   <TableCell
                     colSpan={
                       columns.length +
@@ -230,18 +231,12 @@ const CommonTable = ({
                     }
                     className="px-6 py-8 text-center"
                   >
-                    <div className="flex flex-col items-center justify-center gap-2">
-                      <p className="text-slate-500 text-sm">{noDataText}</p>
-                      {emptyStateAction && (
-                        <Button
-                          onClick={emptyStateAction}
-                          variant="outline"
-                          size="sm"
-                          className="mt-2"
-                        >
-                          {emptyStateActionText}
-                        </Button>
-                      )}
+                    <div className="flex items-center justify-center h-full min-h-[calc(100dvh-345px)]">
+                      <EmptyState
+                        title={noDataText}
+                        actionText={emptyStateActionText}
+                        onAction={emptyStateAction}
+                      />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -354,32 +349,27 @@ const CommonTable = ({
                                   <Trash2 className="w-4 h-4" />
                                 </Button>
                               )}
-                              {customActions?.map((action, actionIndex) => {
-                                const buttonElement = (
-                                  <CustomTooltip
-                                    content={action.tooltipText}
-                                    key={action?.actionIndex}
+                              {customActions?.map((action, actionIndex) => (
+                                <CustomTooltip
+                                  key={actionIndex}
+                                  content={action.tooltipText}
+                                >
+                                  <Button
+                                    variant="ghost"
+                                    size="icon"
+                                    onClick={() => action.onClick(row)}
+                                    className={
+                                      action.className ||
+                                      "p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
+                                    }
                                   >
-                                    <Button
-                                      key={actionIndex}
-                                      variant="ghost"
-                                      size="icon"
-                                      onClick={() => action.onClick(row)}
-                                      className={
-                                        action.className ||
-                                        "p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
-                                      }
-                                    >
-                                      {action.icon && (
-                                        <action.icon className="w-4 h-4" />
-                                      )}
-                                      {action.label}
-                                    </Button>
-                                  </CustomTooltip>
-                                );
-
-                                return buttonElement;
-                              })}
+                                    {action.icon && (
+                                      <action.icon className="w-4 h-4" />
+                                    )}
+                                    {action.label}
+                                  </Button>
+                                </CustomTooltip>
+                              ))}
                               {onMore && (
                                 <Button
                                   variant="ghost"

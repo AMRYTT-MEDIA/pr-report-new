@@ -334,7 +334,6 @@ const UserTable = ({ loading = false }) => {
   );
 
   // Calculate pagination info
-  const totalPages = Math.ceil(totalItems / itemsPerPage);
   const paginationComponent = (
     <Pagination
       currentPage={currentPage}
@@ -360,6 +359,7 @@ const UserTable = ({ loading = false }) => {
         emptyStateActionText="Add First User"
         className="rounded-[10px]"
         pagination={paginationComponent}
+        actionColumnWidth="5%"
         customActions={[
           {
             label: "",
@@ -374,7 +374,7 @@ const UserTable = ({ loading = false }) => {
             label: "",
             onClick: handleChangePassword,
             className:
-              "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ml-2",
+              "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ",
             icon: KeyRound,
             showTooltip: true,
             tooltipText: "Change Password",

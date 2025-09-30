@@ -149,7 +149,6 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
         `/report/${report.grid_id || report._id || report.id}`,
         "_blank"
       );
-      toast.success("Report shared successfully!");
     } catch (error) {
       console.error("Error sharing report:", error);
       toast.error("Failed to share report");

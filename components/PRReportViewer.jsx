@@ -165,15 +165,15 @@ const PRReportViewer = ({
   const handleShareReport = async (payload) => {
     try {
       const reportId = report.grid_id || report._id || report.id;
-      await prReportsService.shareReport(
+      const response = await prReportsService.shareReport(
         reportId,
         payload.is_private,
         payload.sharedEmails || []
       );
       fetchReportData && fetchReportData();
-      toast.success("Report shared successfully!");
+      toast.success(response?.message || "Report shared successfully!");
     } catch (error) {
-      toast.error("Failed to share report");
+      toast.error(error?.response?.data?.message || "Failed to share report");
     }
   };
 
@@ -459,6 +459,7 @@ const PRReportViewer = ({
         editWebsiteInitialUrls && editWebsiteInitialUrls.trim() !== "";
 
       if (isUpdateOperation && outletToEdit) {
+        console.log(result);
         // This is an update operation - call the update API
         const recordId = outletToEdit._id || outletToEdit.id;
         const updateData = {
@@ -467,8 +468,12 @@ const PRReportViewer = ({
             : result.urls || [],
         };
 
-        await viewReportsService.updatePR(recordId, updateData);
-        toast.success("Record updated successfully");
+        const response = await viewReportsService.updatePR(
+          recordId,
+          updateData
+        );
+        console.log(response);
+        toast.success(response?.message || "Record updated successfully");
       } else {
         // This is a create operation - already handled by AddUpdateWebsite component
         if (result.websites && Array.isArray(result.websites)) {
@@ -487,7 +492,7 @@ const PRReportViewer = ({
       setEditWebsiteInitialUrls("");
       setOutletToEdit(null);
     } catch (error) {
-      //empty catch
+      toast.error(error?.response?.data?.message || "Failed to update record");
     }
   };
 
@@ -577,7 +582,7 @@ const PRReportViewer = ({
   }
 
   return (
-    <div className="">
+    <div>
       {/* Summary Stats */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-4">
         <Card className="bg-indigo-50">
@@ -660,7 +665,7 @@ const PRReportViewer = ({
       </div>
 
       {/* Media Outlets Table */}
-      <Card className="mt-4">
+      <Card className="mt-4 ">
         <CardHeader className="sticky top-0 z-10 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
@@ -780,7 +785,7 @@ const PRReportViewer = ({
                         }_${outlet.website_name?.replace(/\s+/g, "_")}`,
                     };
                     const tooltipPosition =
-                      index === filteredOutlets.length - 1 ? "top" : "bottom";
+                      index === filteredOutlets.length - 1 ? "top" : "top";
 
                     return (
                       <TableRow key={index}>
