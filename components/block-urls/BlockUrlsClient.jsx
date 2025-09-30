@@ -534,9 +534,7 @@ export default function BlockUrlsClient() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="text-gray-600 truncate max-w-xs">
-                            {url.domain}
-                          </div>
+                          <div className="text-gray-600 ">{url?.url}</div>
                         </TableCell>
                         <TableCell>
                           <CustomSwitch

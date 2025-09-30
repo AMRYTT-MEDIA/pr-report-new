@@ -6,45 +6,24 @@ import { toast } from "sonner";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { blockUrlsService } from "@/services/blockUrls";
 import { useFormik } from "formik";
-import * as Yup from "yup";
+import {
+  urlValidationSchemas,
+  parseAndNormalizeUrls,
+} from "@/lib/validations/urlSchema";
+import ErrorMessage from "../ui/error-message";
 
 export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
   const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: { websiteUrls: "" },
-    validationSchema: Yup.object().shape({
-      websiteUrls: Yup.string()
-        .trim()
-        .required("Website URL is required")
-        .test("valid-urls", "Please enter a valid URL", function (value) {
-          if (!value) return true;
-          const urls = value
-            .split(/[\,\n]/)
-            .map((u) => u.trim())
-            .filter((u) => u.length > 0);
-          const urlPattern =
-            /^(https?:\/\/)?(www\.)?[a-zA-Z0-9][a-zA-Z0-9-]{1,61}[a-zA-Z0-9]\.[a-zA-Z]{2,}/;
-          const invalid = urls.filter((u) => !urlPattern.test(u));
-          if (invalid.length > 0) {
-            return this.createError({
-              message: `Invalid URLs found: ${invalid.join(", ")}`,
-            });
-          }
-          return true;
-        }),
-    }),
+    validationSchema: urlValidationSchemas.blockUrls,
     onSubmit: async (values) => {
       setLoading(true);
       try {
-        const urls = values.websiteUrls
-          .split(/[\,\n]/)
-          .map((u) => u.trim())
-          .filter((u) => u.length > 0);
+        const urls = parseAndNormalizeUrls(values.websiteUrls);
 
-        const response = await blockUrlsService.bulkCreateBlocks(
-          urls.map((u) => (u.startsWith("http") ? u : `https://${u}`))
-        );
+        const response = await blockUrlsService.bulkCreateBlocks(urls);
 
         toast.success(
           response.message ||
@@ -89,12 +68,14 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
   };
 
   const handleTextareaChange = (e) => {
-    const cleanValue = e.target.value
-      .toLowerCase()
-      .replace(/\s+(?![,\s])/g, "")
-      .replace(/\s*,\s*/g, ", ");
-    formik?.setFieldValue("websiteUrls", cleanValue);
+    // Only clean the value, don't interfere with user typing
+    formik?.setFieldValue("websiteUrls", e.target.value);
     formik?.setFieldTouched("websiteUrls", true);
+
+    // Trigger validation immediately while typing
+    setTimeout(() => {
+      formik.validateField("websiteUrls");
+    }, 0);
   };
 
   const handleKeyDown = (e) => {
@@ -104,14 +85,20 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
       const cursorPosition = e.target.selectionStart;
       const beforeCursor = currentValue.substring(0, cursorPosition);
       const afterCursor = currentValue.substring(cursorPosition);
-      const hasContentBeforeCursor = beforeCursor.trim().length > 0;
-      const endsWithComma =
-        beforeCursor.endsWith(",") || beforeCursor.endsWith(", ");
-      const needsComma = hasContentBeforeCursor && !endsWithComma;
-      const newValue = beforeCursor + (needsComma ? ", " : "") + afterCursor;
+
+      // Always add comma and space when Enter is pressed (for URL separation)
+      const trimmedBefore = beforeCursor.trim();
+      const needsComma =
+        trimmedBefore.length > 0 && !trimmedBefore.endsWith(",");
+
+      // Add comma and space, then move to new line
+      const newValue =
+        beforeCursor + (needsComma ? ", " : "") + "\n" + afterCursor;
       formik.setFieldValue("websiteUrls", newValue);
+
+      // Set cursor position after the comma, space, and newline
       setTimeout(() => {
-        const newCursorPosition = cursorPosition + (needsComma ? 2 : 0);
+        const newCursorPosition = cursorPosition + (needsComma ? 3 : 1); // +3 for ", \n" or +1 for "\n"
         e.target.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);
     }
@@ -120,19 +107,34 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
   const handlePaste = (e) => {
     e.preventDefault();
     const pastedText = e.clipboardData.getData("text");
-    const processedText = pastedText
-      .replace(/\n/g, ", ")
-      .toLowerCase()
-      .replace(/\s+(?![,\s])/g, "")
-      .replace(/\s*,\s*/g, ", ");
+
+    // Keep newlines as-is for better URL separation
+    const processedText = pastedText;
+
     const currentValue = formik.values.websiteUrls;
     const cursorPosition = e.target.selectionStart;
     const beforeCursor = currentValue.substring(0, cursorPosition);
     const afterCursor = currentValue.substring(cursorPosition);
-    const needsComma = beforeCursor.length > 0 && !beforeCursor.endsWith(", ");
+
+    // Only add comma if there's content before cursor and it doesn't end with comma or newline
+    const needsComma =
+      beforeCursor.length > 0 &&
+      !beforeCursor.endsWith(", ") &&
+      !beforeCursor.endsWith("\n");
     const finalText =
       beforeCursor + (needsComma ? ", " : "") + processedText + afterCursor;
+
     formik.setFieldValue("websiteUrls", finalText);
+
+    // Trigger validation immediately after pasting
+    formik.setFieldTouched("websiteUrls", true);
+
+    // Validate the field immediately
+    setTimeout(() => {
+      formik.validateField("websiteUrls");
+    }, 0);
+
+    // Set cursor position after pasted text
     setTimeout(() => {
       const newCursorPosition =
         cursorPosition + processedText.length + (needsComma ? 2 : 0);
@@ -167,7 +169,8 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
                 Block Website URL
               </h2>
               <p className="text-sm font-medium text-[#263145] opacity-50">
-                Confirm blocking this website?
+                Enter multiple website URLs separated by commas to create them
+                in bulk.
               </p>
             </div>
 
@@ -195,9 +198,7 @@ export default function BlockUrlDialog({ isOpen, onClose, onSuccess }) {
                 }`}
               />
               {formik.errors.websiteUrls && formik.touched.websiteUrls && (
-                <p className="text-danger-60 text-sm font-medium flex items-center gap-2">
-                  <Info className="w-4 h-4" /> {formik.errors.websiteUrls}
-                </p>
+                <ErrorMessage message={formik.errors.websiteUrls} />
               )}
             </div>
           </div>
