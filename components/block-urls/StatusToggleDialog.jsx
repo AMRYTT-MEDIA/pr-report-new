@@ -5,6 +5,8 @@ import { Ban, CheckCircle, CircleCheck, CircleX, X } from "lucide-react";
 import { toast } from "sonner";
 import CommonModal from "@/components/common/CommonModal";
 import { blockUrlsService } from "@/services/blockUrls";
+import { Button } from "../ui/button";
+import Loading from "../ui/loading";
 
 export default function StatusToggleDialog({
   isOpen,
@@ -102,27 +104,35 @@ export default function StatusToggleDialog({
       size="md"
       footer={
         <>
-          <button
+          <Button
+            variant="outline"
             onClick={handleCancel}
             disabled={loading}
             className="px-4 py-2.5 bg-white border border-slate-300 rounded-full flex items-center gap-2 text-sm font-semibold text-slate-600 hover:bg-slate-50 transition-colors disabled:opacity-50"
           >
             <X className="w-5 h-5" />
             Cancel
-          </button>
+          </Button>
 
-          <button
+          <Button
+            variant="default"
             onClick={handleConfirm}
             disabled={loading}
             className={`px-4 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-50 bg-indigo-500 text-white hover:bg-indigo-600`}
           >
             {isActivating ? (
-              <CheckCircle className="w-5 h-5" />
+              loading ? (
+                <Loading size="sm" color="white" className="w-5 h-5 " />
+              ) : (
+                <CheckCircle className="w-5 h-5" />
+              )
+            ) : loading ? (
+              <Loading size="sm" color="white" className="w-5 h-5 " />
             ) : (
               <CircleX className="w-5 h-5" />
             )}
-            {loading ? `${actionText}ing...` : actionText}
-          </button>
+            {actionText}
+          </Button>
         </>
       }
     ></CommonModal>

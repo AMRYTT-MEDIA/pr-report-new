@@ -16,7 +16,7 @@ const DeleteDialog = ({
   cancelText = "Cancel",
   IconComponent = Trash2,
   className = "",
-  showCloseButton = false,
+  showCloseButton = true,
 }) => {
   if (!open) return null;
 

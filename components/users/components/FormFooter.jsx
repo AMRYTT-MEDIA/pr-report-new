@@ -30,7 +30,7 @@ const FormFooter = ({
         {loading ? (
           <>
             <Loading size="sm" color="white" className="w-4 h-4 animate-spin" />
-            {isEdit ? "Updating..." : "Creating..."}
+            {isEdit ? "Update" : "Create"}
           </>
         ) : (
           <>

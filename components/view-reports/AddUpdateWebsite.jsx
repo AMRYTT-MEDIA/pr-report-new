@@ -10,6 +10,7 @@ import * as Yup from "yup";
 import WebsiteConstants from "../website/constans";
 import { viewReportsService } from "@/services/viewReports";
 import CommonModal from "@/components/common/CommonModal";
+import Loading from "../ui/loading";
 
 const AddUpdateWebsite = ({
   onWebsiteAdded,
@@ -199,16 +200,26 @@ const AddUpdateWebsite = ({
       // In edit mode, only allow single URL - no comma processing
       formik.setFieldValue("websiteUrls", value);
     } else {
-      // In add mode, process multiple URLs with comma handling
-      const cleanValue = value
-        .toLowerCase()
-        .replace(/\s+(?![,\s])/g, "")
-        .replace(/\s*,\s*/g, ", ");
-      formik.setFieldValue("websiteUrls", cleanValue);
+      // In add mode, convert to lowercase but allow normal typing/backspace
+      formik.setFieldValue("websiteUrls", value.toLowerCase());
     }
 
     // Trigger validation on change
     formik.setFieldTouched("websiteUrls", true);
+  };
+
+  // Handle blur to normalize comma spacing
+  const handleBlur = (e) => {
+    if (!isEditMode) {
+      const value = e.target.value;
+      // Normalize comma spacing - only fix spacing around commas, don't use spaces as delimiters
+      const normalizedValue = value
+        .replace(/\s*,\s*/g, ", ") // Normalize spaces around commas
+        .replace(/,+/g, ", ") // Replace multiple consecutive commas with single comma
+        .trim();
+      formik.setFieldValue("websiteUrls", normalizedValue);
+    }
+    formik.handleBlur(e);
   };
 
   const handleKeyDown = (e) => {
@@ -227,11 +238,18 @@ const AddUpdateWebsite = ({
       const beforeCursor = currentValue.substring(0, cursorPosition);
       const afterCursor = currentValue.substring(cursorPosition);
 
-      // Check if there's content before cursor and no comma already
-      const hasContentBeforeCursor = beforeCursor.trim().length > 0;
+      // Check if there's actual content (not just spaces) after the last comma
+      const lastCommaIndex = beforeCursor.lastIndexOf(",");
+      const contentAfterLastComma =
+        lastCommaIndex >= 0
+          ? beforeCursor.substring(lastCommaIndex + 1).trim()
+          : beforeCursor.trim();
+
+      // Only add comma if there's real content after the last comma and no comma already at the end
+      const hasRealContent = contentAfterLastComma.length > 0;
       const endsWithComma =
         beforeCursor.endsWith(",") || beforeCursor.endsWith(", ");
-      const needsComma = hasContentBeforeCursor && !endsWithComma;
+      const needsComma = hasRealContent && !endsWithComma;
 
       const newValue = beforeCursor + (needsComma ? ", " : "") + afterCursor;
       formik.setFieldValue("websiteUrls", newValue);
@@ -253,30 +271,53 @@ const AddUpdateWebsite = ({
       formik.setFieldValue("websiteUrls", pastedText.trim());
     } else {
       // In add mode, process multiple URLs with comma handling
-      const processedText = pastedText
-        .replace(/\n/g, ", ")
-        .toLowerCase()
-        .replace(/\s+(?![,\s])/g, "") // Remove spaces that are not after commas
-        .replace(/\s*,\s*/g, ", "); // Normalize comma spacing
+      // Split by newlines and commas, filter empty strings, then rejoin
+      const urls = pastedText
+        .split(/[\n,]+/)
+        .map((url) => url.trim())
+        .filter((url) => url.length > 0);
+
+      const processedText = urls.join(", ").toLowerCase();
 
       const currentValue = formik.values.websiteUrls;
       const cursorPosition = e.target.selectionStart;
 
-      const beforeCursor = currentValue.substring(0, cursorPosition);
-      const afterCursor = currentValue.substring(cursorPosition);
+      const beforeCursor = currentValue.substring(0, cursorPosition).trim();
+      const afterCursor = currentValue.substring(cursorPosition).trim();
 
-      // Add comma and space before pasted text if needed
-      const needsComma =
-        beforeCursor.length > 0 && !beforeCursor.endsWith(", ");
-      const finalText =
-        beforeCursor + (needsComma ? ", " : "") + processedText + afterCursor;
+      // Build the final text with proper comma handling
+      let finalText = "";
+
+      if (beforeCursor.length > 0) {
+        finalText = beforeCursor;
+        if (!beforeCursor.endsWith(",")) {
+          finalText += ", ";
+        } else if (!beforeCursor.endsWith(", ")) {
+          finalText += " ";
+        }
+      }
+
+      finalText += processedText;
+
+      if (afterCursor.length > 0) {
+        if (!processedText.endsWith(",") && !afterCursor.startsWith(",")) {
+          finalText += ", ";
+        } else if (
+          processedText.endsWith(",") &&
+          !processedText.endsWith(", ")
+        ) {
+          finalText += " ";
+        }
+        finalText += afterCursor;
+      }
 
       formik.setFieldValue("websiteUrls", finalText);
 
       // Set cursor position after pasted text
       setTimeout(() => {
         const newCursorPosition =
-          cursorPosition + processedText.length + (needsComma ? 2 : 0);
+          (beforeCursor.length > 0 ? beforeCursor.length + 2 : 0) +
+          processedText.length;
         e.target.setSelectionRange(newCursorPosition, newCursorPosition);
       }, 0);
     }
@@ -319,8 +360,12 @@ const AddUpdateWebsite = ({
               disabled={isLoading || !formik.isValid}
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
-              <Save className="w-5 h-5" />
-              {isLoading ? "Saving..." : "Save"}
+              {!isLoading && <Save className="w-5 h-5" />}
+              {isLoading ? (
+                <Loading size="sm" color="white" showText={true} text="Save" />
+              ) : (
+                "Save"
+              )}
             </Button>
           </>
         }
@@ -342,7 +387,7 @@ const AddUpdateWebsite = ({
               onChange={handleTextareaChange}
               onKeyDown={handleKeyDown}
               onPaste={handlePaste}
-              onBlur={formik.handleBlur}
+              onBlur={handleBlur}
               rows={isEditMode ? 3 : 8}
               className={`w-full rounded-lg border border-slate-300 text-slate-700 placeholder:text-slate-400 p-3 resize-none focus:outline-none focus:border-indigo-500 ${
                 formik.errors.websiteUrls && formik.touched.websiteUrls

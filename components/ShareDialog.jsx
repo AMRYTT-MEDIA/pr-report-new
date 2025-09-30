@@ -89,7 +89,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
   };
 
   const removeEmailField = (index) => {
-    const newEmails = emails.filter((_, i) => i !== index);
+    const newEmails = emails?.filter((_, i) => i !== index);
     setEmails(newEmails);
   };
 
@@ -107,7 +107,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       setEmails([]);
     } else {
       // Only initialize from API if no emails are currently set locally
-      if (emails.length === 0 && report?.sharedEmails?.length > 0) {
+      if (emails?.length === 0 && report?.sharedEmails?.length > 0) {
         setEmails(report.sharedEmails);
       }
     }
@@ -122,8 +122,8 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       let payload;
 
       if (isPrivate) {
-        const validEmails = emails.filter((email) => email.trim() !== "");
-        if (validEmails.length === 0) {
+        const validEmails = emails?.filter((email) => email.trim() !== "");
+        if (validEmails?.length === 0) {
           toast.error("Please add at least one email address");
           return;
         }
@@ -189,7 +189,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           <Button
             variant="default"
             onClick={handleShare}
-            disabled={emails.length === 0 && isPrivate}
+            disabled={emails?.length === 0 && isPrivate}
             className="gap-1.5 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl font-semibold w-full sm:w-auto"
           >
             <CircleCheckBig className="h-4 w-4" />
@@ -269,11 +269,11 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           Only emails from approved domains are allowed.
         </p>
         {report?.sharedEmails &&
-          report.sharedEmails.length > 0 &&
+          report.sharedEmails?.length > 0 &&
           isPrivate && (
             <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md ">
               <p className="text-xs text-blue-700">
-                📧 {report.sharedEmails.length} email(s) already shared with
+                📧 {report.sharedEmails?.length} email(s) already shared with
                 this report
               </p>
             </div>
@@ -344,11 +344,11 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
         }}
       </Formik>
 
-      {emails.length > 0 && isPrivate && (
+      {emails?.length > 0 && isPrivate && (
         <div className="flex flex-col gap-3.5 pt-5">
           <Label className="text-sm font-medium">People With Access</Label>
           <div className="flex flex-col gap-2.5 max-h-[90px] overflow-y-auto scrollbar-custom">
-            {emails.map((email, index) => (
+            {emails?.map((email, index) => (
               <div key={index} className="relative">
                 <Input
                   type="email"
