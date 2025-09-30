@@ -168,7 +168,7 @@ const ForgotPasswordForm = () => {
                         >
                           <div className="absolute bg-white bottom-0 left-0 right-0 rounded-[6px] top-0 border border-[#dbe2ed] hover:border-indigo-300 transition-colors">
                             <div className="overflow-clip relative size-full">
-                              <div className="absolute content-stretch flex gap-[7px] items-center justify-center top-1/2 trangray-x-[-50%] trangray-y-[-50%] left-1/2">
+                              <div className="absolute content-stretch flex gap-[7px] items-center justify-center top-1/2 translate-x-[-50%] translate-y-[-50%] left-1/2">
                                 <div className="overflow-clip relative shrink-0 size-6">
                                   <Image
                                     src={provider.icon}

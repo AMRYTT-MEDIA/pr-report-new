@@ -94,8 +94,8 @@ export default function Dropdown({
           align === "left" && "left-0 top-full",
           align === "center" && "left-1/2 top-full transform -translate-x-1/2",
           isOpen
-            ? "opacity-100 scale-100 trangray-y-0"
-            : "opacity-0 scale-95 trangray-y-0 pointer-events-none",
+            ? "opacity-100 scale-100 translate-y-0"
+            : "opacity-0 scale-95 translate-y-0 pointer-events-none",
           className
         )}
       >
