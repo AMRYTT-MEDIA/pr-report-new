@@ -303,7 +303,7 @@ const LoginForm = ({ searchParams }) => {
               <div className="flex justify-end">
                 <Link
                   href="/forgot-password"
-                  className="text-sm font-medium text-indigo-500-60"
+                  className="text-sm font-medium text-indigo-500"
                 >
                   Forgot Password?
                 </Link>

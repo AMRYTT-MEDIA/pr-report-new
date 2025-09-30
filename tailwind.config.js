@@ -79,31 +79,31 @@ module.exports = {
         // Your custom colors are now mapped to standard Tailwind scale (50, 100, 200, etc.)
         // Using Tailwind's default slate colors (closer to your original design)
         slate: {
-          50: "#f8fafc", // Tailwind default slate-50
-          100: "#f1f5f9", // Tailwind default slate-100
-          200: "#e2e8f0", // Tailwind default slate-200
-          300: "#cbd5e1", // Tailwind default slate-300
-          400: "#94a3b8", // Tailwind default slate-400
-          500: "#64748b", // Tailwind default slate-500
-          600: "#475569", // Tailwind default slate-600
-          700: "#334155", // Tailwind default slate-700
-          800: "#1e293b", // Tailwind default slate-800
-          900: "#0f172a", // Tailwind default slate-900
-          950: "#020617", // Tailwind default slate-950
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+          950: "#020617",
         },
 
         // Primary brand colors mapped to Tailwind scale
         indigo: {
-          50: "#eef2ff", // was primary-5
-          100: "#e0e7ff", // was primary-10
-          200: "#c7d2fe", // was primary-20
-          300: "#a5b4fc", // was primary-30
-          400: "#818cf8", // was primary-40
-          500: "#6366f1", // was primary-50
-          600: "#4f46e5", // was primary-60
-          700: "#4338ca", // was primary-70
-          800: "#3730a3", // was primary-80
-          900: "#312e81", // was primary-90
+          50: "#eef2ff",
+          100: "#e0e7ff",
+          200: "#c7d2fe",
+          300: "#a5b4fc",
+          400: "#818cf8",
+          500: "#6366f1",
+          600: "#4f46e5",
+          700: "#4338ca",
+          800: "#3730a3",
+          900: "#312e81",
         },
 
         // Semantic colors mapped to Tailwind scale
