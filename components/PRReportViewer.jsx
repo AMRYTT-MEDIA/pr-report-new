@@ -57,7 +57,7 @@ const PRReportViewer = ({
   const [outletToDelete, setOutletToDelete] = useState(null);
   const [outletToEdit, setOutletToEdit] = useState(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-
+  const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [rowsPerPage, setRowsPerPage] = useState(25);
 
@@ -453,6 +453,7 @@ const PRReportViewer = ({
 
   const handleWebsiteAdded = async (result) => {
     // Handle website(s) added/updated - result can be single website or bulk result
+    setIsLoading(true);
     try {
       // Check if this is an update operation (when editWebsiteInitialUrls is set)
       const isUpdateOperation =
@@ -472,8 +473,19 @@ const PRReportViewer = ({
           recordId,
           updateData
         );
-        console.log(response);
-        toast.success(response?.message || "Record updated successfully");
+
+        // Only show success message and close modal if API call succeeds
+        toast.success(response?.data?.message || "Record updated successfully");
+
+        // Refresh the report data to reflect changes
+        if (fetchReportData) {
+          fetchReportData();
+        }
+
+        // Clear edit state and close modal only on success
+        setEditWebsiteInitialUrls("");
+        setOutletToEdit(null);
+        setShowAddWebsiteDialog(false);
       } else {
         // This is a create operation - already handled by AddUpdateWebsite component
         if (result.websites && Array.isArray(result.websites)) {
@@ -481,18 +493,24 @@ const PRReportViewer = ({
         } else {
           // Single website result (for backward compatibility)
         }
-      }
 
-      // Refresh the report data to reflect changes
-      if (fetchReportData) {
-        fetchReportData();
-      }
+        // For create operations, close modal and refresh data
+        if (fetchReportData) {
+          fetchReportData();
+        }
 
-      // Clear edit state
-      setEditWebsiteInitialUrls("");
-      setOutletToEdit(null);
+        // Clear edit state and close modal
+        setEditWebsiteInitialUrls("");
+        setOutletToEdit(null);
+        setShowAddWebsiteDialog(false);
+      }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to update record");
+      // Show error message but keep modal open for update operations
+      toast.error(error.response?.data?.message || "Failed to update record");
+      // Don't close modal on error - let user fix the issue and try again
+      // Only clear the error state, but keep edit state intact
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -529,7 +547,8 @@ const PRReportViewer = ({
     } catch (error) {
       console.error("Error deleting record:", error);
       toast.error(
-        error.message || "Failed to delete record. Please try again."
+        error.response.data.message ||
+          "Failed to delete record. Please try again."
       );
     } finally {
       setDeleteLoading(false);
@@ -588,7 +607,7 @@ const PRReportViewer = ({
         <Card className="bg-indigo-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-slate-700">
+              <div className="text-base pb-2 font-medium text-scale-700">
                 Total Publications
               </div>
               <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-slate-800">
@@ -868,7 +887,7 @@ const PRReportViewer = ({
           </div>
 
           {filteredOutlets.length === 0 && searchTerm && (
-            <div className="text-center py-6">
+            <div className="text-center py-6 mx-6">
               <p className="text-muted-foreground">
                 No outlets found matching "{searchTerm}"
               </p>
@@ -904,6 +923,7 @@ const PRReportViewer = ({
         onWebsiteAdded={handleWebsiteAdded}
         initialUrls={editWebsiteInitialUrls}
         report={report}
+        loading={isLoading}
       />
 
       {/* Delete Dialog */}
