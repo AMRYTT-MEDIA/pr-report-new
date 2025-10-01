@@ -4,12 +4,10 @@ import { uploadLogo, deleteLogo } from "@/lib/utils";
 // Websites API service
 export const websitesService = {
   // Get all websites
-  getWebsites: async () => {
-    return await apiGet("/websites");
-  },
+  getWebsites: () => apiGet("/websites"),
 
   // Get websites with pagination
-  getWebsitesPaginated: async (page = 1, pageSize = 25, search = null) => {
+  getWebsitesPaginated: (page = 1, pageSize = 25, search = null) => {
     const params = new URLSearchParams({
       page: page.toString(),
       pageSize: pageSize.toString(),
@@ -19,18 +17,14 @@ export const websitesService = {
       params.append("search", search);
     }
 
-    return await apiGet(`/websites?${params.toString()}`);
+    return apiGet(`/websites?${params.toString()}`);
   },
 
   // Get all websites
-  getAllWebsites: async () => {
-    return await apiGet("/websites/all");
-  },
+  getAllWebsites: () => apiGet("/websites/all"),
 
   // Get website by ID
-  getWebsiteById: async (id) => {
-    return await apiGet(`/websites/${id}`);
-  },
+  getWebsiteById: (id) => apiGet(`/websites/${id}`),
 
   // Create new website
   createWebsite: async (websiteData) => {
@@ -105,7 +99,5 @@ export const websitesService = {
   },
 
   // Reorder websites
-  reorderWebsites: async (reorderData) => {
-    return await apiPut("/websites/reorder", reorderData);
-  },
+  reorderWebsites: (reorderData) => apiPut("/websites/reorder", reorderData),
 };

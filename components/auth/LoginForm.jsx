@@ -96,7 +96,7 @@ const LoginForm = ({ searchParams }) => {
           return isEmail(value.trim());
         })
         .required("Email is required"),
-      password: Yup.string().required("Password is required").min(8, "Password should be a minimum of 8 characters"),
+      password: Yup.string().required("Password is required"),
     }),
     onSubmit: async (values) => {
       if (!isVerified) return;
