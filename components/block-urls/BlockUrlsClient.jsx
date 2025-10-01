@@ -1,16 +1,15 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Search, CheckCircle, XCircle, Trash2, Plus, X } from "lucide-react";
+import { CheckCircle, XCircle, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Input } from "@/components/ui/input";
 import { CustomSwitch } from "@/components/ui/custom-switch";
 import { SimpleCheckbox } from "@/components/ui/simple-checkbox";
 // Using CommonTable instead of raw table components
 import { useAuth } from "@/lib/auth";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import Pagination from "@/components/Pagination";
-import { CommonTable } from "@/components/common";
+import { CommonTable, SearchInput } from "@/components/common";
 // Empty state handled by CommonTable
 
 import { blockUrlsService } from "@/services/blockUrls";
@@ -345,19 +344,8 @@ export default function BlockUrlsClient() {
   // Header actions (search + bulk buttons)
   const headerActions = (
     <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 sm:gap-2 w-full sm:w-auto">
-      <div className="relative w-full sm:max-w-[400px] order-2 sm:order-1">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
-        <Input
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="w-full pl-9 pr-9 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:opacity-50"
-        />
-        {searchQuery && (
-          <button type="button" onClick={handleClearSearch} className="absolute right-2 top-1/2 -translate-y-1/2">
-            <X className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1" />
-          </button>
-        )}
+      <div className="w-full sm:max-w-[400px] order-2 sm:order-1">
+        <SearchInput value={searchQuery} onChange={handleSearch} onClear={handleClearSearch} />
       </div>
 
       <div className="flex items-center gap-2 order-1 sm:order-2">

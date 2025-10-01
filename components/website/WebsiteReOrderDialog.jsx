@@ -1,10 +1,11 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { Search, Undo, Redo, X, Save, GripVertical, Check, TriangleAlert } from "lucide-react";
+import { Undo, Redo, Save, GripVertical, Check, TriangleAlert, X } from "lucide-react";
 import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Dialog, DialogContent } from "../ui/dialog";
 import CommonModal from "@/components/common/CommonModal";
+import { SearchInput } from "@/components/common";
 import { Button } from "../ui/button";
 import { websitesService } from "@/services/websites";
 import { toast } from "sonner";
@@ -471,25 +472,13 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
             </div>
 
             {/* Search */}
-            <div className="relative w-full">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Search className="h-5 w-5 text-slate-400" />
-              </div>
-              <input
-                type="text"
-                placeholder="Search..."
+            <div className="w-full">
+              <SearchInput
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-indigo-500"
+                onClear={() => setSearchTerm("")}
+                className="w-full"
               />
-              {searchTerm && (
-                <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                  <X
-                    className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
-                    onClick={() => setSearchTerm("")}
-                  />
-                </div>
-              )}
             </div>
             <div className="flex items-center gap-2">
               {/* Action Buttons */}

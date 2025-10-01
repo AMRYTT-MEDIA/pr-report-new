@@ -2,11 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
+import { ListRestart, Plus, Trash2, PencilLine } from "lucide-react";
 import Pagination from "@/components/Pagination";
-import { CommonTable } from "@/components/common";
+import { CommonTable, SearchInput } from "@/components/common";
 import { AddNewWebsiteDialog, WebsiteDeleteDialog, WebsiteReOrderDialog } from "@/components/website";
 import { toast } from "sonner";
 import { websitesService } from "@/services/websites";
@@ -237,20 +236,7 @@ const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => 
   // Header actions for CommonTable (search + actions)
   const headerActions = (
     <div className="flex items-center gap-3">
-      <div className="relative  sm:max-w-[400px] lg:w-full">
-        <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-600" />
-        <Input
-          placeholder="Search..."
-          value={searchQuery}
-          onChange={handleSearch}
-          className="w-full pl-9 pr-8 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:opacity-50"
-        />
-        {searchQuery && (
-          <button type="button" onClick={handleClearSearch} className="absolute right-2 top-1/2 -translate-y-1/2">
-            <X className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1" />
-          </button>
-        )}
-      </div>
+      <SearchInput value={searchQuery} onChange={handleSearch} onClear={handleClearSearch} />
       {canManageWebsite(user) && (
         <>
           <Button

@@ -1,23 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TotalPublicationIcon, TotalReachIcon } from "@/components/icon";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import WebsiteIcon from "@/components/ui/WebsiteIcon";
-import {
-  Search,
-  Eye,
-  Share2,
-  FileSpreadsheet,
-  FileArchive,
-  X,
-  FileSpreadsheetIcon,
-  Plus,
-  PencilLine,
-  Trash2,
-} from "lucide-react";
+import { Eye, Share2, FileSpreadsheet, FileArchive, FileSpreadsheetIcon, Plus, PencilLine, Trash2 } from "lucide-react";
+import { SearchInput } from "@/components/common";
 import { toast } from "sonner";
 // Dynamic import will be used in handleDownload function
 import { prReportsService } from "@/services/prReports";
@@ -596,22 +585,14 @@ const PRReportViewer = ({ report, loading = false, isPublic = true, fetchReportD
             </CardTitle>
             <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center gap-2 w-full sm:w-auto">
-                <div className="relative flex-1 sm:flex-none">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                  <Input
+                <div className="flex-1 sm:flex-none">
+                  <SearchInput
                     placeholder="Search outlets..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-full rounded-3xl min-w-[100%] md:min-w-[300px] border-slate-300 focus:border-indigo-500"
+                    onClear={() => setSearchTerm("")}
+                    className="min-w-[100%] md:min-w-[300px]"
                   />
-                  {searchTerm && (
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                      <X
-                        className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
-                        onClick={() => setSearchTerm("")}
-                      />
-                    </div>
-                  )}
                 </div>
               </div>
               <div className="flex items-center gap-2">
