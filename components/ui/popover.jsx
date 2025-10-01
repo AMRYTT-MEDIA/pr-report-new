@@ -31,94 +31,82 @@ const Popover = ({ children, open: openProp, onOpenChange }) => {
   );
 
   return (
-    <PopoverContext.Provider
-      value={{ open: isOpen, setOpen: handleOpenChange }}
-    >
-      {children}
-    </PopoverContext.Provider>
+    <PopoverContext.Provider value={{ open: isOpen, setOpen: handleOpenChange }}>{children}</PopoverContext.Provider>
   );
 };
 
-const PopoverTrigger = React.forwardRef(
-  ({ children, asChild = false, ...props }, ref) => {
-    const { setOpen } = usePopover();
+const PopoverTrigger = React.forwardRef(({ children, asChild = false, ...props }, ref) => {
+  const { setOpen } = usePopover();
 
-    const handleClick = React.useCallback(() => {
-      setOpen(true);
-    }, [setOpen]);
+  const handleClick = React.useCallback(() => {
+    setOpen(true);
+  }, [setOpen]);
 
-    if (asChild && React.isValidElement(children)) {
-      return React.cloneElement(children, {
-        onClick: handleClick,
-        ref: ref || children.ref,
-        ...props,
-      });
-    }
-
-    return (
-      <div ref={ref} onClick={handleClick} {...props}>
-        {children}
-      </div>
-    );
+  if (asChild && React.isValidElement(children)) {
+    return React.cloneElement(children, {
+      onClick: handleClick,
+      ref: ref || children.ref,
+      ...props,
+    });
   }
-);
 
-const PopoverContent = React.forwardRef(
-  (
-    { className, align = "center", sideOffset = 4, children, ...props },
-    ref
-  ) => {
-    const { open, setOpen } = usePopover();
-    const [position, setPosition] = React.useState({ top: 0, left: 0 });
-    const triggerRef = React.useRef(null);
-    const contentRef = React.useRef(null);
+  return (
+    <div ref={ref} onClick={handleClick} {...props}>
+      {children}
+    </div>
+  );
+});
 
-    React.useEffect(() => {
-      if (open && triggerRef.current && contentRef.current) {
-        const triggerRect = triggerRef.current.getBoundingClientRect();
-        const contentRect = contentRef.current.getBoundingClientRect();
+const PopoverContent = React.forwardRef(({ className, align = "center", sideOffset = 4, children, ...props }, _ref) => {
+  const { open } = usePopover();
+  const [position, setPosition] = React.useState({ top: 0, left: 0 });
+  const triggerRef = React.useRef(null);
+  const contentRef = React.useRef(null);
 
-        let top = triggerRect.bottom + sideOffset;
-        let left = triggerRect.left;
+  React.useEffect(() => {
+    if (open && triggerRef.current && contentRef.current) {
+      const triggerRect = triggerRef.current.getBoundingClientRect();
+      const contentRect = contentRef.current.getBoundingClientRect();
 
-        // Align content
-        switch (align) {
-          case "start":
-            left = triggerRect.left;
-            break;
-          case "center":
-            left =
-              triggerRect.left + triggerRect.width / 2 - contentRect.width / 2;
-            break;
-          case "end":
-            left = triggerRect.right - contentRect.width;
-            break;
-        }
+      const top = triggerRect.bottom + sideOffset;
+      let { left } = triggerRect;
 
-        setPosition({ top, left });
+      // Align content
+      switch (align) {
+        case "start":
+          ({ left } = triggerRect);
+          break;
+        case "center":
+          left = triggerRect.left + triggerRect.width / 2 - contentRect.width / 2;
+          break;
+        case "end":
+          left = triggerRect.right - contentRect.width;
+          break;
       }
-    }, [open, align, sideOffset]);
 
-    if (!open) return null;
+      setPosition({ top, left });
+    }
+  }, [open, align, sideOffset]);
 
-    return (
-      <div
-        ref={contentRef}
-        className={cn(
-          "fixed z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
-          className
-        )}
-        style={{
-          top: position.top,
-          left: position.left,
-        }}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+  if (!open) return null;
+
+  return (
+    <div
+      ref={contentRef}
+      className={cn(
+        "fixed z-50 w-72 rounded-md border bg-popover p-4 text-popover-foreground shadow-md outline-none",
+        className
+      )}
+      style={{
+        top: position.top,
+        left: position.left,
+      }}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+});
 
 Popover.displayName = "Popover";
 PopoverTrigger.displayName = "PopoverTrigger";

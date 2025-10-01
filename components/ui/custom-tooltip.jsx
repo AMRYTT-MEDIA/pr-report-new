@@ -1,24 +1,11 @@
 "use client";
 
-import React, {
-  useState,
-  useCallback,
-  useMemo,
-  useRef,
-  useEffect,
-} from "react";
+import React, { useState, useCallback, useMemo, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils";
 
 const CustomTooltip = React.memo(
-  ({
-    children,
-    content,
-    position = "top",
-    className = "",
-    contentClassName = "",
-    delay = 300,
-  }) => {
+  ({ children, content, position = "top", className = "", contentClassName = "", delay = 300 }) => {
     const [isVisible, setIsVisible] = useState(false);
     const timeoutRef = useRef(null);
     const triggerRef = useRef(null);
@@ -120,13 +107,14 @@ const CustomTooltip = React.memo(
     }, [position]);
 
     // Cleanup timeout on unmount
-    useEffect(() => {
-      return () => {
+    useEffect(
+      () => () => {
         if (timeoutRef.current) {
           clearTimeout(timeoutRef.current);
         }
-      };
-    }, []);
+      },
+      []
+    );
 
     return (
       <div
@@ -140,10 +128,7 @@ const CustomTooltip = React.memo(
         {isVisible &&
           content &&
           createPortal(
-            <div
-              className={positionClasses}
-              style={{ top: coords.top, left: coords.left }}
-            >
+            <div className={positionClasses} style={{ top: coords.top, left: coords.left }}>
               {/* Tooltip Container */}
               <div
                 className={cn(

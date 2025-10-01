@@ -93,24 +93,20 @@ export default function ViewPRClient() {
     if (reportId && user && !hasFetched.current) {
       fetchReportData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reportId]);
 
   useEffect(() => {
     if (user && reportId && !hasFetched.current) {
       fetchReportData();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   if (loading) {
     return (
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
-        <Loading
-          size="lg"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <Loading size="lg" showText={true} text="Loading..." textColor="black" textPosition="bottom" />
       </div>
     );
   }
@@ -119,9 +115,7 @@ export default function ViewPRClient() {
     return (
       <div>
         <div className="bg-red-50 border border-red-200 rounded-md p-6 text-center">
-          <h2 className="text-lg font-medium text-red-800 mb-2">
-            Error Loading Report
-          </h2>
+          <h2 className="text-lg font-medium text-red-800 mb-2">Error Loading Report</h2>
           <p className="text-red-700">{error}</p>
         </div>
       </div>
@@ -132,11 +126,7 @@ export default function ViewPRClient() {
     <div>
       {report && (
         <div className="max-w-[1270px] mx-auto">
-          <PRReportViewer
-            report={report}
-            isPublic={false}
-            fetchReportData={() => fetchReportData(true)}
-          />
+          <PRReportViewer report={report} isPublic={false} fetchReportData={() => fetchReportData(true)} />
         </div>
       )}
     </div>

@@ -11,12 +11,7 @@ import { toast } from "sonner";
 import { userService } from "@/services/user";
 import Loading from "../ui/loading";
 
-const ChangePasswordDialog = ({
-  open = false,
-  onClose,
-  user = null,
-  onSuccess,
-}) => {
+const ChangePasswordDialog = ({ open = false, onClose, user = null, onSuccess }) => {
   const [submitting, setSubmitting] = React.useState(false);
 
   const formik = useFormik({
@@ -26,10 +21,21 @@ const ChangePasswordDialog = ({
     },
     validationSchema: Yup.object({
       newPassword: Yup.string()
-        .min(8, "Password must be at least 8 characters")
+        .min(6, "New password must be at least 6 characters")
+        .max(50, "New password must be less than 50 characters")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
+          "New password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        )
         .required("New password is required"),
       confirmPassword: Yup.string()
+        .min(6, "Confirm password must be at least 6 characters")
+        .max(50, "Confirm password must be less than 50 characters")
         .oneOf([Yup.ref("newPassword"), null], "Passwords must match")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
+          "Confirm password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        )
         .required("Confirm password is required"),
     }),
     onSubmit: async (values, { resetForm }) => {
@@ -47,10 +53,7 @@ const ChangePasswordDialog = ({
         onSuccess?.();
         onClose?.();
       } catch (error) {
-        const message =
-          error?.response?.data?.message ||
-          error?.message ||
-          "Failed to change password";
+        const message = error?.response?.data?.message || error?.message || "Failed to change password";
         toast.error(message);
       } finally {
         setSubmitting(false);
@@ -65,6 +68,7 @@ const ChangePasswordDialog = ({
     if (!open) {
       formik.resetForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open]);
 
   const handleClose = () => {
@@ -75,12 +79,7 @@ const ChangePasswordDialog = ({
   const subtitle = (
     <span>
       Are you sure you want to change{" "}
-      {user?.fullName ? (
-        <span className="font-bold">{user.fullName}'s</span>
-      ) : (
-        "this user's"
-      )}{" "}
-      password?
+      {user?.fullName ? <span className="font-bold">{user.fullName}'s</span> : "this user's"} password?
     </span>
   );
 
@@ -91,7 +90,7 @@ const ChangePasswordDialog = ({
         variant="default"
         onClick={handleClose}
         disabled={submitting}
-        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-20 text-gray-scale-60 hover:text-primary-60 rounded-3xl font-semibold w-full sm:w-auto"
+        className="gap-1.5 px-4 py-2.5 bg-white hover:bg-white-200 text-slate-500 hover:text-slate-600 rounded-3xl font-semibold w-full sm:w-auto"
       >
         <CircleXIcon className="h-4 w-4" />
         Cancel
@@ -101,7 +100,7 @@ const ChangePasswordDialog = ({
         form="changePasswordForm"
         variant="default"
         disabled={submitting || !formik.isValid || !formik.dirty}
-        className="gap-1.5 px-4 py-2.5 bg-primary-50 hover:bg-primary-60 text-white rounded-3xl font-semibold w-full sm:w-auto"
+        className="gap-1.5 px-4 py-2.5 bg-indigo-500 hover:bg-indigo-600 text-white rounded-3xl font-semibold w-full sm:w-auto"
       >
         {submitting ? (
           <Loading size="sm" color="white" className="w-4 h-4 animate-spin" />
@@ -126,18 +125,9 @@ const ChangePasswordDialog = ({
       footer={footer}
     >
       <FormikProvider value={formik}>
-        <form
-          id="changePasswordForm"
-          onSubmit={formik.handleSubmit}
-          autoComplete="off"
-        >
+        <form id="changePasswordForm" onSubmit={formik.handleSubmit} autoComplete="off">
           <div className="grid gap-4">
-            <PasswordField
-              name="newPassword"
-              label="New Password"
-              placeholder="Enter new password"
-              required
-            />
+            <PasswordField name="newPassword" label="New Password" placeholder="Enter new password" required />
             <PasswordField
               name="confirmPassword"
               label="Confirm Password"

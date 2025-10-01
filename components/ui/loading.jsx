@@ -17,66 +17,48 @@ const Loading = ({
   };
 
   const colorClasses = {
-    primary: "border-primary-60",
+    primary: "border-indigo-600",
     white: "border-white",
-    gray: "border-gray-400",
+    gray: "border-slate-400",
     purple: "border-purple-600",
-    danger: "border-danger-60",
+    danger: "border-red-600",
   };
 
   // Special case for purple to match the original design
-  const getBorderStyle = (color) => {
-    if (color === "purple") {
+  const getBorderStyle = (loadingColor) => {
+    if (loadingColor === "purple") {
       return "border-b-2 border-purple-600";
     }
     if (color === "white") {
       return "border-b-2 border-white";
     }
     if (color === "primary") {
-      return "border-b-2 border-primary-60";
+      return "border-b-2 border-indigo-600";
     }
     if (color === "danger") {
-      return "border-b-2 border-danger-60";
+      return "border-b-2 border-red-600";
     }
-    return `border-2 border-gray-200 ${colorClasses[color]} border-t-transparent`;
+    return `border-2 border-slate-200 ${colorClasses[color]} border-t-transparent`;
   };
 
   const textColorClasses = {
     white: "text-white",
     black: "text-black",
-    gray: "text-gray-600",
-    primary: "text-primary-60",
+    gray: "text-slate-600",
+    primary: "text-indigo-600",
   };
 
   // Handle different text positions
   const renderContent = () => {
     if (textPosition === "top" || textPosition === "bottom") {
       return (
-        <div
-          className={`flex flex-col items-center justify-center gap-2 ${className}`}
-        >
+        <div className={`flex flex-col items-center justify-center gap-2 ${className}`}>
           {showText && text && textPosition === "top" && (
-            <p
-              className={`text-sm font-medium ${
-                textColorClasses[textColor] || textColorClasses.gray
-              }`}
-            >
-              {text}
-            </p>
+            <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
           )}
-          <div
-            className={`animate-spin rounded-full ${
-              sizeClasses[size]
-            } ${getBorderStyle(color)}`}
-          />
+          <div className={`animate-spin rounded-full ${sizeClasses[size]} ${getBorderStyle(color)}`} />
           {showText && text && textPosition === "bottom" && (
-            <p
-              className={`text-sm font-medium ${
-                textColorClasses[textColor] || textColorClasses.gray
-              }`}
-            >
-              {text}
-            </p>
+            <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
           )}
         </div>
       );
@@ -86,27 +68,11 @@ const Loading = ({
     return (
       <div className={`flex items-center justify-center gap-2 ${className}`}>
         {showText && text && textPosition === "start" && (
-          <p
-            className={`text-sm font-medium ${
-              textColorClasses[textColor] || textColorClasses.gray
-            }`}
-          >
-            {text}
-          </p>
+          <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
         )}
-        <div
-          className={`animate-spin rounded-full ${
-            sizeClasses[size]
-          } ${getBorderStyle(color)}`}
-        />
+        <div className={`animate-spin rounded-full ${sizeClasses[size]} ${getBorderStyle(color)}`} />
         {showText && text && textPosition === "end" && (
-          <p
-            className={`text-sm font-medium ${
-              textColorClasses[textColor] || textColorClasses.gray
-            }`}
-          >
-            {text}
-          </p>
+          <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
         )}
       </div>
     );

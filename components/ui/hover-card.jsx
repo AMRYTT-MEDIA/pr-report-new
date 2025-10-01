@@ -31,10 +31,7 @@ const HoverCard = ({ children, openDelay = 700, closeDelay = 300 }) => {
 };
 
 const HoverCardTrigger = React.forwardRef(
-  (
-    { children, asChild = false, openDelay = 700, closeDelay = 300, ...props },
-    ref
-  ) => {
+  ({ children, asChild = false, openDelay: _openDelay = 700, closeDelay: _closeDelay = 300, ...props }, ref) => {
     const { setOpen, open } = useHoverCard();
 
     const handleClick = React.useCallback(() => {
@@ -65,10 +62,10 @@ const HoverCardContent = React.forwardRef(
     {
       className,
       align = "center",
-      sideOffset = 4,
+      sideOffset: _sideOffset = 4,
       children,
-      openDelay,
-      closeDelay,
+      openDelay: _openDelay,
+      closeDelay: _closeDelay,
       ...props
     },
     ref
@@ -104,10 +101,7 @@ const HoverCardContent = React.forwardRef(
             ref.current = node;
           }
         }}
-        className={cn(
-          "absolute z-50 w-48 rounded-md border bg-white shadow-lg outline-none",
-          className
-        )}
+        className={cn("absolute z-50 w-48 rounded-md border bg-white shadow-lg outline-none", className)}
         style={{
           top: "calc(100% + 8px)",
           left: align === "start" ? "0" : align === "center" ? "50%" : "auto",

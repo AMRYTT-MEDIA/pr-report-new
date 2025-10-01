@@ -40,6 +40,7 @@ module.exports = {
         },
       },
       colors: {
+        // Base colors for shadcn/ui
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -48,16 +49,6 @@ module.exports = {
         primary: {
           DEFAULT: "hsl(var(--primary))",
           foreground: "hsl(var(--primary-foreground))",
-          5: "var(--color-primary-5)",
-          10: "var(--color-primary-10)",
-          20: "var(--color-primary-20)",
-          30: "var(--color-primary-30)",
-          40: "var(--color-primary-40)",
-          50: "var(--color-primary-50)",
-          60: "var(--color-primary-60)",
-          70: "var(--color-primary-70)",
-          80: "var(--color-primary-80)",
-          90: "var(--color-primary-90)",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
@@ -83,135 +74,168 @@ module.exports = {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+
+        // Custom colors mapped to Tailwind default scale
+        // Your custom colors are now mapped to standard Tailwind scale (50, 100, 200, etc.)
+        // Using Tailwind's default slate colors (closer to your original design)
+        slate: {
+          50: "#f8fafc",
+          100: "#f1f5f9",
+          200: "#e2e8f0",
+          300: "#cbd5e1",
+          400: "#94a3b8",
+          500: "#64748b",
+          600: "#475569",
+          700: "#334155",
+          800: "#1e293b",
+          900: "#0f172a",
+          950: "#020617",
+        },
+
+        // Primary brand colors mapped to Tailwind scale
+        indigo: {
+          50: "#eef2ff",
+          100: "#e0e7ff",
+          200: "#c7d2fe",
+          300: "#a5b4fc",
+          400: "#818cf8",
+          500: "#6366f1",
+          600: "#4f46e5",
+          700: "#4338ca",
+          800: "#3730a3",
+          900: "#312e81",
+        },
+
+        // Semantic colors mapped to Tailwind scale
+        green: {
+          50: "#f0fdf4", // was success-5
+          100: "#dcfce7", // was success-10
+          200: "#bbf7d0", // was success-20
+          300: "#86efac", // was success-30
+          400: "#4ade80", // was success-40
+          500: "#22c55e", // was success-50
+          600: "#16a34a", // was success-60
+          700: "#15803d", // was success-70
+          800: "#166534", // was success-80
+          900: "#14532d", // was success-90
+        },
+
+        yellow: {
+          50: "#fffbeb", // was warning-5
+          100: "#fef3c7", // was warning-10
+          200: "#fde68a", // was warning-20
+          300: "#fcd34d", // was warning-30
+          400: "#fbbf24", // was warning-40
+          500: "#f59e0b", // was warning-50
+          600: "#d97706", // was warning-60
+          700: "#b45309", // was warning-70
+          800: "#92400e", // was warning-80
+          900: "#78350f", // was warning-90
+        },
+
+        red: {
+          50: "#fff1f2", // was danger-5
+          100: "#ffe4e6", // was danger-10
+          200: "#fecdd3", // was danger-20
+          300: "#fda4af", // was danger-30
+          400: "#fb7185", // was danger-40
+          500: "#f43f5e", // was danger-50
+          600: "#e11d48", // was danger-60
+          700: "#be123c", // was danger-70
+          800: "#9f1239", // was danger-80
+          900: "#881337", // was danger-90
+        },
+
+        // Additional colors mapped to Tailwind scale
+        blue: {
+          50: "#eff6ff", // was blue-5
+          100: "#dbeafe", // was blue-10
+          200: "#bfdbfe", // was blue-20
+          300: "#93c5fd", // was blue-30
+          400: "#60a5fa", // was blue-40
+          500: "#3b82f6", // was blue-50
+          600: "#2563eb", // was blue-60
+          700: "#1d4ed8", // was blue-70
+          800: "#1e40af", // was blue-80
+          900: "#1e3a8a", // was blue-90
+        },
+
+        cyan: {
+          50: "#ecfeff", // was cyan-5
+          100: "#cffafe", // was cyan-10
+          200: "#a5f3fc", // was cyan-20
+          300: "#67e8f9", // was cyan-30
+          400: "#22d3ee", // was cyan-40
+          500: "#06b6d4", // was cyan-50
+          600: "#0891b2", // was cyan-60
+          700: "#0e7490", // was cyan-70
+          800: "#155e75", // was cyan-80
+          900: "#164e63", // was cyan-90
+        },
+
+        teal: {
+          50: "#f0fdfa", // was teal-5
+          100: "#ccfbf1", // was teal-10
+          200: "#99f6e4", // was teal-20
+          300: "#5eead4", // was teal-30
+          400: "#2dd4bf", // was teal-40
+          500: "#14b8a6", // was teal-50
+          600: "#0d9488", // was teal-60
+          700: "#0f766e", // was teal-70
+          800: "#115e59", // was teal-80
+          900: "#134e4a", // was teal-90
+        },
+
         lime: {
-          5: "var(--color-lime-5)",
-          10: "var(--color-lime-10)",
-          20: "var(--color-lime-20)",
-          30: "var(--color-lime-30)",
-          40: "var(--color-lime-40)",
-          50: "var(--color-lime-50)",
-          60: "var(--color-lime-60)",
-          70: "var(--color-lime-70)",
-          80: "var(--color-lime-80)",
-          90: "var(--color-lime-90)",
+          50: "#f7fee7", // was lime-5
+          100: "#ecfccb", // was lime-10
+          200: "#d9f99d", // was lime-20
+          300: "#bef264", // was lime-30
+          400: "#a3e635", // was lime-40
+          500: "#84cc16", // was lime-50
+          600: "#65a30d", // was lime-60
+          700: "#4d7c0f", // was lime-70
+          800: "#3f6212", // was lime-80
+          900: "#365314", // was lime-90
         },
-        orange: {
-          5: "var(--color-orange-5)",
-          10: "var(--color-orange-10)",
-          20: "var(--color-orange-20)",
-          30: "var(--color-orange-30)",
-          40: "var(--color-orange-40)",
-          50: "var(--color-orange-50)",
-          60: "var(--color-orange-60)",
-          70: "var(--color-orange-70)",
-          80: "var(--color-orange-80)",
-          90: "var(--color-orange-90)",
-        },
+
         purple: {
-          5: "var(--color-purple-5)",
-          10: "var(--color-purple-10)",
-          20: "var(--color-purple-20)",
-          30: "var(--color-purple-30)",
-          40: "var(--color-purple-40)",
-          50: "var(--color-purple-50)",
-          60: "var(--color-purple-60)",
-          70: "var(--color-purple-70)",
-          80: "var(--color-purple-80)",
-          90: "var(--color-purple-90)",
+          50: "#faf5ff", // was purple-5
+          100: "#f3e8ff", // was purple-10
+          200: "#e9d5ff", // was purple-20
+          300: "#d8b4fe", // was purple-30
+          400: "#c084fc", // was purple-40
+          500: "#a855f7", // was purple-50
+          600: "#9333ea", // was purple-60
+          700: "#7c3aed", // was purple-70 (adjusted)
+          800: "#6b21a8", // was purple-80
+          900: "#581c87", // was purple-90
         },
-        font: {
-          h2: "var(--color-font-h2)",
-          "h2-5": "var(--color-font-h2-5)",
+
+        pink: {
+          50: "#fdf2f8", // was pink-5
+          100: "#fce7f3", // was pink-10 (adjusted)
+          200: "#fbcfe8", // was pink-20
+          300: "#f9a8d4", // was pink-30
+          400: "#f472b6", // was pink-40
+          500: "#ec4899", // was pink-50
+          600: "#db2777", // was pink-60
+          700: "#be185d", // was pink-70
+          800: "#9d174d", // was pink-80
+          900: "#831843", // was pink-90
         },
-        danger: {
-          5: "var(--color-danger-5)",
-          10: "var(--color-danger-10)",
-          20: "var(--color-danger-20)",
-          30: "var(--color-danger-30)",
-          40: "var(--color-danger-40)",
-          50: "var(--color-danger-50)",
-          60: "var(--color-danger-60)",
-          70: "var(--color-danger-70)",
-          80: "var(--color-danger-80)",
-          90: "var(--color-danger-90)",
-        },
-        warning: {
-          5: "var(--color-warning-5)",
-          10: "var(--color-warning-10)",
-          20: "var(--color-warning-20)",
-          30: "var(--color-warning-30)",
-          40: "var(--color-warning-40)",
-          50: "var(--color-warning-50)",
-          60: "var(--color-warning-60)",
-          70: "var(--color-warning-70)",
-          80: "var(--color-warning-80)",
-          90: "var(--color-warning-90)",
-        },
-        success: {
-          5: "var(--color-success-5)",
-          10: "var(--color-success-10)",
-          20: "var(--color-success-20)",
-          30: "var(--color-success-30)",
-          40: "var(--color-success-40)",
-          50: "var(--color-success-50)",
-          60: "var(--color-success-60)",
-          70: "var(--color-success-70)",
-          80: "var(--color-success-80)",
-          90: "var(--color-success-90)",
-        },
-        info: {
-          5: "var(--color-info-5)",
-          10: "var(--color-info-10)",
-          20: "var(--color-info-20)",
-          30: "var(--color-info-30)",
-          40: "var(--color-info-40)",
-          50: "var(--color-info-50)",
-          60: "var(--color-info-60)",
-          70: "var(--color-info-70)",
-          80: "var(--color-info-80)",
-          90: "var(--color-info-90)",
-        },
-        lime: {
-          5: "var(--color-lime-5)",
-          10: "var(--color-lime-10)",
-          20: "var(--color-lime-20)",
-          30: "var(--color-lime-30)",
-          40: "var(--color-lime-40)",
-          50: "var(--color-lime-50)",
-          60: "var(--color-lime-60)",
-          70: "var(--color-lime-70)",
-          80: "var(--color-lime-80)",
-          90: "var(--color-lime-90)",
-        },
+
         orange: {
-          5: "var(--color-orange-5)",
-          10: "var(--color-orange-10)",
-          20: "var(--color-orange-20)",
-          30: "var(--color-orange-30)",
-          40: "var(--color-orange-40)",
-          50: "var(--color-orange-50)",
-          60: "var(--color-orange-60)",
-          70: "var(--color-orange-70)",
-          80: "var(--color-orange-80)",
-          90: "var(--color-orange-90)",
-        },
-        // gray: {
-        //   0: "var(--color-gray-0)",
-        //   5: "var(--color-gray-5)",
-        //   10: "var(--color-gray-10)",
-        //   20: "var(--color-gray-20)",
-        //   30: "var(--color-gray-30)",
-        //   40: "var(--color-gray-40)",
-        //   50: "var(--color-gray-50)",
-        //   60: "var(--color-gray-60)",
-        //   70: "var(--color-gray-70)",
-        //   80: "var(--color-gray-80)",
-        //   90: "var(--color-gray-90)",
-        //   100: "var(--color-gray-100)",
-        //   secondary: "var(--color-gray-secondary)",
-        // },
-        border: {
-          gray: "var(--color-border-gray)",
+          50: "#fff7ed", // was orange-5
+          100: "#ffedd5", // was orange-10
+          200: "#fed7aa", // was orange-20
+          300: "#fdba74", // was orange-30
+          400: "#fb923c", // was orange-40
+          500: "#f97316", // was orange-50
+          600: "#ea580c", // was orange-60
+          700: "#c2410c", // was orange-70
+          800: "#9a3412", // was orange-80
+          900: "#7c2d12", // was orange-90
         },
       },
 
@@ -234,6 +258,14 @@ module.exports = {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      fontFamily: {
+        inter: ["Inter", "system-ui", "sans-serif"],
+      },
+      boxShadow: {
+        card: "0 10px 20px rgba(0,0,0,0.05)",
+        elegant: "var(--shadow-elegant)",
+        login: "var(--shadow-login-card)",
       },
     },
   },

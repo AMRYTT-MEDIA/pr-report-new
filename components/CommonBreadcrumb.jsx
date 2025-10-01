@@ -10,20 +10,17 @@ const CommonBreadcrumb = ({ items = [] }) => {
 
   return (
     <nav className="py-3" aria-label="Breadcrumb">
-      <ol className="flex items-center  text-sm text-gray-600">
+      <ol className="flex items-center  text-sm text-slate-600">
         {/* Home icon - always show first */}
         <li className="flex items-center ml-0">
-          <Home className="h-4 w-4 text-gray-500" />
+          <Home className="h-4 w-4 text-slate-500" />
         </li>
 
         {items
           .filter((item) => item && typeof item === "object" && item.name)
           .map((item, index) => (
-            <li
-              key={item.href || item.name || index}
-              className="flex items-center"
-            >
-              <ChevronRight className="h-4 w-4 mx-2 text-gray-400" />
+            <li key={item.href || item.name || index} className="flex items-center">
+              <ChevronRight className="h-4 w-4 mx-2 text-slate-400" />
 
               {item.current ? (
                 <span
@@ -35,15 +32,13 @@ const CommonBreadcrumb = ({ items = [] }) => {
               ) : item.href ? (
                 <Link
                   href={item.href}
-                  className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter'] hover:text-gray-900 transition-colors duration-200"
+                  className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter'] hover:text-slate-900 transition-colors duration-200"
                   style={{ fontFeatureSettings: "'cv03' on, 'cv04' on" }}
                 >
                   {item.name}
                 </Link>
               ) : (
-                <span className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter']">
-                  {item.name}
-                </span>
+                <span className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter']">{item.name}</span>
               )}
             </li>
           ))}

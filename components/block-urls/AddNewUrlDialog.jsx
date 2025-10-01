@@ -43,7 +43,7 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
 
     // Basic URL validation
     try {
-      new URL(formData.websiteUrl);
+      const _validUrl = new URL(formData.websiteUrl);
     } catch {
       toast.error("Please enter a valid URL");
       return;
@@ -95,7 +95,7 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="flex items-center gap-2 bg-primary-50 hover:bg-primary-60 text-white">
+        <Button className="flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 text-white">
           <Plus className="w-4 h-4" />
           Add New
         </Button>
@@ -103,9 +103,7 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>Add New URL</DialogTitle>
-          <DialogDescription>
-            Add a new website URL to the block list. Fill in the details below.
-          </DialogDescription>
+          <DialogDescription>Add a new website URL to the block list. Fill in the details below.</DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
@@ -143,19 +141,10 @@ export default function AddNewUrlDialog({ onUrlAdded }) {
           </div>
 
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleCancel}
-              disabled={loading}
-            >
+            <Button type="button" variant="outline" onClick={handleCancel} disabled={loading}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              disabled={loading}
-              className="bg-primary-50 hover:bg-primary-60 text-white"
-            >
+            <Button type="submit" disabled={loading} className="bg-indigo-500 hover:bg-indigo-600 text-white">
               {loading ? "Adding..." : "Add URL"}
             </Button>
           </DialogFooter>

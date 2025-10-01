@@ -42,16 +42,12 @@ const URLTableCell = ({
         <div className="flex items-center gap-2.5">
           <button
             onClick={handleClick}
-            className="flex-shrink-0 hover:bg-gray-100 rounded transition-colors mt-1"
+            className="flex-shrink-0 rounded transition-colors mt-1"
             title="Open link in new tab"
           >
             <ExternalLink className={cn(iconColor, iconSize)} />
           </button>
-          <button
-            onClick={handleCopyLink}
-            className="flex-shrink-0 hover:bg-gray-100 rounded transition-colors mt-1"
-            title="Copy link"
-          >
+          <button onClick={handleCopyLink} className="flex-shrink-0 rounded transition-colors mt-1" title="Copy link">
             <Copy className="h-4 w-4 text-[#1E293B]" />
           </button>
         </div>

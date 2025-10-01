@@ -2,36 +2,20 @@
 
 import React, { useState, useEffect } from "react";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
-import WebsiteAvatar from "@/components/ui/website-avatar";
-import CustomTooltip from "@/components/ui/custom-tooltip";
+import { ListRestart, Plus, Trash2, PencilLine } from "lucide-react";
 import Pagination from "@/components/Pagination";
-import Loading from "@/components/ui/loading";
-import {
-  AddNewWebsiteDialog,
-  WebsiteDeleteDialog,
-  WebsiteReOrderDialog,
-} from "@/components/website";
+import { CommonTable, SearchInput } from "@/components/common";
+import { AddNewWebsiteDialog, WebsiteDeleteDialog, WebsiteReOrderDialog } from "@/components/website";
 import { toast } from "sonner";
 import { websitesService } from "@/services/websites";
 import { useAuth } from "@/lib/auth";
 import { canManageWebsite } from "@/lib/rbac";
-import { NoDataFound } from "@/components/icon";
+// (NoDataFound removed; CommonTable handles empty state)
 import WebsiteConstants from "@/components/website/constans";
 import WebsiteIcon from "../ui/WebsiteIcon";
 
-const WebsiteTableClient = ({
-  initialWebsites = [],
-  initialTotalCount = 0,
-}) => {
+const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => {
   const { user } = useAuth();
   const [websites, setWebsites] = useState(initialWebsites);
   const [loading, setLoading] = useState(true);
@@ -53,25 +37,15 @@ const WebsiteTableClient = ({
   const useWebsitesData = () => {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    const loadWebsites = async (
-      page = currentPage,
-      size = pageSize,
-      search = null
-    ) => {
+    const loadWebsites = async (page = currentPage, size = pageSize, search = null) => {
       setLoading(true);
       try {
-        const response = await websitesService.getWebsitesPaginated(
-          page,
-          size,
-          search
-        );
+        const response = await websitesService.getWebsitesPaginated(page, size, search);
         setWebsites(response.data || response.websites || []);
         setTotalCount(response.totalCount || response.total || 0);
       } catch (error) {
         console.error("Error loading websites:", error);
-        toast.error(
-          error.message || "Failed to load websites. Please try again."
-        );
+        toast.error(error.message || "Failed to load websites. Please try again.");
         setWebsites([]);
         setTotalCount(0);
       } finally {
@@ -95,8 +69,9 @@ const WebsiteTableClient = ({
         },
         searchQuery ? 500 : 0
       ); // Immediate load for page changes, debounced for search
-
+      // eslint-disable-next-line no-use-before-define
       return () => clearTimeout(timeoutId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, pageSize, searchQuery, refreshTrigger]);
 
     return { refreshData };
@@ -125,7 +100,7 @@ const WebsiteTableClient = ({
   };
 
   // Handle add new website
-  const handleAddWebsite = (newWebsite) => {
+  const handleAddWebsite = () => {
     refreshData();
     setEditWebsite(null);
   };
@@ -137,7 +112,7 @@ const WebsiteTableClient = ({
   };
 
   // Handle update website after edit
-  const handleUpdateWebsite = (updatedWebsite) => {
+  const handleUpdateWebsite = () => {
     refreshData();
     setEditWebsite(null);
   };
@@ -155,7 +130,7 @@ const WebsiteTableClient = ({
 
   // Confirm delete website
   const confirmDelete = async () => {
-    if (!websiteToDelete) return;
+    if (!websiteToDelete || isDeleting) return; // Prevent multiple calls
 
     setIsDeleting(true);
     try {
@@ -168,9 +143,7 @@ const WebsiteTableClient = ({
       toast.success("Website deleted successfully!");
     } catch (error) {
       console.error("Error deleting website:", error);
-      toast.error(
-        error.message || "Failed to delete website. Please try again."
-      );
+      toast.error(error.message || "Failed to delete website. Please try again.");
     } finally {
       setIsDeleting(false);
       setDeleteDialog(false);
@@ -208,7 +181,7 @@ const WebsiteTableClient = ({
     setEditWebsite(null);
   };
 
-  const formatTitle = (title, type) => {
+  const _formatTitle = (title, type) => {
     let maxLength = 50;
     if (type === "name") {
       maxLength = 20;
@@ -217,11 +190,11 @@ const WebsiteTableClient = ({
     }
     if (!title) return "-";
     if (title.length <= maxLength) return title;
-    return title.substring(0, maxLength) + "...";
+    return `${title.substring(0, maxLength)}...`;
   };
 
   // Check if title needs truncation
-  const needsTruncation = (title, type) => {
+  const _needsTruncation = (title, type) => {
     let maxLength = 50;
     if (type === "name") {
       maxLength = 20;
@@ -231,271 +204,113 @@ const WebsiteTableClient = ({
     return title && title.length > maxLength;
   };
 
+  const columns = [
+    {
+      key: "no",
+      label: WebsiteConstants.no,
+      width: "4%",
+      render: (value, row, index) => <p className="text-sm font-medium text-slate-600">{index + 1}</p>,
+    },
+    {
+      key: "websiteIcon",
+      label: WebsiteConstants.websiteIcon,
+      width: "15%",
+      render: (value, row) => (
+        <WebsiteIcon logoFilename={row.logo} websiteName={row.name} size="default" alt={row.name} />
+      ),
+    },
+    {
+      key: "name",
+      label: WebsiteConstants.websiteName,
+      width: "25%",
+      render: (value, row) => <p className="text-sm font-medium text-slate-600">{row.name || "-"}</p>,
+    },
+    {
+      key: "url",
+      label: WebsiteConstants.websiteUrl,
+      width: "40%",
+      render: (value, row) => <p className="text-sm font-medium text-slate-600">{row?.url || "-"}</p>,
+    },
+  ];
+
+  // Header actions for CommonTable (search + actions)
+  const headerActions = (
+    <div className="flex items-center gap-3">
+      <SearchInput value={searchQuery} onChange={handleSearch} onClear={handleClearSearch} />
+      {canManageWebsite(user) && (
+        <>
+          <Button
+            onClick={() => setReOrderWebsiteDialog(true)}
+            className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
+          >
+            <ListRestart className="w-4 h-4 text-slate-600" />
+            <span className="hidden md:inline">{WebsiteConstants.reOrder}</span>
+          </Button>
+          <Button
+            onClick={handleAddNewWebsite}
+            className="text-white px-4 py-2.5 flex items-center gap-2 bg-indigo-500 hover:bg-indigo-600 rounded-[39px]"
+          >
+            <Plus className="w-4 h-4 text-white" />
+            <span className="hidden md:inline">{WebsiteConstants.addNew}</span>
+          </Button>
+        </>
+      )}
+    </div>
+  );
+
+  // Pagination component for CommonTable
+  const paginationComponent = (
+    <Pagination
+      totalItems={totalCount}
+      currentPage={currentPage}
+      rowsPerPage={pageSize}
+      onPageChange={handlePageChange}
+      onRowsPerPageChange={handlePageSizeChange}
+    />
+  );
+
   return (
-    <div className="bg-gray-50">
-      <div className="mx-auto">
-        <div className="bg-white shadow-sm border rounded-lg border-gray-200 overflow-hidden">
-          {/* Header Section */}
-          <div className="px-4 sm:px-6 py-4 block sm:flex justify-between items-start w-full sm:items-center border-b border-gray-200">
-            <div className="items-center gap-2 hidden sm:flex">
-              <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
-                {WebsiteConstants.allWebsites}
-              </h1>
-              <div className="text-sm text-primary-60 px-3 py-0.5 border border-primary-60 rounded-full">
-                {totalCount}
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row items-end sm:items-center gap-2">
-              <div className="flex order-2 sm:order-1 items-center gap-2 w-full relative max-w-full sm:max-w-[400px]">
-                <Search className="w-4 h-4 absolute left-4 text-slate-600" />
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={handleSearch}
-                  className="w-full pl-10 pr-4 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-primary-50 placeholder:text-gray-scale-60 placeholder:opacity-50"
-                />
-                {searchQuery && (
-                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
-                    <X
-                      className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
-                      onClick={handleClearSearch}
-                    />
-                  </div>
-                )}
-              </div>
-              <div className="flex order-1 sm:order-2 justify-between w-full sm:w-auto">
-                <div className="items-center gap-2 flex sm:hidden">
-                  <h1 className="text-xl font-bold text-gray-900 whitespace-nowrap">
-                    {WebsiteConstants.allWebsites}
-                  </h1>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {canManageWebsite(user) && (
-                    <>
-                      <Button
-                        onClick={() => setReOrderWebsiteDialog(true)}
-                        className="text-slate-600 border border-slate-200 rounded-[39px] px-4 py-2.5 font-semibold bg-transparent hover:bg-slate-50"
-                      >
-                        <ListRestart className="w-4 h-4 text-slate-600" />
-                        <span className="hidden md:inline">
-                          {WebsiteConstants.reOrder}
-                        </span>
-                      </Button>
-                      <Button
-                        onClick={handleAddNewWebsite}
-                        className="text-white px-4 py-2.5 flex items-center gap-2 bg-primary-50 hover:bg-primary-60 rounded-[39px]"
-                      >
-                        <Plus className="w-4 h-4 text-white" />
-                        <span className="hidden md:inline">
-                          {WebsiteConstants.addNew}
-                        </span>
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Table Section */}
-          <div className="overflow-x-auto">
-            <div
-              className="max-h-[calc(100dvh-340px)] sm:max-h-[calc(100dvh-300px)] lg:max-h-[calc(100dvh-234px)] overflow-y-auto scrollbar-custom"
-              style={loading ? { paddingRight: "10px" } : {}}
-            >
-              <table className="w-full divide-y divide-slate-200 table-auto">
-                <thead className="bg-slate-50 w-full sticky top-0 z-10">
-                  <tr className="w-full">
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[4%]">
-                      {WebsiteConstants.no}
-                    </th>
-                    <th className="px-6 py-3.5  text-sm font-semibold text-slate-800 w-[15%] text-left whitespace-nowrap">
-                      {WebsiteConstants.websiteIcon}
-                    </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[25%] whitespace-nowrap">
-                      {WebsiteConstants.websiteName}
-                    </th>
-                    <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[40%] whitespace-nowrap">
-                      {WebsiteConstants.websiteUrl}
-                    </th>
-                    {canManageWebsite(user) && (
-                      <th className="px-6 py-3.5 text-left text-sm font-semibold text-slate-800 w-[10%] whitespace-nowrap">
-                        {WebsiteConstants.actions}
-                      </th>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-slate-200">
-                  {loading ? (
-                    <>
-                      {/* Loading */}
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className="text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
-                        >
-                          <Loading size="lg" />
-                        </td>
-                      </tr>
-                    </>
-                  ) : filteredWebsites?.length === 0 ? (
-                    <>
-                      {/* No Data Found */}
-                      <tr>
-                        <td
-                          colSpan={5}
-                          className=" text-center h-[calc(100dvh-350px)] lg:h-[calc(100dvh-284px)]"
-                        >
-                          <div className="flex flex-col items-center justify-center space-y-3 h-full">
-                            <NoDataFound width={105} height={130} />
-                            <div>
-                              <h3 className="text-lg font-medium text-slate-900">
-                                {searchQuery
-                                  ? WebsiteConstants.noWebsiteFound
-                                  : WebsiteConstants.noWebsiteYetTitle}
-                              </h3>
-                              <p className="text-sm text-slate-500 mt-1">
-                                {searchQuery
-                                  ? WebsiteConstants.noDataFoundDescription
-                                  : WebsiteConstants.addFirstWebsiteDescription}
-                              </p>
-                            </div>
-                            {!searchQuery && canManageWebsite(user) && (
-                              <Button
-                                onClick={handleAddFirstWebsite}
-                                className="mt-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full px-6"
-                              >
-                                <Plus className="w-4 h-4" />
-                                {WebsiteConstants.addFirstWebsite}
-                              </Button>
-                            )}
-                          </div>
-                        </td>
-                      </tr>
-                    </>
-                  ) : (
-                    filteredWebsites?.map((website, index) => (
-                      <tr
-                        key={website._id || website.id || index}
-                        className="hover:bg-gray-50"
-                      >
-                        <td className="px-6 py-3">
-                          <p className="text-sm font-medium text-slate-600">
-                            {index + 1}
-                          </p>
-                        </td>
-                        <td className="px-6 py-3">
-                          <WebsiteIcon
-                            logoFilename={website.logo}
-                            websiteName={website.name}
-                            size="default"
-                            alt={website.name}
-                          />
-                        </td>
-                        <td className="px-6 py-3">
-                          {/* {needsTruncation(website.name, "name") ? (
-                            <TooltipProvider>
-                              <Tooltip>
-                                <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help ">
-                                    {formatTitle(website.name, "name")}
-                                  </p>
-                                </TooltipTrigger>
-                                <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                  side="top"
-                                  align="start"
-                                >
-                                  <div className="break-words">
-                                    {website.name}
-                                  </div>
-                                </TooltipContent>
-                              </Tooltip>
-                            </TooltipProvider>
-                          ) : (
-                            <p className="text-sm font-medium text-gray-scale-60">
-                              {website.name || "-"}
-                            </p>
-                          )} */}
-                          <p className="text-sm font-medium text-gray-scale-60">
-                            {website.name || "-"}
-                          </p>
-                        </td>
-                        <td className="px-6 py-3">
-                          <div className="flex-1 min-w-0">
-                            {/* {needsTruncation(website.domain, "url") ? (
-                              <TooltipProvider>
-                                <Tooltip>
-                                  <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
-                                      {formatTitle(website.domain, "url")}
-                                    </p>
-                                  </TooltipTrigger>
-                                  <TooltipContent
-                                    className="max-w-sm bg-gray-900 text-white border-gray-700"
-                                    side="top"
-                                    align="start"
-                                  >
-                                    <div className="break-words">
-                                      {website.domain}
-                                    </div>
-                                  </TooltipContent>
-                                </Tooltip>
-                              </TooltipProvider>
-                            ) : (
-                              <p className="text-sm font-medium text-gray-scale-60">
-                                {website.domain || "-"}
-                              </p>
-                            )} */}
-                            <p className="text-sm font-medium text-gray-scale-60">
-                              {website.domain || "-"}
-                            </p>
-                          </div>
-                        </td>
-                        {canManageWebsite(user) && (
-                          <td className="px-6 py-3">
-                            <div className="flex gap-8 items-center">
-                              <CustomTooltip content="Edit" position="top">
-                                <button
-                                  onClick={() => handleEdit(website)}
-                                  className="text-slate-600 flex text-sm font-medium"
-                                >
-                                  <PencilLine className="w-4 h-4" />
-                                </button>
-                              </CustomTooltip>
-                              <CustomTooltip content="Delete" position="top">
-                                <button
-                                  onClick={() => handleDelete(website)}
-                                  className="text-red-600 flex text-sm font-medium"
-                                >
-                                  <Trash2 className="w-4 h-4" />
-                                </button>
-                              </CustomTooltip>
-                            </div>
-                          </td>
-                        )}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* Pagination */}
-          {filteredWebsites?.length > 0 && (
-            <Pagination
-              totalItems={totalCount}
-              currentPage={currentPage}
-              rowsPerPage={pageSize}
-              onPageChange={handlePageChange}
-              onRowsPerPageChange={handlePageSizeChange}
-            />
-          )}
-        </div>
-      </div>
+    <>
+      {/* Table Section -> Replaced with CommonTable */}
+      <CommonTable
+        columns={columns}
+        data={filteredWebsites}
+        isLoading={false}
+        isLoadingBody={loading}
+        title={WebsiteConstants.allWebsites}
+        badgeCount={totalCount}
+        headerActions={headerActions}
+        showActions={canManageWebsite(user)}
+        customActions={
+          canManageWebsite(user)
+            ? [
+                {
+                  label: "",
+                  onClick: handleEdit,
+                  className: "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
+                  icon: PencilLine,
+                  showTooltip: true,
+                  tooltipText: "Edit",
+                },
+                {
+                  label: "",
+                  onClick: handleDelete,
+                  className:
+                    "text-red-600 hover:text-red-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ml-2",
+                  icon: Trash2,
+                  showTooltip: true,
+                  tooltipText: "Delete",
+                },
+              ]
+            : []
+        }
+        noDataText={searchQuery ? WebsiteConstants.noWebsiteFound : WebsiteConstants.noWebsiteYetTitle}
+        emptyStateAction={!searchQuery && canManageWebsite(user) ? handleAddFirstWebsite : undefined}
+        emptyStateActionText={WebsiteConstants.addFirstWebsite}
+        className="rounded-[10px]"
+        headerInnerClassName="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
+        pagination={paginationComponent}
+      />
 
       {/* Add/ Edit Website Dialog */}
       <AddNewWebsiteDialog
@@ -512,6 +327,7 @@ const WebsiteTableClient = ({
         website={websiteToDelete}
         confirmDelete={confirmDelete}
         cancelDelete={cancelDelete}
+        loading={isDeleting}
       />
 
       {/* Re Order Website Dialog */}
@@ -520,7 +336,7 @@ const WebsiteTableClient = ({
         onClose={() => setReOrderWebsiteDialog(false)}
         onDataChanged={handleDataChanged}
       />
-    </div>
+    </>
   );
 };
 

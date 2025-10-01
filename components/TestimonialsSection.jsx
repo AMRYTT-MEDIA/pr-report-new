@@ -50,8 +50,7 @@ const TestimonialsSection = () => {
             What Our <span className="text-primary">Clients Say</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Don't just take our word for it - hear from businesses who've
-            achieved amazing results with our PR services
+            Don't just take our word for it - hear from businesses who've achieved amazing results with our PR services
           </p>
         </div>
 
@@ -64,17 +63,12 @@ const TestimonialsSection = () => {
               <CardContent className="p-8">
                 <div className="flex items-start gap-4 mb-6">
                   <Quote className="h-8 w-8 text-primary mt-1 flex-shrink-0" />
-                  <p className="text-lg text-muted-foreground italic leading-relaxed">
-                    "{testimonial.quote}"
-                  </p>
+                  <p className="text-lg text-muted-foreground italic leading-relaxed">"{testimonial.quote}"</p>
                 </div>
 
                 <div className="flex items-center gap-4">
                   <Avatar className="h-12 w-12">
-                    <AvatarImage
-                      src={testimonial.image}
-                      alt={testimonial.name}
-                    />
+                    <AvatarImage src={testimonial.image} alt={testimonial.name} />
                     <AvatarFallback>
                       {testimonial.name
                         .split(" ")
@@ -84,9 +78,7 @@ const TestimonialsSection = () => {
                   </Avatar>
 
                   <div>
-                    <div className="font-semibold text-foreground">
-                      {testimonial.name}
-                    </div>
+                    <div className="font-semibold text-foreground">{testimonial.name}</div>
                     <div className="text-sm text-muted-foreground">
                       {testimonial.role} at {testimonial.company}
                     </div>

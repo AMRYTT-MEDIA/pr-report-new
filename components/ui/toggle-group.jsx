@@ -8,28 +8,14 @@ const ToggleGroupContext = React.createContext({
 });
 
 const ToggleGroup = React.forwardRef(
-  (
-    {
-      className,
-      variant,
-      size,
-      type = "single",
-      value,
-      onValueChange,
-      children,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, variant, size, type = "single", value, onValueChange, children, ...props }, ref) => {
     const [selectedValues, setSelectedValues] = React.useState(
       type === "single" ? (value ? [value] : []) : value || []
     );
 
     React.useEffect(() => {
       if (value !== undefined) {
-        setSelectedValues(
-          type === "single" ? (value ? [value] : []) : value || []
-        );
+        setSelectedValues(type === "single" ? (value ? [value] : []) : value || []);
       }
     }, [value, type]);
 
@@ -52,11 +38,7 @@ const ToggleGroup = React.forwardRef(
     );
 
     return (
-      <div
-        ref={ref}
-        className={cn("flex items-center justify-center gap-1", className)}
-        {...props}
-      >
+      <div ref={ref} className={cn("flex items-center justify-center gap-1", className)} {...props}>
         <ToggleGroupContext.Provider value={{ variant, size }}>
           {React.Children.map(children, (child) => {
             if (React.isValidElement(child)) {
@@ -74,19 +56,7 @@ const ToggleGroup = React.forwardRef(
 );
 
 const ToggleGroupItem = React.forwardRef(
-  (
-    {
-      className,
-      children,
-      variant,
-      size,
-      value,
-      selectedValues = [],
-      onValueChange,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, children, variant, size, value, selectedValues = [], onValueChange, ...props }, ref) => {
     const context = React.useContext(ToggleGroupContext);
     const isSelected = selectedValues.includes(value);
 

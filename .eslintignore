@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+build
+out
+public
+*.config.js
+.eslintrc.json
+next-env.d.ts
+

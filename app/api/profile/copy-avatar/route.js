@@ -8,19 +8,13 @@ export async function POST(request) {
     const { avatarName } = await request.json();
 
     if (!avatarName) {
-      return NextResponse.json(
-        { error: "No avatar name provided." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No avatar name provided." }, { status: 400 });
     }
 
     // Validate that the avatar exists in the meek directory
     const meekAvatarPath = path.join(process.cwd(), "public/meek", avatarName);
     if (!existsSync(meekAvatarPath)) {
-      return NextResponse.json(
-        { error: "Avatar not found in predefined avatars." },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Avatar not found in predefined avatars." }, { status: 404 });
     }
 
     // Create profile directory if it doesn't exist
@@ -47,9 +41,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("Error copying avatar:", error);
-    return NextResponse.json(
-      { error: "Failed to copy avatar" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to copy avatar" }, { status: 500 });
   }
 }

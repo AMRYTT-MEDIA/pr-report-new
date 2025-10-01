@@ -27,12 +27,11 @@ const StatsSection = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-white mb-6">
-            Proven Results in{" "}
-            <span className="text-accent">PR Distribution</span>
+            Proven Results in <span className="text-accent">PR Distribution</span>
           </h2>
           <p className="text-xl text-white/90 max-w-2xl mx-auto">
-            Our track record speaks for itself - delivering exceptional press
-            release distribution results for businesses worldwide
+            Our track record speaks for itself - delivering exceptional press release distribution results for
+            businesses worldwide
           </p>
         </div>
 
@@ -42,12 +41,8 @@ const StatsSection = () => {
               key={index}
               className="text-center bg-white/10 backdrop-blur-sm rounded-lg p-8 hover:bg-white/20 transition-colors duration-300"
             >
-              <div className="text-4xl lg:text-5xl font-bold text-accent mb-4">
-                {stat.number}
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-2">
-                {stat.label}
-              </h3>
+              <div className="text-4xl lg:text-5xl font-bold text-accent mb-4">{stat.number}</div>
+              <h3 className="text-xl font-semibold text-white mb-2">{stat.label}</h3>
               <p className="text-white/80">{stat.description}</p>
             </div>
           ))}

@@ -43,11 +43,7 @@ export const PasswordField = ({
           className="text-slate-400 hover:text-slate-600 focus:outline-none focus:text-slate-600 transition-colors"
           tabIndex={-1}
         >
-          {showPassword ? (
-            <EyeClosed className="w-4 h-4" />
-          ) : (
-            <Eye className="w-4 h-4" />
-          )}
+          {showPassword ? <EyeClosed className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
         </button>
       }
       {...props}

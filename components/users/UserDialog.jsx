@@ -1,36 +1,21 @@
 "use client";
 
 import React from "react";
-import { UserPlus, UserCheck, ListPlus, Plus, PencilLine } from "lucide-react";
+import { Plus, PencilLine } from "lucide-react";
 import { toast } from "sonner";
 import CommonModal from "@/components/common/CommonModal";
 import UserForm from "./components/UserForm";
 import FormFooter from "./components/FormFooter";
 import { useUserForm } from "./hooks/useUserForm";
 
-const UserDialog = ({
-  open,
-  onClose,
-  user,
-  onSuccess,
-  roles,
-  rolesLoading,
-}) => {
+const UserDialog = ({ open, onClose, user, onSuccess, roles, rolesLoading }) => {
   const isEdit = !!user;
-  const { formik, loading, showPassword, setShowPassword } = useUserForm(
-    user,
-    isEdit,
-    open,
-    roles,
-    rolesLoading
-  );
+  const { formik, loading, showPassword, setShowPassword } = useUserForm(user, isEdit, open, roles, rolesLoading);
 
   const handleSubmit = async () => {
     try {
       await formik.submitForm();
-      toast.success(
-        isEdit ? "User updated successfully" : "User created successfully"
-      );
+      toast.success(isEdit ? "User updated successfully" : "User created successfully");
       onSuccess?.();
       onClose();
       formik.resetForm();
@@ -55,19 +40,9 @@ const UserDialog = ({
       open={open}
       onClose={onClose}
       title={isEdit ? "Update User" : "Add User"}
-      subtitle={
-        isEdit
-          ? `Are you sure you want to Update `
-          : "Are you sure you want to Add New user ?"
-      }
+      subtitle={isEdit ? `Are you sure you want to Update ` : "Are you sure you want to Add New user ?"}
       subtitle2={isEdit && `${user?.fullName} ?`}
-      icon={
-        isEdit ? (
-          <PencilLine className="w-7 h-7 text-slate-600" />
-        ) : (
-          <Plus className="w-7 h-7 text-gray-scale-100" />
-        )
-      }
+      icon={isEdit ? <PencilLine className="w-7 h-7 text-slate-600" /> : <Plus className="w-7 h-7 text-slate-900" />}
       footer={footer}
       size="lg"
       className="w-full mx-5 md:w-[600px] md:mx-0"

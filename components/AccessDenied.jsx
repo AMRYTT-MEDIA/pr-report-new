@@ -35,7 +35,7 @@ const AccessDenied = ({
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-center items-center px-4">
+    <div className="min-h-screen bg-slate-500 flex flex-col justify-center items-center px-4">
       <div className="max-w-md w-full text-center">
         {/* Icon */}
         <div className="mx-auto flex items-center justify-center w-16 h-16 bg-red-100 rounded-full mb-6">
@@ -43,27 +43,22 @@ const AccessDenied = ({
         </div>
 
         {/* Title */}
-        <h1 className="text-2xl font-bold text-gray-900 mb-4">{title}</h1>
+        <h1 className="text-2xl font-bold text-slate-900 mb-4">{title}</h1>
 
         {/* Message */}
-        <p className="text-gray-600 mb-2">{message}</p>
+        <p className="text-slate-600 mb-2">{message}</p>
 
         {/* User role info */}
         {userRole && (
-          <p className="text-sm text-gray-500 mb-8">
-            Current role:{" "}
-            <span className="font-medium capitalize">{userRole}</span>
+          <p className="text-sm text-slate-500 mb-8">
+            Current role: <span className="font-medium capitalize">{userRole}</span>
           </p>
         )}
 
         {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {showBackButton && (
-            <Button
-              variant="outline"
-              onClick={handleGoBack}
-              className="flex items-center gap-2"
-            >
+            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Go Back
             </Button>
@@ -78,7 +73,7 @@ const AccessDenied = ({
         </div>
 
         {/* Help text */}
-        <p className="text-xs text-gray-400 mt-8">
+        <p className="text-xs text-slate-400 mt-8">
           If you believe this is an error, please contact your administrator.
         </p>
       </div>

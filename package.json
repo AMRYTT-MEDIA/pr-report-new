@@ -8,6 +8,13 @@
     "start": "next start -p 3000",
     "build:staging": "cross-env ENV=staging next build",
     "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "lint:strict": "next lint --max-warnings 0",
+    "lint:report": "eslint . --ext .js,.jsx --format stylish",
+    "lint:report:json": "eslint . --ext .js,.jsx --format json --output-file eslint-report.json",
+    "format": "prettier --write \"**/*.{js,jsx,json,css,md}\"",
+    "format:check": "prettier --check \"**/*.{js,jsx,json,css,md}\"",
+    "format:staged": "prettier --write",
     "deploy": "node deploy.js --env=live",
     "deploy:staging": "node deploy.js --env=staging",
     "trigger-build": "curl -X POST https://api.vercel.com/v1/integrations/deploy/prj_2nbdM2HzUpejSxttHjrN2nyrzgkO/T7pWSGKwc5"
@@ -46,9 +53,11 @@
     "autoprefixer": "^10.4.20",
     "eslint": "^8.57.0",
     "eslint-config-next": "14.2.5",
+    "eslint-config-prettier": "^10.1.8",
     "ftp-deploy": "^2.4.4",
     "node-ssh": "^13.2.1",
     "postcss": "^8.4.47",
+    "prettier": "^3.6.2",
     "tailwindcss": "^3.4.11"
   }
 }

@@ -8,22 +8,14 @@ const publicApi = axios.create({
 
 // Public GET helper (no auth headers)
 export const publicApiGet = async (endpoint, params = {}) => {
-  try {
-    const response = await publicApi.get(endpoint, { params });
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await publicApi.get(endpoint, { params });
+  return response.data;
 };
 
 // Public POST helper (no auth headers)
 export const publicApiPost = async (endpoint, data = {}) => {
-  try {
-    const response = await publicApi.post(endpoint, data);
-    return response.data;
-  } catch (error) {
-    throw error;
-  }
+  const response = await publicApi.post(endpoint, data);
+  return response.data;
 };
 
 export default publicApi;

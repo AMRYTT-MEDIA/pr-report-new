@@ -1,7 +1,8 @@
 import React from "react";
-import { Trash2, X, Info } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import CommonModal from "@/components/common/CommonModal";
+import Loading from "@/components/ui/loading";
 
 const BlockUrlDeleteDialog = ({
   open,
@@ -27,76 +28,78 @@ const BlockUrlDeleteDialog = ({
     }
   };
 
-  const getDisplayMessage = () => {
+  const getSubtitle = () => {
     if (message) return message;
 
     if (isBulkDelete) {
-      return `Are you sure you want to delete ${selectedCount} URL(s)? This action cannot be undone.`;
+      // return `Are you sure you want to delete ${selectedCount} URL(s)? This action cannot be undone.`;
+      return (
+        <>
+          Are you sure you want to delete <span className="font-bold">{selectedCount} URL(s)</span> ? This action cannot
+          be undone.
+        </>
+      );
     }
 
     return (
-      <>
-        Are you sure you want to delete{" "}
-        <span className="font-bold max-w-[500px] break-words">
-          {urlData.domain}
-        </span>
-        ?
-      </>
+      <div className="text-slate-400 text-sm">
+        Are you sure you want to delete <span className="font-bold">{urlData.domain} </span>URL(s)?
+      </div>
     );
   };
 
-  return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
-      <DialogContent
-        className="sm:max-w-1xl bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
-        showCloseButton={false}
+  const _getSubtitle2 = () => {
+    if (isBulkDelete || message) return "";
+    return "This action cannot be undone.";
+  };
+
+  const footer = (
+    <>
+      <Button
+        type="button"
+        variant="outline"
+        onClick={onClose}
+        disabled={loading}
+        className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
       >
-        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-          <div className="flex flex-col gap-5">
-            <div className="flex items-start justify-between">
-              <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                <Trash2 className="w-5 h-5" />
-              </div>
-              <button
-                onClick={onClose}
-                className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-              <p className="text-font-h2-5 text-sm font-medium">
-                {getDisplayMessage()}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={onClose}
-            disabled={loading}
-            className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
-          >
-            <X className="w-5 h-5" />
-            Cancel
-          </Button>
-          <Button
-            type="button"
-            onClick={handleConfirm}
-            disabled={loading}
-            className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
-          >
+        <X className="w-5 h-5" />
+        Cancel
+      </Button>
+      <Button
+        type="button"
+        onClick={handleConfirm}
+        disabled={loading}
+        className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
+      >
+        {loading ? (
+          <>
+            <Loading size="sm" color="white" className="w-5 h-5" />
+            Delete
+          </>
+        ) : (
+          <>
             <Trash2 className="w-5 h-5" />
-            {loading ? "Deleting..." : "Delete"}
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+            Delete
+          </>
+        )}
+      </Button>
+    </>
+  );
+
+  return (
+    <CommonModal
+      open={open}
+      onClose={onClose}
+      title={title}
+      subtitle={getSubtitle()}
+      icon={<Trash2 className="w-5 h-5" />}
+      footer={footer}
+      showCloseButton={true}
+      size="md"
+      className="max-w-[90vw] sm:max-w-[550px]"
+      noScroll={false}
+      isBorderShow={false}
+    ></CommonModal>
   );
 };
 

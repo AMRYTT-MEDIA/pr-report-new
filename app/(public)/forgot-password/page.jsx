@@ -5,8 +5,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Forgot Password",
-  description:
-    "Reset your PR Reports account password. Enter your email to receive password reset instructions.",
+  description: "Reset your PR Reports account password. Enter your email to receive password reset instructions.",
 };
 
 export default function ForgotPasswordPage() {

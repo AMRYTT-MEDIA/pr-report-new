@@ -17,9 +17,6 @@ export async function GET() {
       success: true,
     });
   } catch (error) {
-    return NextResponse.json(
-      { error: "Failed to list avatars", details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to list avatars", details: error.message }, { status: 500 });
   }
 }

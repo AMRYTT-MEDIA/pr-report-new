@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Loading from "@/components/ui/loading";
@@ -10,10 +9,7 @@ import { useFormik } from "formik";
 import * as Yup from "yup";
 import ErrorMessage from "@/components/ui/error-message";
 import { Eye, EyeClosed, LockKeyhole, LogOut, CheckCircle } from "lucide-react";
-import {
-  verifyResetCode,
-  confirmPasswordResetWithCode,
-} from "@/lib/firebaseHelperfunction";
+import { verifyResetCode, confirmPasswordResetWithCode } from "@/lib/firebaseHelperfunction";
 
 const ResetPasswordForm = ({ oobCode }) => {
   const [message, setMessage] = useState("");
@@ -23,7 +19,6 @@ const ResetPasswordForm = ({ oobCode }) => {
   const [resetComplete, setResetComplete] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const router = useRouter();
 
   const validationSchema = Yup.object({
     password: Yup.string()
@@ -51,10 +46,7 @@ const ResetPasswordForm = ({ oobCode }) => {
       setIsLoading(true);
       setMessage("");
 
-      const result = await confirmPasswordResetWithCode(
-        oobCode,
-        values.password
-      );
+      const result = await confirmPasswordResetWithCode(oobCode, values.password);
 
       if (result.success) {
         setResetComplete(true);
@@ -66,20 +58,9 @@ const ResetPasswordForm = ({ oobCode }) => {
     },
   });
 
-  const handleBackToLogin = () => {
-    router.push("/login");
-  };
-
-  useEffect(() => {
-    if (oobCode) {
-      verifyCode();
-    } else {
-      setIsVerifying(false);
-      setMessage(
-        "Invalid or missing reset link. Please request a new password reset link."
-      );
-    }
-  }, [oobCode]);
+  // const handleBackToLogin = () => {
+  //   router.push("/login");
+  // };
 
   const verifyCode = async () => {
     setIsVerifying(true);
@@ -94,6 +75,16 @@ const ResetPasswordForm = ({ oobCode }) => {
 
     setIsVerifying(false);
   };
+
+  useEffect(() => {
+    if (oobCode) {
+      verifyCode();
+    } else {
+      setIsVerifying(false);
+      setMessage("Invalid or missing reset link. Please request a new password reset link.");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [oobCode]);
 
   if (isVerifying) {
     return (
@@ -123,9 +114,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                       <p className="leading-[24.2px]">Verifying Reset Link</p>
                     </div>
                     <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
-                      <p className="leading-[normal]">
-                        Please wait while we verify your reset link...
-                      </p>
+                      <p className="leading-[normal]">Please wait while we verify your reset link...</p>
                     </div>
                   </div>
                 </div>
@@ -163,9 +152,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                       <p className="leading-[24.2px]">Verifying Reset Link</p>
                     </div>
                     <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
-                      <p className="leading-[normal]">
-                        Please wait while we verify your reset link...
-                      </p>
+                      <p className="leading-[normal]">Please wait while we verify your reset link...</p>
                     </div>
                   </div>
                 </div>
@@ -213,7 +200,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                   </div>
                   <Link
                     href="/forgot-password"
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                     tabIndex={0}
                     aria-label="Request a new password reset link"
                   >
@@ -258,7 +245,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                   </div>
                   <Link
                     href="/forgot-password"
-                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-primary-60 hover:bg-primary-70 transition-colors"
+                    className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-full text-white bg-indigo-600 hover:bg-indigo-700 transition-colors"
                     tabIndex={0}
                     aria-label="Request a new password reset link"
                   >
@@ -306,28 +293,20 @@ const ResetPasswordForm = ({ oobCode }) => {
 
                   <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
                     <div className="reset-password-success-title">
-                      <p className="leading-[24.2px]">
-                        Password Reset Successfully!
-                      </p>
+                      <p className="leading-[24.2px]">Password Reset Successfully!</p>
                     </div>
                     <div className="reset-password-state-description success-description-animation">
                       <p className="leading-[normal]">
-                        Your password has been successfully updated. You can now
-                        log in with your new password.
+                        Your password has been successfully updated. You can now log in with your new password.
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-3 items-center w-full success-button-animation">
-                    <Link
-                      href="/login"
-                      className="reset-password-state-link w-full justify-center"
-                    >
+                    <Link href="/login" className="reset-password-state-link w-full justify-center">
                       Go to Login
                     </Link>
-                    <p className="text-sm text-slate-500">
-                      You will be redirected to the login page
-                    </p>
+                    <p className="text-sm text-slate-500">You will be redirected to the login page</p>
                   </div>
                 </div>
               </div>
@@ -365,28 +344,20 @@ const ResetPasswordForm = ({ oobCode }) => {
 
                   <div className="flex flex-col gap-4 items-center justify-start leading-[0] not-italic relative text-center w-full">
                     <div className="reset-password-success-title">
-                      <p className="leading-[24.2px]">
-                        Password Reset Successfully!
-                      </p>
+                      <p className="leading-[24.2px]">Password Reset Successfully!</p>
                     </div>
                     <div className="reset-password-state-description success-description-animation">
                       <p className="leading-[normal]">
-                        Your password has been successfully updated. You can now
-                        log in with your new password.
+                        Your password has been successfully updated. You can now log in with your new password.
                       </p>
                     </div>
                   </div>
 
                   <div className="flex flex-col gap-3 items-center w-full success-button-animation">
-                    <Link
-                      href="/login"
-                      className="reset-password-state-link w-full justify-center"
-                    >
+                    <Link href="/login" className="reset-password-state-link w-full justify-center">
                       Go to Login
                     </Link>
-                    <p className="text-sm text-slate-500">
-                      You will be redirected to the login page
-                    </p>
+                    <p className="text-sm text-slate-500">You will be redirected to the login page</p>
                   </div>
                 </div>
               </div>
@@ -427,19 +398,14 @@ const ResetPasswordForm = ({ oobCode }) => {
                     <p className="leading-[24.2px]">Reset Password</p>
                   </div>
                   <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
-                    <p className="leading-[normal]">
-                      Please enter new password and submit to set new password.
-                    </p>
+                    <p className="leading-[normal]">Please enter new password and submit to set new password.</p>
                   </div>
                 </div>
               </div>
 
               {/* Form Section */}
               <div className="flex flex-col gap-8 items-start justify-start relative w-full">
-                <form
-                  onSubmit={formik.handleSubmit}
-                  className="flex flex-col gap-6 items-start justify-start w-full"
-                >
+                <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6 items-start justify-start w-full">
                   {/* New Password Field */}
                   <div className="flex flex-col gap-2 w-full">
                     <div className="font-['Inter',_sans-serif] font-semibold leading-[0] not-italic text-[14px] text-slate-800 w-full">
@@ -450,11 +416,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                         <div className="basis-0 flex gap-2 grow items-center justify-start min-h-px min-w-px relative">
                           <div className="basis-0 flex gap-2 grow items-end justify-start min-h-px min-w-px relative">
                             <div className="flex items-center justify-center relative">
-                              <LockKeyhole
-                                width={20}
-                                height={20}
-                                className="text-gray-secondary"
-                              />
+                              <LockKeyhole width={20} height={20} className="text-gray-secondary" />
                             </div>
                             <input
                               id="password"
@@ -473,9 +435,9 @@ const ResetPasswordForm = ({ oobCode }) => {
                             className="overflow-clip relative w-5 h-5"
                           >
                             {showPassword ? (
-                              <EyeClosed className="h-5 w-5 text-gray-scale-100" />
+                              <EyeClosed className="h-5 w-5 text-slate-900" />
                             ) : (
-                              <Eye className="h-5 w-5 text-gray-scale-100" />
+                              <Eye className="h-5 w-5 text-slate-900" />
                             )}
                           </button>
                         </div>
@@ -498,11 +460,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                         <div className="basis-0 flex gap-2 grow items-center justify-start min-h-px min-w-px relative">
                           <div className="basis-0 flex gap-2 grow items-end justify-start min-h-px min-w-px relative">
                             <div className="flex items-center justify-center relative">
-                              <LockKeyhole
-                                width={20}
-                                height={20}
-                                className="text-gray-secondary"
-                              />
+                              <LockKeyhole width={20} height={20} className="text-gray-secondary" />
                             </div>
                             <input
                               id="confirmPassword"
@@ -517,35 +475,30 @@ const ResetPasswordForm = ({ oobCode }) => {
                           </div>
                           <button
                             type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             className="overflow-clip relative w-5 h-5"
                           >
                             {showConfirmPassword ? (
-                              <EyeClosed className="h-5 w-5 text-gray-scale-100" />
+                              <EyeClosed className="h-5 w-5 text-slate-900" />
                             ) : (
-                              <Eye className="h-5 w-5 text-gray-scale-100" />
+                              <Eye className="h-5 w-5 text-slate-900" />
                             )}
                           </button>
                         </div>
                       </div>
                     </div>
-                    {formik.touched.confirmPassword &&
-                      formik.errors.confirmPassword && (
-                        <div className="mt-1">
-                          <ErrorMessage
-                            message={formik.errors.confirmPassword}
-                          />
-                        </div>
-                      )}
+                    {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                      <div className="mt-1">
+                        <ErrorMessage message={formik.errors.confirmPassword} />
+                      </div>
+                    )}
                   </div>
 
                   {/* Submit Button */}
                   <div className="flex flex-col gap-3 items-start justify-start relative w-full">
                     <Button
                       type="submit"
-                      className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full rounded-[1234px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors border border-indigo-400 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isLoading || !formik.isValid || !formik.dirty}
                     >
                       {isLoading ? (
@@ -601,19 +554,14 @@ const ResetPasswordForm = ({ oobCode }) => {
                     <p className="leading-[24.2px]">Reset Password</p>
                   </div>
                   <div className="font-['Inter',_sans-serif] font-medium relative text-[16px] text-slate-600 w-full">
-                    <p className="leading-[normal]">
-                      Please enter new password and submit to set new password.
-                    </p>
+                    <p className="leading-[normal]">Please enter new password and submit to set new password.</p>
                   </div>
                 </div>
               </div>
 
               {/* Form Section */}
               <div className="flex flex-col gap-8 items-start justify-start relative w-full">
-                <form
-                  onSubmit={formik.handleSubmit}
-                  className="flex flex-col gap-6 items-start justify-start w-full"
-                >
+                <form onSubmit={formik.handleSubmit} className="flex flex-col gap-6 items-start justify-start w-full">
                   {/* New Password Field */}
                   <div className="flex flex-col gap-2 w-full">
                     <div className="font-['Inter',_sans-serif] font-semibold leading-[0] not-italic text-[14px] text-slate-800 w-full">
@@ -624,11 +572,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                         <div className="basis-0 flex gap-2 grow items-center justify-start min-h-px min-w-px relative">
                           <div className="basis-0 flex gap-2 grow items-end justify-start min-h-px min-w-px relative">
                             <div className="flex items-center justify-center relative">
-                              <LockKeyhole
-                                width={20}
-                                height={20}
-                                className="text-gray-secondary"
-                              />
+                              <LockKeyhole width={20} height={20} className="text-gray-secondary" />
                             </div>
                             <input
                               id="password"
@@ -647,9 +591,9 @@ const ResetPasswordForm = ({ oobCode }) => {
                             className="overflow-clip relative w-5 h-5"
                           >
                             {showPassword ? (
-                              <EyeClosed className="h-5 w-5 text-gray-scale-100" />
+                              <EyeClosed className="h-5 w-5 text-slate-900" />
                             ) : (
-                              <Eye className="h-5 w-5 text-gray-scale-100" />
+                              <Eye className="h-5 w-5 text-slate-900" />
                             )}
                           </button>
                         </div>
@@ -672,11 +616,7 @@ const ResetPasswordForm = ({ oobCode }) => {
                         <div className="basis-0 flex gap-2 grow items-center justify-start min-h-px min-w-px relative">
                           <div className="basis-0 flex gap-2 grow items-end justify-start min-h-px min-w-px relative">
                             <div className="flex items-center justify-center relative">
-                              <LockKeyhole
-                                width={20}
-                                height={20}
-                                className="text-gray-secondary"
-                              />
+                              <LockKeyhole width={20} height={20} className="text-gray-secondary" />
                             </div>
                             <input
                               id="confirmPassword"
@@ -691,35 +631,30 @@ const ResetPasswordForm = ({ oobCode }) => {
                           </div>
                           <button
                             type="button"
-                            onClick={() =>
-                              setShowConfirmPassword(!showConfirmPassword)
-                            }
+                            onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                             className="overflow-clip relative w-5 h-5"
                           >
                             {showConfirmPassword ? (
-                              <EyeClosed className="h-5 w-5 text-gray-scale-100" />
+                              <EyeClosed className="h-5 w-5 text-slate-900" />
                             ) : (
-                              <Eye className="h-5 w-5 text-gray-scale-100" />
+                              <Eye className="h-5 w-5 text-slate-900" />
                             )}
                           </button>
                         </div>
                       </div>
                     </div>
-                    {formik.touched.confirmPassword &&
-                      formik.errors.confirmPassword && (
-                        <div className="mt-1">
-                          <ErrorMessage
-                            message={formik.errors.confirmPassword}
-                          />
-                        </div>
-                      )}
+                    {formik.touched.confirmPassword && formik.errors.confirmPassword && (
+                      <div className="mt-1">
+                        <ErrorMessage message={formik.errors.confirmPassword} />
+                      </div>
+                    )}
                   </div>
 
                   {/* Submit Button */}
                   <div className="flex flex-col gap-3 items-start justify-start relative w-full">
                     <Button
                       type="submit"
-                      className="w-full rounded-[1234px] bg-primary-60 hover:bg-primary-70 text-white transition-colors border border-primary-40 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full rounded-[1234px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors border border-indigo-400 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={isLoading || !formik.isValid || !formik.dirty}
                     >
                       {isLoading ? (
@@ -745,10 +680,7 @@ const ResetPasswordForm = ({ oobCode }) => {
             </div>
           </div>
         </div>
-        <div
-          aria-hidden="true"
-          className="absolute border border-slate-200 border-solid inset-0 pointer-events-none"
-        />
+        <div aria-hidden="true" className="absolute border border-slate-200 border-solid inset-0 pointer-events-none" />
       </div>
     </div>
   );

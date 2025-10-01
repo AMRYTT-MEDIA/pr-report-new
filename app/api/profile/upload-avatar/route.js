@@ -14,25 +14,13 @@ export async function POST(request) {
       return NextResponse.json({ error: "No file received." }, { status: 400 });
     }
 
-    const allowedTypes = [
-      "image/jpeg",
-      "image/png",
-      "image/svg+xml",
-      "image/webp",
-      "image/svg",
-    ];
+    const allowedTypes = ["image/jpeg", "image/png", "image/svg+xml", "image/webp", "image/svg"];
     if (!allowedTypes.includes(file.type)) {
-      return NextResponse.json(
-        { error: "Invalid file type. Only images are allowed." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "Invalid file type. Only images are allowed." }, { status: 400 });
     }
 
     if (file.size > 10 * 1024 * 1024) {
-      return NextResponse.json(
-        { error: "File size too large. Maximum 10MB allowed." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "File size too large. Maximum 10MB allowed." }, { status: 400 });
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
@@ -42,21 +30,15 @@ export async function POST(request) {
       await mkdir(avatarDir, { recursive: true });
     }
 
-    const safeOriginalName =
-      file.name?.replace(/[^a-zA-Z0-9._-]/g, "_") || "avatar";
+    const safeOriginalName = file.name?.replace(/[^a-zA-Z0-9._-]/g, "_") || "avatar";
     const finalFilename = filename || `${Date.now()}-${safeOriginalName}`;
     const filePath = path.join(avatarDir, finalFilename);
 
     if (existingAvatar) {
       try {
-        const existingFilename = existingAvatar.includes("/")
-          ? existingAvatar.split("/").pop()
-          : existingAvatar;
+        const existingFilename = existingAvatar.includes("/") ? existingAvatar.split("/").pop() : existingAvatar;
         const existingFilePath = path.join(avatarDir, existingFilename);
-        if (
-          existingFilename !== finalFilename &&
-          existsSync(existingFilePath)
-        ) {
+        if (existingFilename !== finalFilename && existsSync(existingFilePath)) {
           await unlink(existingFilePath);
         }
       } catch (deleteError) {
@@ -67,9 +49,7 @@ export async function POST(request) {
     await writeFile(filePath, buffer);
 
     return NextResponse.json({
-      message: existingAvatar
-        ? "Avatar replaced successfully"
-        : "Avatar uploaded successfully",
+      message: existingAvatar ? "Avatar replaced successfully" : "Avatar uploaded successfully",
       filename: finalFilename,
       path: `/uploads/profile/${finalFilename}`,
       success: true,
@@ -77,9 +57,6 @@ export async function POST(request) {
     });
   } catch (error) {
     console.error("Error uploading avatar:", error);
-    return NextResponse.json(
-      { error: "Failed to upload avatar" },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to upload avatar" }, { status: 500 });
   }
 }

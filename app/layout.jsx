@@ -11,14 +11,7 @@ export const metadata = {
   },
   description:
     "PR Reports distribution platform. Manage your PR campaigns, track distribution metrics, and analyze reach across multiple media outlets.",
-  keywords: [
-    "PR Reports",
-    "PR distribution",
-    "press release",
-    "media outreach",
-    "public relations",
-    "press coverage",
-  ],
+  keywords: ["PR Reports", "PR distribution", "press release", "media outreach", "public relations", "press coverage"],
   authors: [{ name: "PR Reports Team" }],
   creator: "PR Reports",
   publisher: "PR Reports",

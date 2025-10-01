@@ -10,13 +10,7 @@ const StatusPdfIcon = ({ size = 28, PDFComponents }) => {
   const { Svg, Path } = PDFComponents;
 
   return (
-    <Svg
-      width={size}
-      height={size}
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 50 50"
-      fill="none"
-    >
+    <Svg width={size} height={size} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 50" fill="none">
       <Path
         fillRule="evenodd"
         clipRule="evenodd"

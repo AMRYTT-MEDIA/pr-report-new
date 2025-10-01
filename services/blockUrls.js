@@ -2,86 +2,46 @@ import { apiDelete, apiGet, apiPost, apiPut } from "@/lib/api";
 
 export const blockUrlsService = {
   // Get all blocks with pagination and search
-  async getBlocks(page = 1, pageSize = 25, search = null) {
-    try {
-      return await apiGet("/blocks", {
-        page,
-        pageSize,
-        search,
-      });
-    } catch (error) {
-      console.error("Error fetching blocked URLs:", error);
-      throw error;
-    }
+  getBlocks(page = 1, pageSize = 25, search = null) {
+    return apiGet("/blocks", {
+      page,
+      pageSize,
+      search,
+    });
   },
 
   // Bulk create blocks
-  async bulkCreateBlocks(urls) {
-    try {
-      return await apiPost("/blocks/bulk", { urls });
-    } catch (error) {
-      console.error("Error bulk creating blocks:", error);
-      throw error;
-    }
+  bulkCreateBlocks(urls) {
+    return apiPost("/blocks/bulk", { urls });
   },
 
   // Update single block
-  async updateBlock(id, data) {
-    try {
-      return await apiPut(`/blocks/${id}`, data);
-    } catch (error) {
-      console.error("Error updating block:", error);
-      throw error;
-    }
+  updateBlock(id, data) {
+    return apiPut(`/blocks/${id}`, data);
   },
 
   // Bulk update blocks
-  async bulkUpdateBlocks(updateData) {
-    try {
-      return await apiPut(`/blocks/bulk/update`, updateData);
-    } catch (error) {
-      console.error("Error bulk updating blocks:", error);
-      throw error;
-    }
+  bulkUpdateBlocks(updateData) {
+    return apiPut(`/blocks/bulk/update`, updateData);
   },
 
   // Delete (unblock) single block
-  async deleteBlock(id) {
-    try {
-      return await apiDelete(`/blocks/${id}`);
-    } catch (error) {
-      console.error("Error deleting (unblocking) block:", error);
-      throw error;
-    }
+  deleteBlock(id) {
+    return apiDelete(`/blocks/${id}`);
   },
 
   // Bulk activate blocks
-  async bulkActivateBlocks(blockIds) {
-    try {
-      return await apiPut("/blocks/bulk/activate", { blockIds });
-    } catch (error) {
-      console.error("Error bulk activating blocks:", error);
-      throw error;
-    }
+  bulkActivateBlocks(blockIds) {
+    return apiPut("/blocks/bulk/activate", { blockIds });
   },
 
   // Bulk deactivate blocks
-  async bulkDeactivateBlocks(blockIds) {
-    try {
-      return await apiPut("/blocks/bulk/deactivate", { blockIds });
-    } catch (error) {
-      console.error("Error bulk deactivating blocks:", error);
-      throw error;
-    }
+  bulkDeactivateBlocks(blockIds) {
+    return apiPut("/blocks/bulk/deactivate", { blockIds });
   },
 
   // Bulk delete blocks
-  async bulkDeleteBlocks(blockIds) {
-    try {
-      return await apiDelete("/blocks/bulk/delete", { blockIds });
-    } catch (error) {
-      console.error("Error bulk deleting blocks:", error);
-      throw error;
-    }
+  bulkDeleteBlocks(blockIds) {
+    return apiDelete("/blocks/bulk/delete", { blockIds });
   },
 };

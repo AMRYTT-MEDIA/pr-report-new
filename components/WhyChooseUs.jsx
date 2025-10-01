@@ -1,13 +1,4 @@
-import {
-  CheckCircle,
-  Clock,
-  Globe,
-  Shield,
-  Users,
-  Zap,
-  Award,
-  TrendingUp,
-} from "lucide-react";
+import { CheckCircle, Clock, Globe, Shield, Users, Zap, Award, TrendingUp } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 
@@ -68,22 +59,17 @@ const WhyChooseUs = () => {
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold text-foreground mb-6">
-            Why Choose GUESTPOSTLINKS for{" "}
-            <span className="text-primary">Press Release Distribution?</span>
+            Why Choose GUESTPOSTLINKS for <span className="text-primary">Press Release Distribution?</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto">
-            We help brands amplify their message with high-quality{" "}
-            <strong>press release distribution services</strong>. Our expert
-            team crafts compelling, newsworthy content and distributes it across
-            major media outlets to maximize your brand's visibility,
-            credibility, and search engine rankings.
+            We help brands amplify their message with high-quality <strong>press release distribution services</strong>.
+            Our expert team crafts compelling, newsworthy content and distributes it across major media outlets to
+            maximize your brand's visibility, credibility, and search engine rankings.
           </p>
           <div className="mt-8">
             <div className="inline-flex items-center gap-2 bg-primary/10 px-6 py-3 rounded-full">
               <Award className="h-5 w-5 text-primary" />
-              <span className="text-primary font-semibold">
-                Trusted by 1000+ businesses worldwide
-              </span>
+              <span className="text-primary font-semibold">Trusted by 1000+ businesses worldwide</span>
             </div>
           </div>
         </div>
@@ -95,24 +81,18 @@ const WhyChooseUs = () => {
               className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300"
             >
               <div className="mb-4">{benefit.icon}</div>
-              <h3 className="text-lg font-semibold text-foreground mb-3">
-                {benefit.title}
-              </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
-                {benefit.description}
-              </p>
+              <h3 className="text-lg font-semibold text-foreground mb-3">{benefit.title}</h3>
+              <p className="text-muted-foreground text-sm leading-relaxed">{benefit.description}</p>
             </div>
           ))}
         </div>
 
         <div className="mt-16 text-center">
           <div className="bg-gradient-hero text-white rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold mb-4">
-              Ready to Get Featured in Major News?
-            </h3>
+            <h3 className="text-3xl font-bold mb-4">Ready to Get Featured in Major News?</h3>
             <p className="text-xl mb-6 opacity-90">
-              Join thousands of successful businesses who've amplified their
-              brand reach with our professional PR distribution services
+              Join thousands of successful businesses who've amplified their brand reach with our professional PR
+              distribution services
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/login">

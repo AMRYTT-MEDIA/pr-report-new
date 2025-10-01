@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
 /**
@@ -38,15 +32,17 @@ const CommonModal = ({
   showCloseButton = true,
   size = "md", // sm, md, lg, xl, 2xl
   className = "",
-  headerClassName = "",
   contentClassName = "",
-  footerClassName = "",
+  footerClassName = "bg-slate-100",
   closeOnOverlayClick = true,
   closeOnEscape = true,
   preventClose = false,
   subtitle = "",
   subtitle2 = "",
   noScroll = false, // Prevent scrolling in modal content
+  isBorderShow = true,
+  headerActions = null, // Additional actions in header (like Sample CSV button)
+  customHeaderLayout = false, // Use custom header layout for specific designs
 }) => {
   // Handle modal close
   const handleClose = () => {
@@ -80,6 +76,7 @@ const CommonModal = ({
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, closeOnEscape]);
 
   // Size classes
@@ -91,10 +88,16 @@ const CommonModal = ({
     "2xl": "sm:max-w-[1000px]",
   };
 
+  // Check if custom className overrides default sizing
+  const hasCustomSizing = className.includes("max-w-") || className.includes("w-");
+  const defaultSizing = hasCustomSizing ? "" : "max-w-[90vw] sm:max-w-[550px]";
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent
-        className={`${sizeClasses[size]} bg-white border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px] ${className}`}
+        className={`${
+          hasCustomSizing ? "" : sizeClasses[size]
+        }  border border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-slate-100 border-gray-scale-10 gap-0 ${defaultSizing} ${className}`}
         onPointerDownOutside={handleOverlayClick}
         showCloseButton={false}
         style={{
@@ -108,48 +111,45 @@ const CommonModal = ({
       >
         {/* Main Content Container */}
         <div
-          className={`flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white ${
-            noScroll ? "" : "overflow-y-auto scrollbar-custom"
+          className={`flex flex-col gap-5 border border-slate-200 rounded-xl p-5 bg-white ${
+            noScroll ? "" : "overflow-y-auto max-h-[80vh] scrollbar-custom"
           }`}
         >
           {/* Header Section */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center border border-purple-70 rounded-xl p-2.5">
-              {icon}
-            </div>
+            <div className="flex items-center border border-purple-70 rounded-lg p-2.5">{icon}</div>
             {showCloseButton && (
-              <button
-                onClick={handleClose}
-                className="p-1 "
-                disabled={preventClose}
-              >
-                <X className="w-[24px] h-[24px] text-gray-scale-60" />
+              <button onClick={handleClose} className="p-1 hover:bg-gray-100 rounded" disabled={preventClose}>
+                <X className="w-5 h-5 text-gray-500" />
               </button>
             )}
           </div>
 
-          {/* Title Section */}
-          <div className="flex flex-col gap-1">
-            <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-            <p className="text-font-h2-5 text-sm font-medium">
-              {subtitle}{" "}
-              {subtitle2 && (
-                <span className="text-gray-scale-70 opacity-50 text-sm font-bold">
-                  {subtitle2}
-                </span>
-              )}
-            </p>
-          </div>
-          <div className="border-b-2 border-dashed border-gray-scale-20" />
+          {/* Title Section with Custom Layout Support */}
+          {customHeaderLayout ? (
+            <div className="flex sm:items-center justify-between flex-col sm:flex-row gap-3">
+              <div>
+                <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
+                <p className="text-sm text-font-h2 opacity-50 font-semibold mt-1">{subtitle}</p>
+              </div>
+              {headerActions && <div className="flex items-center gap-2 justify-end">{headerActions}</div>}
+            </div>
+          ) : (
+            <div className="flex flex-col gap-1">
+              <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
+              <p className="text-slate-500 text-sm">
+                {subtitle} {subtitle2 && <span className="text-slate-500 font-semibold text-sm ">{subtitle2}</span>}
+              </p>
+            </div>
+          )}
+          {isBorderShow && <div className="border-b-2 border-dashed border-slate-200" />}
           {/* Dynamic Content */}
           <div className={`${contentClassName}`}>{children}</div>
         </div>
 
         {/* Footer Section */}
         {footer && (
-          <div
-            className={`flex gap-2.5 items-center justify-center sm:justify-end p-5 ${footerClassName}`}
-          >
+          <div className={`flex gap-2.5 items-center justify-center sm:justify-end p-5 ${footerClassName}`}>
             {footer}
           </div>
         )}

@@ -69,7 +69,7 @@ const Pagination = ({
   };
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
-    const newRowsPerPageNum = parseInt(newRowsPerPage);
+    const newRowsPerPageNum = parseInt(newRowsPerPage, 10);
     setLocalRowsPerPage(newRowsPerPageNum);
     setLocalCurrentPage(1);
     setIsDropdownOpen(false);
@@ -77,7 +77,7 @@ const Pagination = ({
   };
 
   const handleGoToPage = () => {
-    const pageNum = parseInt(goToPage);
+    const pageNum = parseInt(goToPage, 10);
     if (pageNum >= 1 && pageNum <= totalPages) {
       handlePageChange(pageNum);
       setGoToPage("");
@@ -166,12 +166,9 @@ const Pagination = ({
                 className={`flex items-center gap-2 cursor-pointer select-none ${
                   localCurrentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  localCurrentPage > 1 && handlePageChange(localCurrentPage - 1)
-                }
+                onClick={() => localCurrentPage > 1 && handlePageChange(localCurrentPage - 1)}
               >
-                <LeftArrow />{" "}
-                <span className="hidden sm:block">{previousLabel}</span>
+                <LeftArrow /> <span className="hidden sm:block">{previousLabel}</span>
               </div>
             )}
 
@@ -183,8 +180,8 @@ const Pagination = ({
                     page === localCurrentPage
                       ? "text-primary font-medium text-sm border border-primary rounded-full py-1"
                       : page !== "..."
-                      ? "hover:text-primary hover:outline hover:outline-primary hover:outline-1 rounded-full py-1"
-                      : ""
+                        ? "hover:text-primary hover:outline hover:outline-primary hover:outline-1 rounded-full py-1"
+                        : ""
                   }`}
                   onClick={() => page !== "..." && handlePageChange(page)}
                 >
@@ -196,17 +193,11 @@ const Pagination = ({
             {showPreviousNext && (
               <div
                 className={`flex items-center gap-2 cursor-pointer select-none ${
-                  localCurrentPage === totalPages
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
+                  localCurrentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  localCurrentPage < totalPages &&
-                  handlePageChange(localCurrentPage + 1)
-                }
+                onClick={() => localCurrentPage < totalPages && handlePageChange(localCurrentPage + 1)}
               >
-                <span className="hidden sm:block">{nextLabel}</span>{" "}
-                <RightArrow />
+                <span className="hidden sm:block">{nextLabel}</span> <RightArrow />
               </div>
             )}
           </div>
@@ -229,38 +220,31 @@ const Pagination = ({
               <button
                 type="button"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center justify-between bg-white border border-gray-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-gray-700 focus:border-gray-400 hover:border-gray-400 transition-all duration-200 cursor-pointer"
+                className="flex items-center justify-between bg-white border border-slate-300 rounded-lg px-3 py-2 w-16 text-sm font-medium text-slate-700 focus:border-slate-400 hover:border-slate-400 transition-all duration-200 cursor-pointer"
               >
                 <span>{localRowsPerPage}</span>
                 <svg
-                  className={`w-4 h-4 text-gray-500 transition-transform duration-200 ${
+                  className={`w-4 h-4 text-slate-500 transition-transform duration-200 ${
                     isDropdownOpen ? "rotate-180" : ""
                   }`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
               {/* Dropdown Menu */}
               {isDropdownOpen && (
-                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-gray-300 rounded-lg shadow-lg z-10">
+                <div className="absolute bottom-full left-0 mb-1 w-20 bg-white border border-slate-300 rounded-lg shadow-lg z-20">
                   {rowsPerPageOptions.map((option) => (
                     <button
                       key={option}
                       type="button"
                       onClick={() => handleRowsPerPageChange(option)}
-                      className={`w-full px-3 py-2 text-sm text-left hover:bg-gray-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                        option === localRowsPerPage
-                          ? "bg-blue-50 text-blue-700 font-medium"
-                          : "text-gray-700"
+                      className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
+                        option === localRowsPerPage ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-700"
                       }`}
                     >
                       {option}
@@ -281,7 +265,7 @@ const Pagination = ({
               value={goToPage}
               onChange={(e) => setGoToPage(e.target.value)}
               onKeyPress={handleKeyPress}
-              className="text-center bg-white max-w-[50px] max-h-[40px] border border-gray-300 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 focus:outline-none focus:border-primary-50"
+              className="text-center bg-white max-w-[50px] max-h-[40px] border border-slate-300 rounded-lg px-3 py-2 text-sm font-medium text-slate-700 focus:outline-none focus:border-indigo-500"
             />
           </div>
         )}
