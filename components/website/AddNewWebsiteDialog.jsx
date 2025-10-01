@@ -41,7 +41,7 @@ const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onE
     validationSchema: Yup.object().shape({
       websiteName: Yup.string()
         .trim()
-        .min(2, WebsiteConstants.websiteNameMinLength)
+        .min(1, WebsiteConstants.websiteNameMinLength)
         .required(WebsiteConstants.websiteNameRequired),
       websiteUrl: Yup.string()
         .trim()
