@@ -12,6 +12,7 @@ import { toast } from "sonner";
 import WebsiteConstants from "./constans";
 import { NoDataFound } from "../icon";
 import WebsiteIcon from "../ui/WebsiteIcon";
+import Loading from "../ui/loading";
 
 // Simple checkbox component for this dialog
 const SimpleCheckbox = ({ checked, onChange, className = "" }) => (
@@ -33,6 +34,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [websites, setWebsites] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [saving, setSaving] = useState(false);
   const dragCounter = useRef(0);
 
   // Undo/Redo state management
@@ -232,6 +234,8 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
 
   // Handle save and close
   const handleSaveAndClose = useCallback(async () => {
+    if (saving) return; // Prevent multiple calls
+    setSaving(true);
     try {
       // Prepare reorder data in the format you specified
       const reorderData = websites.map((website, index) => ({
@@ -251,8 +255,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
     } catch (error) {
       console.error("Error saving website order:", error);
       toast.error(error.message || "Failed to save website order. Please try again.");
+    } finally {
+      setSaving(false);
     }
-  }, [websites, onClose, onDataChanged]);
+  }, [websites, onClose, onDataChanged, saving]);
 
   // Handle discard and close
   const handleDiscardAndClose = useCallback(() => {
@@ -271,6 +277,8 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
   }, [hasChanges, onClose]);
 
   const handleSave = useCallback(async () => {
+    if (saving) return; // Prevent multiple calls
+    setSaving(true);
     try {
       // Prepare reorder data in the format you specified
       const reorderData = websites.map((website, index) => ({
@@ -290,8 +298,10 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
     } catch (error) {
       console.error("Error saving website order:", error);
       toast.error(error.message || "Failed to save website order. Please try again.");
+    } finally {
+      setSaving(false);
     }
-  }, [websites, onClose, onDataChanged]);
+  }, [websites, onClose, onDataChanged, saving]);
 
   // Handle position input change
   const handlePositionChange = useCallback(
@@ -727,6 +737,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
             <Button
               type="button"
               variant="outline"
+              disabled={saving}
               onClick={warningType === "cancel" ? handleDiscardAndClose : () => setShowWarningDialog(false)}
               className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
             >
@@ -736,10 +747,20 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
             <Button
               type="button"
               onClick={warningType === "cancel" ? handleSaveAndClose : handleSave}
+              disabled={saving}
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
-              <Save className="w-5 h-5" />
-              Save
+              {saving ? (
+                <>
+                  <Loading size="sm" color="white" className="w-5 h-5" />
+                  Save
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  Save
+                </>
+              )}
             </Button>
           </>
         }
