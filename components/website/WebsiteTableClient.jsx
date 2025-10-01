@@ -205,7 +205,6 @@ const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => 
     return title && title.length > maxLength;
   };
 
-  // CommonTable columns (preserve widths and order)
   const columns = [
     {
       key: "no",
