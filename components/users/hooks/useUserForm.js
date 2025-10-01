@@ -2,15 +2,8 @@ import { useState, useEffect } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { userService } from "@/services/user";
-import { toast } from "sonner";
 
-export const useUserForm = (
-  user,
-  isEdit,
-  open,
-  roles = [],
-  rolesLoading = false
-) => {
+export const useUserForm = (user, isEdit, open, roles = [], rolesLoading = false) => {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
@@ -30,33 +23,18 @@ export const useUserForm = (
       fullName: Yup.string()
         .min(2, "Name must be at least 2 characters")
         .max(50, "Name must be less than 50 characters")
-        .matches(
-          /^[A-Za-z._ -]+$/,
-          "Only letters, spaces, dots, hyphens, and underscores allowed."
-        )
+        .matches(/^[A-Za-z._ -]+$/, "Only letters, spaces, dots, hyphens, and underscores allowed.")
         .required("Name is required"),
-      email: isEdit
-        ? Yup.string().email("Invalid email address")
-        : Yup.string()
-            .email("Invalid email address")
-            .required("Email is required"),
+      email: Yup.string().email("Invalid email address").required("Email is required"),
       role: Yup.string().required("Role is required"),
-      password: isEdit
-        ? Yup.string()
-            .min(6, "Password must be at least 6 characters")
-            .max(50, "Password must be less than 50 characters")
-            .matches(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
-              "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-            )
-        : Yup.string()
-            .min(6, "Password must be at least 6 characters")
-            .max(50, "Password must be less than 50 characters")
-            .matches(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
-              "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
-            )
-            .required("Password is required"),
+      password: Yup.string()
+        .min(6, "Password must be at least 6 characters")
+        .max(50, "Password must be less than 50 characters")
+        .matches(
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\w\s]).+$/,
+          "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+        )
+        .required("Password is required"),
     }),
     onSubmit: async (values) => {
       setLoading(true);
@@ -87,6 +65,7 @@ export const useUserForm = (
     } else if (!open && formik) {
       formik.resetForm();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, user]);
 
   return {

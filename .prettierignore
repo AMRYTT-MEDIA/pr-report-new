@@ -1,0 +1,63 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Build outputs
+.next
+out
+dist
+build
+
+# Production
+/build
+
+# Testing
+coverage
+
+# Misc
+.DS_Store
+*.pem
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Local env files
+.env
+.env*.local
+.env.development
+.env.production
+
+# Vercel
+.vercel
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+bun.lockb
+
+# Public assets
+public/uploads
+public/website-logos
+public/logos
+
+# Documentation (already formatted)
+*.md
+
+# Config files that should remain as-is
+ecosystem.config.js
+ecosystem.staging.config.js
+next.config.js
+postcss.config.js
+tailwind.config.js
+components.json
+tsconfig.json
+

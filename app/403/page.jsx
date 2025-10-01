@@ -5,8 +5,7 @@ export const dynamic = "force-dynamic";
 
 export const metadata = {
   title: "Access Denied",
-  description:
-    "You don't have permission to access this page. Please contact your administrator for access.",
+  description: "You don't have permission to access this page. Please contact your administrator for access.",
 };
 
 export default function ForbiddenPage() {

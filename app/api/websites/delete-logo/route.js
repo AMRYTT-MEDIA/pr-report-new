@@ -9,16 +9,11 @@ export async function DELETE(request) {
     const logoFilename = searchParams.get("filename");
 
     if (!logoFilename) {
-      return NextResponse.json(
-        { error: "No logo filename provided." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No logo filename provided." }, { status: 400 });
     }
 
     // Extract just the filename from the logo path
-    const filename = logoFilename.includes("/")
-      ? logoFilename.split("/").pop()
-      : logoFilename;
+    const filename = logoFilename.includes("/") ? logoFilename.split("/").pop() : logoFilename;
 
     // Construct the full path to the logo file
     const logoDir = path.join(process.cwd(), "public/uploads/websites-logos");
@@ -28,7 +23,7 @@ export async function DELETE(request) {
     if (!existsSync(filePath)) {
       return NextResponse.json({
         message: "Logo file not found, may have been already deleted",
-        filename: filename,
+        filename,
         success: true,
         found: false,
       });
@@ -40,7 +35,7 @@ export async function DELETE(request) {
 
     return NextResponse.json({
       message: "Logo deleted successfully",
-      filename: filename,
+      filename,
       success: true,
       found: true,
     });

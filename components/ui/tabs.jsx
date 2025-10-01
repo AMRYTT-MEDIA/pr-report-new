@@ -15,37 +15,31 @@ const useTabs = () => {
   return context;
 };
 
-const Tabs = React.forwardRef(
-  ({ children, value, defaultValue, onValueChange, ...props }, ref) => {
-    const [selectedValue, setSelectedValue] = React.useState(
-      value || defaultValue || ""
-    );
+const Tabs = React.forwardRef(({ children, value, defaultValue, onValueChange, ...props }, ref) => {
+  const [selectedValue, setSelectedValue] = React.useState(value || defaultValue || "");
 
-    React.useEffect(() => {
-      if (value !== undefined) {
-        setSelectedValue(value);
-      }
-    }, [value]);
+  React.useEffect(() => {
+    if (value !== undefined) {
+      setSelectedValue(value);
+    }
+  }, [value]);
 
-    const handleValueChange = React.useCallback(
-      (newValue) => {
-        setSelectedValue(newValue);
-        onValueChange?.(newValue);
-      },
-      [onValueChange]
-    );
+  const handleValueChange = React.useCallback(
+    (newValue) => {
+      setSelectedValue(newValue);
+      onValueChange?.(newValue);
+    },
+    [onValueChange]
+  );
 
-    return (
-      <TabsContext.Provider
-        value={{ value: selectedValue, onValueChange: handleValueChange }}
-      >
-        <div ref={ref} {...props}>
-          {children}
-        </div>
-      </TabsContext.Provider>
-    );
-  }
-);
+  return (
+    <TabsContext.Provider value={{ value: selectedValue, onValueChange: handleValueChange }}>
+      <div ref={ref} {...props}>
+        {children}
+      </div>
+    </TabsContext.Provider>
+  );
+});
 
 const TabsList = React.forwardRef(({ className, ...props }, ref) => (
   <div

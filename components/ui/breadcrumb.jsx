@@ -15,9 +15,7 @@ const Slot = React.forwardRef(({ children, ...props }, ref) => {
 });
 Slot.displayName = "Slot";
 
-const Breadcrumb = React.forwardRef(({ ...props }, ref) => (
-  <nav ref={ref} aria-label="breadcrumb" {...props} />
-));
+const Breadcrumb = React.forwardRef(({ ...props }, ref) => <nav ref={ref} aria-label="breadcrumb" {...props} />);
 
 const BreadcrumbList = React.forwardRef(({ className, ...props }, ref) => (
   <ol
@@ -31,26 +29,14 @@ const BreadcrumbList = React.forwardRef(({ className, ...props }, ref) => (
 ));
 
 const BreadcrumbItem = React.forwardRef(({ className, ...props }, ref) => (
-  <li
-    ref={ref}
-    className={cn("inline-flex items-center gap-1.5", className)}
-    {...props}
-  />
+  <li ref={ref} className={cn("inline-flex items-center gap-1.5", className)} {...props} />
 ));
 
-const BreadcrumbLink = React.forwardRef(
-  ({ asChild, className, ...props }, ref) => {
-    const Comp = asChild ? Slot : "a";
+const BreadcrumbLink = React.forwardRef(({ asChild, className, ...props }, ref) => {
+  const Comp = asChild ? Slot : "a";
 
-    return (
-      <Comp
-        ref={ref}
-        className={cn("transition-colors hover:text-foreground", className)}
-        {...props}
-      />
-    );
-  }
-);
+  return <Comp ref={ref} className={cn("transition-colors hover:text-foreground", className)} {...props} />;
+});
 
 const BreadcrumbPage = React.forwardRef(({ className, ...props }, ref) => (
   <span
@@ -64,12 +50,7 @@ const BreadcrumbPage = React.forwardRef(({ className, ...props }, ref) => (
 ));
 
 const BreadcrumbSeparator = ({ children, className, ...props }) => (
-  <li
-    role="presentation"
-    aria-hidden="true"
-    className={cn("[&>svg]:size-3.5", className)}
-    {...props}
-  >
+  <li role="presentation" aria-hidden="true" className={cn("[&>svg]:size-3.5", className)} {...props}>
     {children ?? <ChevronRight />}
   </li>
 );

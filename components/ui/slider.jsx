@@ -2,19 +2,7 @@ import * as React from "react";
 import { cn } from "@/lib/utils";
 
 const Slider = React.forwardRef(
-  (
-    {
-      className,
-      value,
-      defaultValue = [0],
-      onValueChange,
-      min = 0,
-      max = 100,
-      step = 1,
-      ...props
-    },
-    ref
-  ) => {
+  ({ className, value, defaultValue = [0], onValueChange, min = 0, max = 100, step = 1, ...props }, ref) => {
     const [sliderValue, setSliderValue] = React.useState(value || defaultValue);
     const [isDragging, setIsDragging] = React.useState(false);
     const trackRef = React.useRef(null);
@@ -39,14 +27,10 @@ const Slider = React.forwardRef(
         const track = trackRef.current;
         if (!track) return;
 
-        const handleMouseMove = (e) => {
+        const handleMouseMove = (event) => {
           const rect = track.getBoundingClientRect();
-          const percentage = Math.max(
-            0,
-            Math.min(1, (e.clientX - rect.left) / rect.width)
-          );
-          const newValue =
-            Math.round((min + percentage * (max - min)) / step) * step;
+          const percentage = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+          const newValue = Math.round((min + percentage * (max - min)) / step) * step;
 
           const newValues = [...sliderValue];
           newValues[index] = Math.max(min, Math.min(max, newValue));
@@ -66,19 +50,15 @@ const Slider = React.forwardRef(
     );
 
     const handleTrackClick = React.useCallback(
-      (e) => {
+      (_e) => {
         if (isDragging) return;
 
         const track = trackRef.current;
         if (!track) return;
 
         const rect = track.getBoundingClientRect();
-        const percentage = Math.max(
-          0,
-          Math.min(1, (e.clientX - rect.left) / rect.width)
-        );
-        const newValue =
-          Math.round((min + percentage * (max - min)) / step) * step;
+        const percentage = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+        const newValue = Math.round((min + percentage * (max - min)) / step) * step;
 
         const newValues = [...sliderValue];
         newValues[0] = Math.max(min, Math.min(max, newValue));
@@ -88,14 +68,7 @@ const Slider = React.forwardRef(
     );
 
     return (
-      <div
-        ref={ref}
-        className={cn(
-          "relative flex w-full touch-none select-none items-center",
-          className
-        )}
-        {...props}
-      >
+      <div ref={ref} className={cn("relative flex w-full touch-none select-none items-center", className)} {...props}>
         <div
           ref={trackRef}
           className="relative h-2 w-full grow overflow-hidden rounded-full bg-secondary cursor-pointer"

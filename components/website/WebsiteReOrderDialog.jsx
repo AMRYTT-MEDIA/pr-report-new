@@ -1,24 +1,10 @@
 "use client";
 
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import {
-  Search,
-  Undo,
-  Redo,
-  X,
-  Save,
-  GripVertical,
-  Check,
-  ImageOff,
-  TriangleAlert,
-} from "lucide-react";
-import {
-  Tooltip,
-  TooltipProvider,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+import { Search, Undo, Redo, X, Save, GripVertical, Check, TriangleAlert } from "lucide-react";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
 import { Dialog, DialogContent } from "../ui/dialog";
+import CommonModal from "@/components/common/CommonModal";
 import { Button } from "../ui/button";
 import { websitesService } from "@/services/websites";
 import { toast } from "sonner";
@@ -27,20 +13,16 @@ import { NoDataFound } from "../icon";
 import WebsiteIcon from "../ui/WebsiteIcon";
 
 // Simple checkbox component for this dialog
-const SimpleCheckbox = ({ checked, onChange, className = "" }) => {
-  return (
-    <div
-      className={`w-5 h-5 rounded-[6px] border-2 cursor-pointer flex items-center justify-center transition-colors ${
-        checked
-          ? "bg-indigo-500 border-indigo-500 text-white"
-          : "border-slate-300 bg-white hover:border-indigo-400"
-      } ${className}`}
-      onClick={() => onChange(!checked)}
-    >
-      {checked && <Check className="w-3 h-3" strokeWidth={4} />}
-    </div>
-  );
-};
+const SimpleCheckbox = ({ checked, onChange, className = "" }) => (
+  <div
+    className={`w-5 h-5 rounded-[6px] border-2 cursor-pointer flex items-center justify-center transition-colors ${
+      checked ? "bg-indigo-500 border-indigo-500 text-white" : "border-slate-300 bg-white hover:border-indigo-400"
+    } ${className}`}
+    onClick={() => onChange(!checked)}
+  >
+    {checked && <Check className="w-3 h-3 text-white" strokeWidth={4} />}
+  </div>
+);
 
 const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -152,9 +134,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
           setOriginalWebsites([...websitesData]); // Store original data for reset
         } catch (error) {
           console.error("Error loading websites:", error);
-          toast.error(
-            error.message || "Failed to load websites. Please try again."
-          );
+          toast.error(error.message || "Failed to load websites. Please try again.");
           setWebsites([]);
           setOriginalWebsites([]);
         } finally {
@@ -206,7 +186,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
 
   const handleBulkMove = useCallback(() => {
     if (selectedWebsites.size === 0 || !bulkMovePosition) return;
-    const position = parseInt(bulkMovePosition) - 1; // Convert to 0-based index
+    const position = parseInt(bulkMovePosition, 10) - 1; // Convert to 0-based index
     if (position < 0 || position >= websites.length) {
       toast.error("Invalid position. Please enter a valid position number.");
       return;
@@ -218,9 +198,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       .map((id) => newWebsites.find((website) => website._id === id))
       .filter(Boolean);
     // Remove selected websites from their current positions
-    const websitesWithoutSelected = newWebsites.filter(
-      (website) => !selectedWebsites.has(website._id)
-    );
+    const websitesWithoutSelected = newWebsites.filter((website) => !selectedWebsites.has(website._id));
     // Insert selected websites at the specified position
     websitesWithoutSelected.splice(position, 0, ...selectedWebsitesData);
     // Save state to history for undo/redo (this will also update srno and setWebsites)
@@ -228,9 +206,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
     // Clear selection and bulk move position
     setSelectedWebsites(new Set());
     setBulkMovePosition("");
-    toast.success(
-      `Moved ${selectedWebsitesData.length} website(s) to position ${bulkMovePosition}`
-    );
+    toast.success(`Moved ${selectedWebsitesData.length} website(s) to position ${bulkMovePosition}`);
   }, [bulkMovePosition, selectedWebsites, websites, saveToHistory]);
 
   // Check if there are any changes made
@@ -273,9 +249,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       }
     } catch (error) {
       console.error("Error saving website order:", error);
-      toast.error(
-        error.message || "Failed to save website order. Please try again."
-      );
+      toast.error(error.message || "Failed to save website order. Please try again.");
     }
   }, [websites, onClose, onDataChanged]);
 
@@ -314,20 +288,18 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       }
     } catch (error) {
       console.error("Error saving website order:", error);
-      toast.error(
-        error.message || "Failed to save website order. Please try again."
-      );
+      toast.error(error.message || "Failed to save website order. Please try again.");
     }
   }, [websites, onClose, onDataChanged]);
 
   // Handle position input change
   const handlePositionChange = useCallback(
-    (e, currentIndex) => {
-      const value = e.target.value;
+    (e, _currentIndex) => {
+      const { value } = e.target;
       // Allow empty value for editing
       if (value === "") return;
 
-      const newPosition = parseInt(value);
+      const newPosition = parseInt(value, 10);
       if (newPosition < 1 || newPosition > websites.length) {
         return; // Invalid position, don't update
       }
@@ -338,11 +310,9 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
   // Handle position input blur (when user clicks away)
   const handlePositionBlur = useCallback(
     (e, currentIndex) => {
-      const value = e.target.value;
+      const { value } = e.target;
       const website = filteredWebsites[currentIndex];
-      const currentDisplayPosition = searchTerm
-        ? website.srno
-        : currentIndex + 1;
+      const currentDisplayPosition = searchTerm ? website.srno : currentIndex + 1;
 
       if (value === "") {
         // Reset to current position if empty
@@ -350,13 +320,11 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
         return;
       }
 
-      const newPosition = parseInt(value);
+      const newPosition = parseInt(value, 10);
       if (newPosition < 1 || newPosition > websites.length) {
         // Reset to current position if invalid
         e.target.value = currentDisplayPosition;
-        toast.error(
-          `Invalid position. Please enter a number between 1 and ${websites.length}`
-        );
+        toast.error(`Invalid position. Please enter a number between 1 and ${websites.length}`);
         return;
       }
 
@@ -377,9 +345,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
         // Save state to history for undo/redo (this will also update srno and setWebsites)
         saveToHistory(newWebsites);
 
-        toast.success(
-          `Moved "${websiteToMove.name}" to position ${newPosition}`
-        );
+        toast.success(`Moved "${websiteToMove.name}" to position ${newPosition}`);
       } else {
         // If position is same, just reset the input value
         e.target.value = currentDisplayPosition;
@@ -389,7 +355,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
   );
 
   // Handle Enter key press
-  const handlePositionKeyDown = useCallback((e, currentIndex) => {
+  const handlePositionKeyDown = useCallback((e, _currentIndex) => {
     if (e.key === "Enter") {
       e.target.blur(); // Trigger blur event to move the website
     }
@@ -412,12 +378,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
     [draggedItem]
   );
 
-  const handleDragEnter = useCallback((e, index) => {
+  const handleDragEnter = useCallback((e, _index) => {
     e.preventDefault();
     dragCounter.current++;
   }, []);
 
-  const handleDragLeave = useCallback((e) => {
+  const handleDragLeave = useCallback((_e) => {
     dragCounter.current--;
     if (dragCounter.current === 0) {
       setDragOverIndex(null);
@@ -435,12 +401,8 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
         const draggedWebsite = filteredWebsites[draggedItem];
         const dropWebsite = filteredWebsites[dropIndex];
 
-        const actualDraggedIndex = websites.findIndex(
-          (w) => w._id === draggedWebsite._id
-        );
-        const actualDropIndex = websites.findIndex(
-          (w) => w._id === dropWebsite._id
-        );
+        const actualDraggedIndex = websites.findIndex((w) => w._id === draggedWebsite._id);
+        const actualDropIndex = websites.findIndex((w) => w._id === dropWebsite._id);
 
         const websiteToMove = newWebsites[actualDraggedIndex];
 
@@ -453,10 +415,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
           // Remove the dragged item
           newWebsites.splice(actualDraggedIndex, 1);
           // Insert at new position - place below the target website
-          const insertIndex =
-            actualDraggedIndex < actualDropIndex
-              ? actualDropIndex
-              : actualDropIndex + 1;
+          const insertIndex = actualDraggedIndex < actualDropIndex ? actualDropIndex : actualDropIndex + 1;
           newWebsites.splice(insertIndex, 0, websiteToMove);
         }
         // Save state to history for undo/redo (this will also update srno and setWebsites)
@@ -484,7 +443,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
     }
     if (!title) return "-";
     if (title.length <= maxLength) return title;
-    return title.substring(0, maxLength) + "...";
+    return `${title.substring(0, maxLength)}...`;
   };
 
   // Check if title needs truncation
@@ -504,13 +463,11 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
         className="max-w-[1570px] w-[95vw] max-h-[880px] bg-slate-100 border border-slate-200 shadow-[0px_0px_20px_0px_rgba(52,64,84,0.08)] p-[5px]"
         showCloseButton={false}
       >
-        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-gray-scale-30">
+        <div className="bg-white h-full rounded-[10px] flex flex-col overflow-hidden border border-slate-300">
           {/* Header */}
           <div className="flex flex-col sm:flex-row sm:items-center items-start justify-between gap-2 sm:px-6 px-4 py-4 border-b border-slate-200">
             <div className="flex items-center gap-4">
-              <h2 className="text-xl font-semibold text-[#344054] whitespace-nowrap mr-2">
-                Reorder Websites
-              </h2>
+              <h2 className="text-xl font-semibold text-[#344054] whitespace-nowrap mr-2">Reorder Websites</h2>
             </div>
 
             {/* Search */}
@@ -523,12 +480,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                 placeholder="Search..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-primary-50"
+                className="pl-10 pr-4 py-2.5 w-full border border-slate-200 rounded-full text-sm font-semibold placeholder:text-slate-600 placeholder:opacity-50 focus:outline-none focus:border-indigo-500"
               />
               {searchTerm && (
                 <div className="absolute right-4 top-1/2 transform -translate-y-1/2 cursor-pointer">
                   <X
-                    className="h-6 w-6 text-muted-foreground bg-gray-100 rounded-xl p-1"
+                    className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1"
                     onClick={() => setSearchTerm("")}
                   />
                 </div>
@@ -538,9 +495,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
               {/* Action Buttons */}
               <button
                 className={`flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-full text-sm font-semibold hover:bg-slate-50 ${
-                  canUndo
-                    ? "text-slate-600"
-                    : "text-slate-400 cursor-not-allowed"
+                  canUndo ? "text-slate-600" : "text-slate-400 cursor-not-allowed"
                 }`}
                 onClick={handleUndo}
                 disabled={!canUndo}
@@ -551,9 +506,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
 
               <button
                 className={`flex items-center gap-2 px-4 py-2.5 border border-slate-200 rounded-full text-sm font-semibold hover:bg-slate-50 ${
-                  canRedo
-                    ? "text-slate-600"
-                    : "text-slate-400 cursor-not-allowed"
+                  canRedo ? "text-slate-600" : "text-slate-400 cursor-not-allowed"
                 }`}
                 onClick={handleRedo}
                 disabled={!canRedo}
@@ -591,24 +544,16 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                   <tr>
                     <th className="w-[105px] px-6 py-3.5 text-left"></th>
                     <th className="w-[68px] px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
-                        No.
-                      </span>
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">No.</span>
                     </th>
                     <th className="w-[241px] px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
-                        Web Portal Icon
-                      </span>
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">Web Portal Icon</span>
                     </th>
                     <th className="px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
-                        Website Name
-                      </span>
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">Website Name</span>
                     </th>
                     <th className="px-6 py-3.5 text-left">
-                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">
-                        Website URL
-                      </span>
+                      <span className="text-sm font-semibold text-slate-800 whitespace-nowrap">Website URL</span>
                     </th>
                   </tr>
                 </thead>
@@ -617,31 +562,21 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                 <tbody className="bg-white">
                   {loading ? (
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="text-center h-[calc(100dvh-350px)]"
-                      >
+                      <td colSpan={5} className="text-center h-[calc(100dvh-350px)]">
                         <div className="flex items-center justify-center">
                           <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-500"></div>
-                          <span className="ml-2 text-sm text-slate-600">
-                            Loading websites...
-                          </span>
+                          <span className="ml-2 text-sm text-slate-600">Loading websites...</span>
                         </div>
                       </td>
                     </tr>
                   ) : filteredWebsites.length === 0 ? (
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="text-center h-[calc(100dvh-350px)]"
-                      >
+                      <td colSpan={5} className="text-center h-[calc(100dvh-350px)]">
                         <div className="flex flex-col items-center justify-center space-y-3 h-full">
                           <NoDataFound width={105} height={130} />
                           <div>
                             <h3 className="text-lg font-medium text-slate-900">
-                              {searchTerm
-                                ? WebsiteConstants.noWebsiteFound
-                                : WebsiteConstants.noWebsiteYetTitle}
+                              {searchTerm ? WebsiteConstants.noWebsiteFound : WebsiteConstants.noWebsiteYetTitle}
                             </h3>
                             <p className="text-sm text-slate-500 mt-1">
                               {searchTerm
@@ -658,11 +593,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                         key={website._id}
                         className={`border-b border-slate-200 transition-colors ${
                           draggedItem === index ? "opacity-50" : ""
-                        } ${
-                          dragOverIndex === index
-                            ? "bg-indigo-50 border-indigo-200 border-b-primary-50"
-                            : ""
-                        }`}
+                        } ${dragOverIndex === index ? "bg-indigo-50 border-indigo-200 border-b-primary-50" : ""}`}
                         draggable
                         onDragStart={(e) => handleDragStart(e, index)}
                         onDragOver={(e) => handleDragOver(e, index)}
@@ -673,26 +604,22 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                       >
                         <td className="px-6 py-[15px]">
                           <div className="flex items-center gap-[15px]">
-                            <GripVertical className="h-5 w-5 text-gray-scale-60 cursor-grab active:cursor-grabbing" />
+                            <GripVertical className="h-5 w-5 text-slate-600 cursor-grab active:cursor-grabbing" />
                             <SimpleCheckbox
                               checked={selectedWebsites.has(website._id)}
-                              onChange={(checked) =>
-                                handleWebsiteSelect(website._id, checked)
-                              }
+                              onChange={(checked) => handleWebsiteSelect(website._id, checked)}
                             />
                           </div>
                         </td>
                         <td className="px-6 py-[6px]">
                           <input
-                            key={`position-${website._id}-${index}-${
-                              searchTerm ? "search" : "all"
-                            }`}
+                            key={`position-${website._id}-${index}-${searchTerm ? "search" : "all"}`}
                             type="number"
                             defaultValue={searchTerm ? website.srno : index + 1}
                             onChange={(e) => handlePositionChange(e, index)}
                             onBlur={(e) => handlePositionBlur(e, index)}
                             onKeyDown={(e) => handlePositionKeyDown(e, index)}
-                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[42px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-primary-50 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                            className="border border-slate-300 rounded px-[6px] py-[6px] inline-flex items-center justify-center w-[42px] h-[22px] text-sm font-medium text-slate-600 text-center focus:outline-none focus:border-indigo-500 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                             min="1"
                             max={websites.length}
                           />
@@ -712,25 +639,21 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                             <TooltipProvider>
                               <Tooltip>
                                 <TooltipTrigger asChild>
-                                  <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help max-w-[150px]">
+                                  <p className="text-sm font-medium text-slate-600 truncate cursor-help max-w-[150px]">
                                     {formatTitle(website.name, "name")}
                                   </p>
                                 </TooltipTrigger>
                                 <TooltipContent
-                                  className="max-w-sm bg-gray-900 text-white border-gray-700"
+                                  className="max-w-sm bg-slate-900 text-white border-slate-700"
                                   side="top"
                                   align="start"
                                 >
-                                  <div className="break-words">
-                                    {website.name}
-                                  </div>
+                                  <div className="break-words">{website.name}</div>
                                 </TooltipContent>
                               </Tooltip>
                             </TooltipProvider>
                           ) : (
-                            <p className="text-sm font-medium text-gray-scale-60 truncate">
-                              {website.name || "-"}
-                            </p>
+                            <p className="text-sm font-medium text-slate-600 truncate">{website.name || "-"}</p>
                           )}
                         </td>
                         <td className="px-6 py-[6px]">
@@ -739,7 +662,7 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                               <TooltipProvider>
                                 <Tooltip>
                                   <TooltipTrigger asChild>
-                                    <p className="text-sm font-medium text-gray-scale-60 truncate cursor-help">
+                                    <p className="text-sm font-medium text-slate-600 truncate cursor-help">
                                       {formatTitle(website.url, "url")}
                                     </p>
                                   </TooltipTrigger>
@@ -748,16 +671,12 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
                                     side="top"
                                     align="start"
                                   >
-                                    <div className="break-words">
-                                      {website.url}
-                                    </div>
+                                    <div className="break-words">{website.url}</div>
                                   </TooltipContent>
                                 </Tooltip>
                               </TooltipProvider>
                             ) : (
-                              <p className="text-sm font-medium text-gray-scale-60">
-                                {website.url || "-"}
-                              </p>
+                              <p className="text-sm font-medium text-slate-600">{website.url || "-"}</p>
                             )}
                           </div>
                         </td>
@@ -773,24 +692,20 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
           <div className="border-t border-slate-200 px-6 py-4 bg-white">
             <div className="flex flex-col sm:flex-row items-center gap-4 justify-between">
               <div className="flex items-center gap-2">
-                <span className="text-base font-bold text-indigo-500">
-                  {selectedWebsites.size}
-                </span>
+                <span className="text-base font-bold text-indigo-500">{selectedWebsites.size}</span>
                 <span className="text-base font-semibold text-slate-600">
                   Website Selected of {websites.length} results
                 </span>
               </div>
 
               <div className="flex items-center gap-2.5">
-                <span className="text-sm font-semibold text-slate-600">
-                  Bulk Move To:
-                </span>
+                <span className="text-sm font-semibold text-slate-600">Bulk Move To:</span>
                 <input
                   type="text"
                   placeholder="#"
                   value={bulkMovePosition}
                   onChange={(e) => setBulkMovePosition(e.target.value)}
-                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-primary-50 leading-4"
+                  className="px-4 py-2.5 border border-slate-300 rounded-full text-sm font-semibold text-slate-700 w-16 text-center focus:outline-none focus:border-indigo-500 leading-4"
                 />
                 <button
                   onClick={handleBulkMove}
@@ -806,50 +721,24 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
       </DialogContent>
 
       {/* Warning Dialog */}
-      <Dialog open={showWarningDialog} onOpenChange={() => {}}>
-        <DialogContent
-          className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
-          showCloseButton={false}
-        >
-          <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-            {/* Header */}
-            <div className="flex flex-col gap-5">
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                  <TriangleAlert className="w-5 h-5" />
-                </div>
-                <button
-                  onClick={() => setShowWarningDialog(false)}
-                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="flex flex-col gap-1">
-                <h2 className="text-lg font-semibold text-font-h2">
-                  {warningType === "cancel"
-                    ? "Unsaved Changes"
-                    : "Save Changes"}
-                </h2>
-                <p className="text-font-h2-5 text-sm font-medium">
-                  {warningType === "cancel"
-                    ? "Website order changed. Save or discard changes?"
-                    : "Website order has been modified. Do you want to save these changes?"}
-                </p>
-              </div>
-            </div>
-          </div>
-          {/* Footer Buttons */}
-          <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
+      <CommonModal
+        open={showWarningDialog}
+        onClose={() => setShowWarningDialog(false)}
+        showCloseButton={true}
+        size="md"
+        title={warningType === "cancel" ? "Unsaved Changes" : "Save Changes"}
+        subtitle={
+          warningType === "cancel"
+            ? "Website order changed. Save or discard changes?"
+            : "Website order has been modified. Do you want to save these changes?"
+        }
+        icon={<TriangleAlert className="w-5 h-5" />}
+        footer={
+          <>
             <Button
               type="button"
               variant="outline"
-              onClick={
-                warningType === "cancel"
-                  ? handleDiscardAndClose
-                  : () => setShowWarningDialog(false)
-              }
+              onClick={warningType === "cancel" ? handleDiscardAndClose : () => setShowWarningDialog(false)}
               className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
             >
               <X className="w-5 h-5" />
@@ -857,17 +746,16 @@ const WebsiteReOrderDialog = ({ isOpen, onClose, onDataChanged }) => {
             </Button>
             <Button
               type="button"
-              onClick={
-                warningType === "cancel" ? handleSaveAndClose : handleSave
-              }
-              className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
+              onClick={warningType === "cancel" ? handleSaveAndClose : handleSave}
+              className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
               Save
             </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </>
+        }
+        isBorderShow={false}
+      />
     </Dialog>
   );
 };

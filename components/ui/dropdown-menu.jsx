@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useCallback } from "react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import Image from "next/image";
 
@@ -17,6 +17,13 @@ export default function DropdownMenu({
   const [isVisible, setIsVisible] = useState(false);
   const dropdownRef = useRef(null);
 
+  const closeWithAnimation = useCallback(() => {
+    setIsOpen(false);
+    onOpenChange?.(false);
+    // Wait for transition to finish before unmounting
+    window.setTimeout(() => setIsVisible(false), 150);
+  }, [onOpenChange]);
+
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -27,17 +34,9 @@ export default function DropdownMenu({
 
     if (isOpen) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () =>
-        document.removeEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
     }
-  }, [isOpen]);
-
-  const closeWithAnimation = () => {
-    setIsOpen(false);
-    onOpenChange?.(false);
-    // Wait for transition to finish before unmounting
-    window.setTimeout(() => setIsVisible(false), 150);
-  };
+  }, [isOpen, closeWithAnimation]);
 
   const handleToggle = (event) => {
     event.stopPropagation();
@@ -92,8 +91,7 @@ export default function DropdownMenu({
             isOpen ? "opacity-100 scale-100" : "opacity-0 scale-95",
             align === "right" && "right-0 top-full mt-0",
             align === "left" && "left-0 top-full mt-2",
-            align === "center" &&
-              "left-1/2 top-full mt-2 transform -translate-x-1/2",
+            align === "center" && "left-1/2 top-full mt-2 transform -translate-x-1/2",
             className
           )}
         >
@@ -103,9 +101,7 @@ export default function DropdownMenu({
               <div className="flex items-center space-x-3 px-4 py-3">
                 <div className="relative">
                   <div className="w-10 h-10 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {profileData.avatar &&
-                    profileData.avatar !== "" &&
-                    getAvatarUrl(profileData.avatar) ? (
+                    {profileData.avatar && profileData.avatar !== "" && getAvatarUrl(profileData.avatar) ? (
                       (() => {
                         let src = "";
                         src = getAvatarUrl(profileData.avatar);
@@ -133,12 +129,8 @@ export default function DropdownMenu({
                   )}
                 </div>
                 <div className="text-left">
-                  <div className="text-base font-bold text-gray-900">
-                    {profileData.name || "Main Text"}
-                  </div>
-                  <div className="text-sm text-gray-500">
-                    {profileData.role || "Test"}
-                  </div>
+                  <div className="text-base font-bold text-slate-900">{profileData.name || "Main Text"}</div>
+                  <div className="text-sm text-slate-500">{profileData.role || "Test"}</div>
                 </div>
               </div>
 
@@ -152,11 +144,7 @@ export default function DropdownMenu({
                   fill="none"
                   className="self-stretch"
                 >
-                  <path
-                    d="M194 0.999983L0 1"
-                    stroke="#E2E8F0"
-                    strokeWidth="1"
-                  />
+                  <path d="M194 0.999983L0 1" stroke="#E2E8F0" strokeWidth="1" />
                 </svg>
               </div>
             </>
@@ -169,14 +157,12 @@ export default function DropdownMenu({
                 <button
                   onClick={() => handleItemClick(item)}
                   className={cn(
-                    "w-full flex items-center space-x-3 py-[6px] text-left text-sm text-gray-scale-60 font-medium  transition-colors",
+                    "w-full flex items-center space-x-3 py-[6px] text-left text-sm text-slate-600 font-medium  transition-colors",
                     item.className
                   )}
                   disabled={item.disabled}
                 >
-                  {item.icon && (
-                    <item.icon className="w-[18px] h-[18px] text-gray-scale-60" />
-                  )}
+                  {item.icon && <item.icon className="w-[18px] h-[18px] text-slate-600" />}
                   <span>{item.label}</span>
                   {item.badge && (
                     <span className="ml-auto px-2 py-1 text-xs bg-blue-100 text-blue-600 rounded-full">
@@ -195,11 +181,7 @@ export default function DropdownMenu({
                       fill="none"
                       className="self-stretch"
                     >
-                      <path
-                        d="M194 0.999983L0 1"
-                        stroke="#E2E8F0"
-                        strokeWidth="1"
-                      />
+                      <path d="M194 0.999983L0 1" stroke="#E2E8F0" strokeWidth="1" />
                     </svg>
                   </div>
                 )}

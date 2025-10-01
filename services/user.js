@@ -11,9 +11,7 @@ export const userService = {
   // Get all users with pagination support
   getAllUsers: async (page = 1, pageSize = 25) => {
     try {
-      const response = await apiGet(
-        `/auth/getallusers?page=${page}&pageSize=${pageSize}`
-      );
+      const response = await apiGet(`/auth/getallusers?page=${page}&pageSize=${pageSize}`);
       return response;
     } catch (error) {
       console.error("Error fetching users:", error);

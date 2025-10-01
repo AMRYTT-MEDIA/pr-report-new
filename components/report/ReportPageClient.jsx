@@ -1,28 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Card, CardContent } from "@/components/ui/card";
-import { Mail, X, CircleCheckBig } from "lucide-react";
+// Card component imports removed - not used
+import { Mail, CircleCheckBig } from "lucide-react";
 import { toast } from "sonner";
 import PRReportViewer from "@/components/PRReportViewer";
 import ReportNotFound from "@/components/ReportNotFound";
 import Image from "next/image";
 
-export default function ReportPageClient({
-  reportId,
-  initialReport,
-  isPrivate,
-  error,
-  verifyEmailAndGetReport,
-}) {
+export default function ReportPageClient({ reportId, initialReport, isPrivate, error, verifyEmailAndGetReport }) {
   const [report, setReport] = useState(initialReport);
   const [loading, setLoading] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [email, setEmail] = useState("");
-  const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [, setEmailSubmitted] = useState(false);
   const [showFullReport, setShowFullReport] = useState(!!initialReport);
   const [showEmailDialog, setShowEmailDialog] = useState(isPrivate);
   const [verifying, setVerifying] = useState(false);
+  const [searchTerm] = useState("");
 
   useEffect(() => {
     // If we have an error or no initial data, show appropriate state
@@ -37,7 +31,7 @@ export default function ReportPageClient({
     }
   }, [error, initialReport, isPrivate]);
 
-  const loadReportData = async (userEmail = null) => {
+  const _loadReportData = async (userEmail = null) => {
     try {
       setLoading(true);
       const result = await verifyEmailAndGetReport(reportId, userEmail);
@@ -101,7 +95,7 @@ export default function ReportPageClient({
     }
   };
 
-  const handleShare = () => {
+  const _handleShare = () => {
     if (report) {
       const shareUrl = `${window.location.origin}/report/${report.id}`;
       navigator.clipboard.writeText(shareUrl).then(() => {
@@ -110,7 +104,7 @@ export default function ReportPageClient({
     }
   };
 
-  const filteredOutlets =
+  const _filteredOutlets =
     report?.outlets?.filter(
       (outlet) =>
         outlet.website_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -136,35 +130,26 @@ export default function ReportPageClient({
   return (
     <>
       {report && !showEmailDialog && (
-        <nav className="bg-white border-b border-gray-200 sticky top-0 z-50">
+        <nav className="bg-white border-b border-slate-200 sticky top-0 z-50">
           <div className="container mx-auto">
             <div className="flex justify-center items-center h-16">
-              <Image
-                src="/guestpost-link.webp"
-                alt="PR Reports"
-                width={223}
-                height={45}
-                loading="lazy"
-              />
+              <Image src="/guestpost-link.webp" alt="PR Reports" width={223} height={45} loading="lazy" />
             </div>
           </div>
         </nav>
       )}
-      <div className="bg-background">
-        <div
-          className="container mx-auto py-8 min-h-[calc(100vh-100px)] relative"
-          style={{ padding: "15px" }}
-        >
-          {/* <div className="mb-6">
+      <div className="container  py-8 min-h-[calc(100vh-100px)] m-auto relative" style={{ padding: "15px" }}>
+        {/* <div className="mb-6">
             <h1 className="text-3xl font-bold tracking-tight">PR Report</h1>
             <p className="text-muted-foreground">
               This is a shared press release distribution report
             </p>
           </div> */}
 
-          {/* Email Dialog for Private Reports */}
-          {showEmailDialog && (
-            <div className="mb-8 mx-auto max-w-[90vw] sm:max-w-[550px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        {/* Email Dialog for Private Reports */}
+        {showEmailDialog && (
+          <div className="flex items-center justify-center min-h-screen absolute inset-0 bg-white/80 backdrop-blur-sm z-50">
+            <div className="mb-8 w-full sm:max-w-[550px] mx-4">
               <div className="bg-slate-100 content-stretch flex flex-col items-start justify-start relative rounded-[14px] size-full">
                 <div
                   aria-hidden="true"
@@ -178,18 +163,16 @@ export default function ReportPageClient({
 
                   {/* Header Section */}
                   <div className="content-stretch flex items-start justify-between relative shrink-0 w-full">
-                    <div className="bg-white relative rounded-[10px] shrink-0 size-12">
+                    <div className="bg-white relative rounded-[10px] shrink-0 size-12 flex items-center justify-center">
                       <div
                         aria-hidden="true"
-                        className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px]"
+                        className="absolute border border-slate-200 border-solid inset-0 pointer-events-none rounded-[10px] "
                       />
-                      <div className="absolute left-1/2 size-7 top-1/2 translate-x-[-50%] translate-y-[-50%]">
-                        <Mail className="w-7 h-7 text-slate-600" />
-                      </div>
+                      <Mail className="w-7 h-7 text-slate-600" />
                     </div>
                     {/* <button
                       onClick={() => setShowEmailDialog(false)}
-                      className="relative shrink-0 size-6 hover:bg-gray-100 rounded"
+                      className="relative shrink-0 size-6 hover:bg-slate-900 rounded"
                     >
                       <X className="w-6 h-6 text-slate-600" />
                     </button> */}
@@ -204,8 +187,7 @@ export default function ReportPageClient({
                     </div>
                     <div className="opacity-50 relative shrink-0 text-[14px]">
                       <p className="leading-[normal] text-nowrap whitespace-pre truncate w-full max-w-[300px] sm:max-w-[520px]">
-                        Enter your business email to unlock and view your
-                        personalized PR report.
+                        Enter your business email to unlock and view your personalized PR report.
                       </p>
                     </div>
                   </div>
@@ -267,24 +249,22 @@ export default function ReportPageClient({
                         )}
                       </div>
                       <div className="css-u7wei flex flex-col  font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-center text-nowrap text-white">
-                        <p className="leading-[20px] whitespace-pre">
-                          {verifying ? "Verifying..." : "Unlock Report"}
-                        </p>
+                        <p className="leading-[20px] whitespace-pre">{verifying ? "Verifying..." : "Unlock Report"}</p>
                       </div>
                     </button>
                   </div>
                 </div>
               </div>
             </div>
-          )}
+          </div>
+        )}
 
-          {/* Report Content */}
-          {showFullReport && report && (
-            <div className="max-w-[1270px] mx-auto">
-              <PRReportViewer report={report} />
-            </div>
-          )}
-        </div>
+        {/* Report Content */}
+        {showFullReport && report && (
+          <div className="max-w-[1270px]  mx-auto">
+            <PRReportViewer report={report} />
+          </div>
+        )}
       </div>
     </>
   );

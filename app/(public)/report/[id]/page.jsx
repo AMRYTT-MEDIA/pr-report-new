@@ -9,9 +9,7 @@ export const revalidate = 3600;
 async function getReportData(reportId) {
   try {
     // First verify URL access
-    const verifyResponse = await publicPrReportsService.verifyUrlAccess(
-      reportId
-    );
+    const verifyResponse = await publicPrReportsService.verifyUrlAccess(reportId);
 
     if (!verifyResponse.success || verifyResponse.data.verify !== true) {
       return {
@@ -88,9 +86,7 @@ export async function generateMetadata({ params }) {
       if (response?.data?.is_private !== true) {
         // For public reports, try to get the actual report data
         try {
-          const reportData = await publicPrReportsService.getReportData(
-            reportId
-          );
+          const reportData = await publicPrReportsService.getReportData(reportId);
           const reportTitle = reportData?.data?.report_title || "PR Report";
 
           return {
@@ -109,8 +105,7 @@ export async function generateMetadata({ params }) {
         // So we use a generic title that will be updated client-side after verification
         return {
           // title: "Private PR Report",
-          description:
-            "Access your private press release distribution report. Email verification required.",
+          description: "Access your private press release distribution report. Email verification required.",
           robots: {
             index: false,
             follow: false,

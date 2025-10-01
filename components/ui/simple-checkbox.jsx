@@ -29,16 +29,12 @@ const SimpleCheckbox = ({
         state === "checked" || state === "indeterminate"
           ? "bg-indigo-500 border-indigo-500 text-white"
           : "border-slate-300 bg-white hover:border-indigo-400"
-      } ${
-        disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
-      } ${className}`}
+      } ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"} ${className}`}
       onClick={handleClick}
       {...props}
     >
       {state === "checked" && <Check className="w-3 h-3" strokeWidth={4} />}
-      {state === "indeterminate" && (
-        <div className="w-2 h-0.5 bg-white rounded"></div>
-      )}
+      {state === "indeterminate" && <div className="w-2 h-0.5 bg-white rounded"></div>}
     </div>
   );
 };

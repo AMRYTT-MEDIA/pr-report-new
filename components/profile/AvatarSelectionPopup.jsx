@@ -32,19 +32,13 @@ const AVATAR_IMAGES = [
   "boy.png",
 ];
 
-export const AvatarSelectionPopup = ({
-  isOpen,
-  onClose,
-  onSelectAvatar,
-  currentAvatar,
-  userName = "User",
-}) => {
+export const AvatarSelectionPopup = ({ isOpen, onClose, onSelectAvatar, currentAvatar, userName = "User" }) => {
   const [selectedAvatar, setSelectedAvatar] = useState(currentAvatar);
   const [uploadedFile, setUploadedFile] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [isDeleteRequested, setIsDeleteRequested] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
-  const { user, setUser } = useAuth();
+  const { setUser } = useAuth();
 
   // Helper: extract filename from a path or URL
   const extractFilename = (value) => {
@@ -163,19 +157,14 @@ export const AvatarSelectionPopup = ({
       if (isDeleteRequested) {
         const current = currentAvatar;
         if (current) {
-          const filename =
-            typeof current === "string" && current.includes("/")
-              ? current.split("/").pop()
-              : current;
+          const filename = typeof current === "string" && current.includes("/") ? current.split("/").pop() : current;
           if (filename) {
+            // eslint-disable-next-line max-depth
             try {
-              await fetch(
-                `/api/profile/delete-avatar?filename=${encodeURIComponent(
-                  filename
-                )}`,
-                { method: "DELETE" }
-              );
-            } catch {}
+              await fetch(`/api/profile/delete-avatar?filename=${encodeURIComponent(filename)}`, { method: "DELETE" });
+            } catch {
+              // Silently ignore deletion errors for cleanup
+            }
           }
         }
         const response = await userService.updateProfile({ avatar: "" });
@@ -282,8 +271,8 @@ export const AvatarSelectionPopup = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-[95%] md:w-[620px] max-h-[90vh] overflow-hidden border-gray-scale-30 border">
+    <div className="fixed inset-0 bg-gray-400 bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
+      <div className="bg-white rounded-2xl shadow-2xl w-[95%] md:w-[620px] max-h-[90vh] overflow-hidden border-slate-300 border">
         {/* Header */}
         <div className="bg-white p-5">
           <div className="flex items-center justify-between">
@@ -292,8 +281,7 @@ export const AvatarSelectionPopup = ({
                 {currentAvatar ? (
                   <Image
                     src={
-                      currentAvatar?.startsWith("http") ||
-                      currentAvatar?.startsWith("data:")
+                      currentAvatar?.startsWith("http") || currentAvatar?.startsWith("data:")
                         ? currentAvatar
                         : getAvatarUrl(currentAvatar)
                     }
@@ -309,9 +297,7 @@ export const AvatarSelectionPopup = ({
                   </div>
                 )}
               </div>
-              <h2 className="text-xl font-semibold text-slate-800">
-                Edit Profile Image
-              </h2>
+              <h2 className="text-xl font-semibold text-slate-800">Edit Profile Image</h2>
             </div>
             <button
               onClick={handleCancel}
@@ -320,7 +306,7 @@ export const AvatarSelectionPopup = ({
               <X className="w-5 h-5 text-slate-600" />
             </button>
           </div>
-          <div className="w-full border-b-2 border-dashed border-gray-scale-30 mt-5"></div>
+          <div className="w-full border-b-2 border-dashed border-slate-300 mt-5"></div>
         </div>
 
         {/* Avatar Grid */}
@@ -331,9 +317,7 @@ export const AvatarSelectionPopup = ({
                 <button
                   onClick={() => handleAvatarSelect(avatar)}
                   className={`w-[60px] h-[60px] rounded-full overflow-hidden transition-all duration-200 ${
-                    selectedAvatar === avatar
-                      ? "ring-4 ring-indigo-500 "
-                      : "hover:scale-105"
+                    selectedAvatar === avatar ? "ring-4 ring-indigo-500 " : "hover:scale-105"
                   }`}
                 >
                   <Image
@@ -358,9 +342,7 @@ export const AvatarSelectionPopup = ({
           <div className="mt-5 flex flex-col md:flex-row gap-4 items-center justify-center">
             <div
               className={`flex-1 border-2 border-dashed w-full rounded-lg p-3 transition-colors cursor-pointer ${
-                isDragging
-                  ? "border-indigo-400 bg-indigo-50"
-                  : "border-slate-300 hover:border-indigo-300"
+                isDragging ? "border-indigo-400 bg-indigo-50" : "border-slate-300 hover:border-indigo-300"
               }`}
               onDragOver={handleDragOver}
               onDragEnter={handleDragOver}
@@ -390,8 +372,8 @@ export const AvatarSelectionPopup = ({
                     {uploadedFile
                       ? selectedFile?.name || "Image"
                       : isDragging
-                      ? "Drop image to upload"
-                      : "Drag & drop or click to upload"}
+                        ? "Drop image to upload"
+                        : "Drag & drop or click to upload"}
                   </span>
                 </div>
                 <label
@@ -399,12 +381,7 @@ export const AvatarSelectionPopup = ({
                   onClick={(e) => e.stopPropagation()}
                 >
                   Browse File
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={handleFileUpload}
-                  />
+                  <input type="file" accept="image/*" className="hidden" onChange={handleFileUpload} />
                 </label>
               </div>
             </div>

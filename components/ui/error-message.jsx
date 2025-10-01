@@ -6,11 +6,9 @@ const ErrorMessage = ({ message, className = "", showIcon = true }) => {
 
   return (
     <div
-      className={`flex items-center gap-[7px] text-danger-scale-60 font-inter text-xs font-medium leading-normal ${className}`}
+      className={`flex items-center gap-[7px] text-red-600 font-inter text-xs font-medium leading-normal ${className}`}
     >
-      {showIcon && (
-        <InfoIcon className="w-4 h-4 flex-shrink-0 text-danger-scale-60" />
-      )}
+      {showIcon && <InfoIcon className="w-4 h-4 flex-shrink-0 text-red-600" />}
       <span>{message}</span>
     </div>
   );

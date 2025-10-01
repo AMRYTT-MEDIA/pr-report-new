@@ -1,16 +1,10 @@
 "use client";
 
 // ** React Imports
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { getFirebaseAuth } from "./firebase";
 import { getuserdatabyfirebaseid } from "@/services/user";
 import { toast } from "sonner";
@@ -37,7 +31,7 @@ export const useAuth = () => {
       initialized: true,
       setUser: () => null,
       setLoading: () => Boolean,
-      logout: async () => ({ success: false, error: "No auth context" }),
+      logout: () => Promise.resolve({ success: false, error: "No auth context" }),
     };
   }
   return context;
@@ -49,6 +43,16 @@ const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(defaultProvider.loading);
   const [initialized, setInitialized] = useState(false);
   const pathName = usePathname();
+
+  const logout = useCallback(async () => {
+    const auth = getFirebaseAuth();
+    if (auth) {
+      await signOut(auth);
+    }
+    setUser(null);
+    return { success: true };
+  }, [setUser]);
+
   useEffect(() => {
     // Only run auth state listener on client side
     if (typeof window === "undefined") {
@@ -82,10 +86,7 @@ const AuthProvider = ({ children }) => {
             // router.push("/login");
           }
           if (pathName !== "/login/") {
-            toast.error(
-              error?.response?.data?.message ||
-                globalConstants?.SomethingWentWrong
-            );
+            toast.error(error?.response?.data?.message || globalConstants?.SomethingWentWrong);
           }
           setUser(null);
         }
@@ -98,20 +99,7 @@ const AuthProvider = ({ children }) => {
     });
 
     return () => unsubscribe();
-  }, [initialized, pathName]);
-
-  const logout = async () => {
-    try {
-      const auth = getFirebaseAuth();
-      if (auth) {
-        await signOut(auth);
-      }
-      setUser(null);
-      return { success: true };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  };
+  }, [initialized, pathName, logout]);
 
   const values = useMemo(
     () => ({
@@ -122,7 +110,7 @@ const AuthProvider = ({ children }) => {
       setLoading,
       logout,
     }),
-    [user, loading, initialized]
+    [user, loading, initialized, logout]
   );
 
   return <AuthContext.Provider value={values}>{children}</AuthContext.Provider>;

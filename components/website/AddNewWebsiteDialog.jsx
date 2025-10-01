@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Dialog, DialogContent } from "../ui/dialog";
 import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
@@ -13,14 +12,10 @@ import * as Yup from "yup";
 import WebsiteConstants from "./constans";
 import { websitesService } from "@/services/websites";
 import { getLogoUrl } from "@/lib/utils";
+import CommonModal from "@/components/common/CommonModal";
+import ErrorMessage from "../ui/error-message";
 
-const AddNewWebsiteDialog = ({
-  onWebsiteAdded,
-  isOpen,
-  onClose,
-  editWebsite,
-  onEditWebsite,
-}) => {
+const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onEditWebsite }) => {
   const [iconPreview, setIconPreview] = useState(null);
   const [websiteIcon, setWebsiteIcon] = useState(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -49,16 +44,13 @@ const AddNewWebsiteDialog = ({
         .required(WebsiteConstants.websiteNameRequired),
       websiteUrl: Yup.string()
         .trim()
-        .test("is-valid-url", WebsiteConstants.invalidUrl, function (value) {
+        .test("is-valid-url", WebsiteConstants.invalidUrl, (value) => {
           if (!value) return false;
 
           const urlValue = value.trim();
 
           // Require protocol - don't auto-add, just validate
-          if (
-            !urlValue.startsWith("http://") &&
-            !urlValue.startsWith("https://")
-          ) {
+          if (!urlValue.startsWith("http://") && !urlValue.startsWith("https://")) {
             return false; // Must include protocol
           }
 
@@ -76,7 +68,7 @@ const AddNewWebsiteDialog = ({
               allow_protocol_relative_urls: false,
               disallow_auth: true,
               allow_fragments: true,
-              allow_query_components: true,
+              allow_query_components: false,
             })
           ) {
             return false;
@@ -89,7 +81,7 @@ const AddNewWebsiteDialog = ({
 
           // Check domain format (remove protocol first and extract just the domain part)
           const cleanUrl = urlValue.replace(/^https?:\/\//, "");
-          const domainPart = cleanUrl.split("/")[0]; // Get only domain part, ignore path
+          const [domainPart] = cleanUrl.split("/"); // Get only domain part, ignore path
 
           // Validate domain using FQDN (Fully Qualified Domain Name)
           if (
@@ -116,7 +108,7 @@ const AddNewWebsiteDialog = ({
       try {
         setIsUploadingLogo(true);
         // Use URL as entered by user
-        const websiteUrl = values.websiteUrl;
+        const { websiteUrl } = values;
 
         const websiteData = {
           name: values.websiteName.trim(),
@@ -131,10 +123,7 @@ const AddNewWebsiteDialog = ({
             websiteData.existingLogo = editWebsite.logo;
           }
 
-          const response = await websitesService.updateWebsite(
-            editWebsite._id || editWebsite.id,
-            websiteData
-          );
+          const response = await websitesService.updateWebsite(editWebsite._id || editWebsite.id, websiteData);
 
           const updatedWebsite = {
             ...editWebsite,
@@ -154,11 +143,10 @@ const AddNewWebsiteDialog = ({
           toast.success(WebsiteConstants.websiteAddedSuccess);
         }
 
+        // eslint-disable-next-line no-use-before-define
         handleClose();
       } catch (error) {
-        let errorMessage = editWebsite
-          ? WebsiteConstants.updateWebsiteError
-          : WebsiteConstants.addWebsiteError;
+        let errorMessage = editWebsite ? WebsiteConstants.updateWebsiteError : WebsiteConstants.addWebsiteError;
 
         if (error?.response?.data?.message) {
           errorMessage = error.response.data.message;
@@ -192,16 +180,10 @@ const AddNewWebsiteDialog = ({
 
   // Handle file upload
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+    const [file] = event.target.files;
     if (file) {
       // Validate file type
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/svg+xml",
-        "image/webp",
-        "image/gif",
-      ];
+      const allowedTypes = ["image/jpeg", "image/png", "image/svg+xml", "image/webp", "image/gif"];
       if (!allowedTypes.includes(file.type)) {
         toast.error(WebsiteConstants.invalidFileType);
         return;
@@ -223,7 +205,7 @@ const AddNewWebsiteDialog = ({
   };
 
   // Remove uploaded file
-  const removeFile = () => {
+  const _removeFile = () => {
     setWebsiteIcon(null);
     // Reset to original icon when removing uploaded file
     if (editWebsite) {
@@ -252,161 +234,18 @@ const AddNewWebsiteDialog = ({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent
-        className="sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px]"
-        showCloseButton={false}
-      >
-        <form onSubmit={formik.handleSubmit} className="flex flex-col h-full">
-          <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-            {/* Header */}
-            <div className="pb-5 border-b-2 border-dashed border-gray-200">
-              <div className="flex items-start justify-between">
-                <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                  {editWebsite ? (
-                    <PencilLine className="w-7 h-7 text-slate-700" />
-                  ) : (
-                    <Plus className="w-7 h-7 text-slate-700" />
-                  )}
-                </div>
-                <button
-                  type="button"
-                  onClick={handleClose}
-                  className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <div className="mt-5">
-                <h2 className="text-lg font-semibold text-slate-800 mb-1">
-                  {editWebsite
-                    ? WebsiteConstants.editWebsite
-                    : WebsiteConstants.addNewWebsite}
-                </h2>
-                <p className="text-sm font-medium text-slate-600">
-                  {editWebsite
-                    ? WebsiteConstants.updateWebsiteDescription
-                    : WebsiteConstants.addWebsiteDescription}
-                </p>
-              </div>
-            </div>
-
-            {/* Form Fields */}
-            <div className="flex flex-col gap-5">
-              {/* Website Name Field */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-slate-700">
-                  {WebsiteConstants.websiteNameLabel}{" "}
-                  <span className="text-red-500">
-                    {WebsiteConstants.required}
-                  </span>
-                </Label>
-                <Input
-                  type="text"
-                  name="websiteName"
-                  placeholder={WebsiteConstants.enterWebsiteName}
-                  value={formik.values.websiteName}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  className={`h-10 rounded-lg border-slate-200 text-slate-700 placeholder:text-slate-400 ${
-                    formik.errors.websiteName && formik.touched.websiteName
-                      ? "border-red-300 focus:border-red-500"
-                      : ""
-                  }`}
-                />
-                {formik.errors.websiteName && formik.touched.websiteName && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {formik.errors.websiteName}
-                  </p>
-                )}
-              </div>
-
-              {/* Website URL Field */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-slate-700">
-                  {WebsiteConstants.websiteUrlLabel}{" "}
-                  {!editWebsite && (
-                    <span className="text-red-500">
-                      {WebsiteConstants.required}
-                    </span>
-                  )}
-                </Label>
-                <div className="relative">
-                  <Input
-                    type="text"
-                    name="websiteUrl"
-                    placeholder={WebsiteConstants.urlPlaceholder}
-                    value={formik.values.websiteUrl}
-                    onChange={(e) => {
-                      const lowercaseValue = e.target.value.toLowerCase();
-                      formik.setFieldValue("websiteUrl", lowercaseValue);
-                    }}
-                    onBlur={formik.handleBlur}
-                    className={`flex-1 rounded-lg border-gray-scale-20 text-gray-scale-60 placeholder:text-gray-scale-40
-                          ${
-                            editWebsite
-                              ? "bg-gray-scale-5 pointer-events-none cursor-not-allowed"
-                              : "bg-white"
-                          }
-                          ${
-                            formik.errors.websiteUrl &&
-                            formik.touched.websiteUrl
-                              ? "border-red-300 focus:border-red-500"
-                              : ""
-                          }`}
-                  />
-                </div>
-                {formik.errors.websiteUrl && formik.touched.websiteUrl && (
-                  <p className="text-red-500 text-xs mt-1">
-                    {formik.errors.websiteUrl}
-                  </p>
-                )}
-              </div>
-
-              {/* Website Icon Field */}
-              <div className="space-y-2">
-                <Label className="text-sm font-semibold text-slate-700">
-                  {WebsiteConstants.websiteIconLabel}
-                </Label>
-                <div className="relative">
-                  <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-between p-3.5 hover:border-slate-400 transition-colors gap-2.5">
-                    {iconPreview && (
-                      <img
-                        src={iconPreview}
-                        alt="Preview"
-                        className="w-10 h-10 object-contain rounded"
-                        width={40}
-                        height={40}
-                      />
-                    )}
-                    <div className="flex-1">
-                      <p className="text-sm text-slate-600 font-semibold truncate max-w-[122px] sm:max-w-full">
-                        {WebsiteConstants.chooseAFileOrDragAndDropItHere}
-                      </p>
-                      <p className="text-[10px] text-slate-400 mt-1 truncate max-w-[122px] sm:max-w-full">
-                        Format: {WebsiteConstants.pngJpgSvgWebpUpTo10mb}
-                      </p>
-                    </div>
-                    <div className="bg-indigo-50 px-3 py-2 rounded-md">
-                      <span className="text-sm font-semibold text-gray-scale-60 whitespace-nowrap">
-                        {WebsiteConstants.browseFile}
-                      </span>
-                    </div>
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleFileUpload}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Footer Buttons */}
-          <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
+    <form onSubmit={formik.handleSubmit}>
+      <CommonModal
+        open={isOpen}
+        onClose={handleClose}
+        title={editWebsite ? WebsiteConstants.editWebsite : WebsiteConstants.addNewWebsite}
+        subtitle={editWebsite ? WebsiteConstants.updateWebsiteDescription : WebsiteConstants.addWebsiteDescription}
+        icon={
+          editWebsite ? <PencilLine className="w-7 h-7 text-slate-700" /> : <Plus className="w-7 h-7 text-slate-700" />
+        }
+        size="lg"
+        footer={
+          <>
             <Button
               type="button"
               variant="outline"
@@ -428,16 +267,105 @@ const AddNewWebsiteDialog = ({
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
-              {isUploadingLogo
-                ? "Uploading..."
-                : formik.isSubmitting
-                ? WebsiteConstants.saving
-                : WebsiteConstants.save}
+              {isUploadingLogo ? "Uploading..." : formik.isSubmitting ? WebsiteConstants.saving : WebsiteConstants.save}
             </Button>
+          </>
+        }
+      >
+        {/* Form Fields */}
+        <div className="flex flex-col gap-5">
+          {/* Website Name Field */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-700">
+              {WebsiteConstants.websiteNameLabel} <span className="text-red-500">{WebsiteConstants.required}</span>
+            </Label>
+            <Input
+              type="text"
+              name="websiteName"
+              placeholder={WebsiteConstants.enterWebsiteName}
+              value={formik.values.websiteName}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              className={`h-10 rounded-lg border-slate-200 text-slate-700 placeholder:text-slate-400 ${
+                formik.errors.websiteName && formik.touched.websiteName ? "border-red-500 focus:border-red-600" : ""
+              }`}
+            />
+            {formik.errors.websiteName && formik.touched.websiteName && (
+              <ErrorMessage message={formik.errors.websiteName} className="mt-1" />
+            )}
           </div>
-        </form>
-      </DialogContent>
-    </Dialog>
+
+          {/* Website URL Field */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-700">
+              {WebsiteConstants.websiteUrlLabel}{" "}
+              {!editWebsite && <span className="text-red-500">{WebsiteConstants.required}</span>}
+            </Label>
+            <div className="relative">
+              <Input
+                type="text"
+                name="websiteUrl"
+                placeholder={WebsiteConstants.urlPlaceholder}
+                value={formik.values.websiteUrl}
+                onChange={(e) => {
+                  const lowercaseValue = e.target.value.toLowerCase();
+                  formik.setFieldValue("websiteUrl", lowercaseValue);
+                }}
+                onBlur={formik.handleBlur}
+                className={`flex-1 rounded-lg border-slate-200 text-slate-600 placeholder:text-slate-400
+                          ${editWebsite ? "bg-slate-50 pointer-events-none cursor-not-allowed" : "bg-white"}
+                          ${
+                            formik.errors.websiteUrl && formik.touched.websiteUrl
+                              ? "border-red-500 focus:border-red-600"
+                              : ""
+                          }`}
+              />
+            </div>
+            {formik.errors.websiteUrl && formik.touched.websiteUrl && (
+              <ErrorMessage message={formik.errors.websiteUrl} className="mt-1" />
+            )}
+          </div>
+
+          {/* Website Icon Field */}
+          <div className="space-y-2">
+            <Label className="text-sm font-semibold text-slate-700">{WebsiteConstants.websiteIconLabel}</Label>
+            <div className="relative">
+              <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-between p-3.5 hover:border-slate-400 transition-colors gap-2.5">
+                {iconPreview && (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={iconPreview}
+                    alt="Preview"
+                    className="w-10 h-10 object-contain rounded"
+                    width={40}
+                    height={40}
+                  />
+                )}
+                <div className="flex-1">
+                  <p className="text-sm text-slate-600 font-semibold truncate max-w-[122px] sm:max-w-full">
+                    {WebsiteConstants.chooseAFileOrDragAndDropItHere}
+                  </p>
+                  <p className="text-[10px] text-slate-400 mt-1 truncate max-w-[122px] sm:max-w-full">
+                    Format: {WebsiteConstants.pngJpgSvgWebpUpTo10mb}
+                  </p>
+                </div>
+                <div className="bg-indigo-50 px-3 py-2 rounded-md">
+                  <span className="text-sm font-semibold text-slate-600 whitespace-nowrap">
+                    {WebsiteConstants.browseFile}
+                  </span>
+                </div>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </div>
+          </div>
+        </div>
+      </CommonModal>
+    </form>
   );
 };
 

@@ -2,21 +2,12 @@ import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Skeleton } from "./skeleton";
 
-const WebsiteAvatar = ({
-  logoUrl,
-  websiteName,
-  size = "default",
-  className = "",
-  onImageLoad,
-  onImageError,
-}) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
+const WebsiteAvatar = ({ logoUrl, websiteName, size = "default", className = "", onImageLoad, onImageError }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(!!logoUrl);
 
   const handleImageLoad = useCallback(() => {
     setIsLoading(false);
-    setImageLoaded(true);
     onImageLoad && onImageLoad();
   }, [onImageLoad]);
 
@@ -53,9 +44,7 @@ const WebsiteAvatar = ({
           src={logoUrl}
           alt={websiteName || "Website logo"}
           fill
-          className={`object-contain ${
-            isLoading ? "opacity-0" : "opacity-100"
-          } transition-opacity duration-200`}
+          className={`object-contain ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
           onLoad={handleImageLoad}
           onError={handleImageError}
           loading="lazy"
@@ -68,7 +57,7 @@ const WebsiteAvatar = ({
   if (!websiteName) {
     return (
       <div
-        className={`${currentSize.container} rounded-full flex items-center w-[137px] justify-center border-2 text-gray-700 border-gray-300 bg-gray-50 ${className}`}
+        className={`${currentSize.container} rounded-full flex items-center w-[137px] justify-center border-2 text-slate-700 border-slate-300 bg-slate-500 ${className}`}
       >
         <span className={`font-bold tracking-wide ${currentSize.text}`}>-</span>
       </div>
@@ -86,9 +75,7 @@ const WebsiteAvatar = ({
   ];
 
   // Use website name to generate consistent color
-  const colorIndex =
-    websiteName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-    colorClasses.length;
+  const colorIndex = websiteName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % colorClasses.length;
   const colorClass = colorClasses[colorIndex];
 
   return (

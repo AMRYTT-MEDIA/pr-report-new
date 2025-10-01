@@ -34,13 +34,7 @@ export default function HomePage() {
   if (!initialized || loading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loading
-          size="lg"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <Loading size="lg" showText={true} text="Loading..." textColor="black" textPosition="bottom" />
       </div>
     );
   }

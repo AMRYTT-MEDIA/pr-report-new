@@ -5,19 +5,13 @@ import { publicPrReportsService } from "@/services/publicPrReports";
 // Server action to verify email and load report on the server
 export async function verifyEmailAndGetReport(reportId, email) {
   try {
-    const verifyResponse = await publicPrReportsService.verifyUrlAccess(
-      reportId,
-      email
-    );
+    const verifyResponse = await publicPrReportsService.verifyUrlAccess(reportId, email);
 
     if (!verifyResponse.success || verifyResponse.data.verify !== true) {
       return { success: false, error: "Email not authorized" };
     }
 
-    const reportResponse = await publicPrReportsService.getReportData(
-      reportId,
-      email
-    );
+    const reportResponse = await publicPrReportsService.getReportData(reportId, email);
 
     if (!reportResponse.success) {
       return { success: false, error: "Failed to load report data" };

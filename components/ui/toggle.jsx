@@ -8,8 +8,7 @@ const toggleVariants = cva(
     variants: {
       variant: {
         default: "bg-transparent",
-        outline:
-          "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
+        outline: "border border-input bg-transparent hover:bg-accent hover:text-accent-foreground",
       },
       size: {
         default: "h-10 px-3",
@@ -24,37 +23,29 @@ const toggleVariants = cva(
   }
 );
 
-const Toggle = React.forwardRef(
-  (
-    { className, variant, size, pressed = false, onPressedChange, ...props },
-    ref
-  ) => {
-    const [isPressed, setIsPressed] = React.useState(pressed);
+const Toggle = React.forwardRef(({ className, variant, size, pressed = false, onPressedChange, ...props }, ref) => {
+  const [isPressed, setIsPressed] = React.useState(pressed);
 
-    React.useEffect(() => {
-      setIsPressed(pressed);
-    }, [pressed]);
+  React.useEffect(() => {
+    setIsPressed(pressed);
+  }, [pressed]);
 
-    const handleClick = React.useCallback(() => {
-      const newPressed = !isPressed;
-      setIsPressed(newPressed);
-      onPressedChange?.(newPressed);
-    }, [isPressed, onPressedChange]);
+  const handleClick = React.useCallback(() => {
+    const newPressed = !isPressed;
+    setIsPressed(newPressed);
+    onPressedChange?.(newPressed);
+  }, [isPressed, onPressedChange]);
 
-    return (
-      <button
-        ref={ref}
-        type="button"
-        className={cn(
-          toggleVariants({ variant, size, className }),
-          isPressed && "bg-accent text-accent-foreground"
-        )}
-        onClick={handleClick}
-        {...props}
-      />
-    );
-  }
-);
+  return (
+    <button
+      ref={ref}
+      type="button"
+      className={cn(toggleVariants({ variant, size, className }), isPressed && "bg-accent text-accent-foreground")}
+      onClick={handleClick}
+      {...props}
+    />
+  );
+});
 
 Toggle.displayName = "Toggle";
 

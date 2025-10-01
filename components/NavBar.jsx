@@ -1,23 +1,11 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Home,
-  ChevronRight,
-  ChevronDown,
-  User,
-  LogOut,
-  Menu,
-  X,
-  MenuSquare,
-  Settings,
-  Eye,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import CommonBreadcrumb from "./CommonBreadcrumb";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { MenuIcon } from "./icon";
 import DropdownMenu from "./ui/dropdown-menu";
@@ -25,7 +13,7 @@ import DropdownMenu from "./ui/dropdown-menu";
 const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Sync with sidebar state updates
@@ -36,8 +24,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
       }
     };
     window.addEventListener("app-sidebar-toggle", handleSidebarToggle);
-    return () =>
-      window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
+    return () => window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
   }, []);
 
   // Restore persisted state
@@ -45,7 +32,9 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
     try {
       const saved = sessionStorage.getItem("app-sidebar-open");
       if (saved !== null) setIsSidebarOpen(saved === "true");
-    } catch {}
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
   }, []);
 
   const toggleSidebar = () => {
@@ -53,10 +42,10 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
     setIsSidebarOpen(next);
     try {
       sessionStorage.setItem("app-sidebar-open", String(next));
-    } catch {}
-    window.dispatchEvent(
-      new CustomEvent("app-sidebar-toggle", { detail: { open: next } })
-    );
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
+    window.dispatchEvent(new CustomEvent("app-sidebar-toggle", { detail: { open: next } }));
   };
 
   const handleLogout = async () => {
@@ -72,7 +61,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   if (isViewPRPage) return null;
 
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-30 ">
+    <header className="bg-white border-b border-slate-200 sticky top-0 z-30 ">
       <div className="flex justify-between items-center h-14 mx-[15px]">
         {/* Left: Logo on mobile/tablet, breadcrumb on desktop */}
         <div className="flex items-center">
@@ -112,7 +101,9 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
               {
                 label: "Settings",
                 icon: Settings,
-                onClick: () => {},
+                onClick: () => {
+                  // TODO: Implement settings
+                },
               },
               {
                 label: "Sign Out",
@@ -125,9 +116,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                 {/* User Avatar with Online Status */}
                 <div className="relative">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {user?.avatar &&
-                    user?.avatar !== "" &&
-                    getAvatarUrl(user.avatar) ? (
+                    {user?.avatar && user?.avatar !== "" && getAvatarUrl(user.avatar) ? (
                       <Image
                         src={getAvatarUrl(user.avatar) || "/placeholder.svg"}
                         alt="User Avatar"
@@ -150,14 +139,12 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
 
                 {/* User Info (desktop only) */}
                 <div className="hidden lg:block text-left">
-                  <div className="text-sm font-semibold text-gray-900">
+                  <div className="text-sm font-semibold text-slate-900">
                     {user?.fullName && user.fullName.length > 20
                       ? `${user.fullName.substring(0, 20)}...`
                       : user?.fullName || "Unknown"}
                   </div>
-                  <div className="text-xss text-gray-500">
-                    {user?.role?.name || "Unknown"}
-                  </div>
+                  <div className="text-xss text-slate-500">{user?.role?.name || "Unknown"}</div>
                 </div>
 
                 {/* Dropdown Button */}
@@ -174,11 +161,11 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
           />
 
           {/* Divider between user and hamburger (mobile/tablet) */}
-          <div className="lg:hidden w-px h-8 bg-gray-200" />
+          <div className="lg:hidden w-px h-8 bg-slate-200" />
 
           {/* Mobile hamburger to toggle sidebar, positioned after avatar */}
           <button
-            className="lg:hidden p-2 hover:bg-gray-50"
+            className="lg:hidden p-2 hover:bg-slate-500"
             aria-label={isSidebarOpen ? "Close sidebar" : "Open sidebar"}
             onClick={toggleSidebar}
           >

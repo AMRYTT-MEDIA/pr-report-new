@@ -1,7 +1,7 @@
 import React from "react";
 import { Trash2, X, Info } from "lucide-react";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import CommonModal from "@/components/common/CommonModal";
 
 const DeleteDialog = ({
   open,
@@ -16,56 +16,24 @@ const DeleteDialog = ({
   cancelText = "Cancel",
   IconComponent = Trash2,
   className = "",
-  showCloseButton = false,
+  showCloseButton = true,
 }) => {
   if (!open) return null;
 
   return (
-    <Dialog open={open} onOpenChange={(isOpen) => !isOpen && onClose?.()}>
-      <DialogContent
-        className={
-          "sm:max-w-1xl bg-white boder border-gray-200 shadow-2xl z-[10000] h-auto overflow-hidden p-0 bg-gray-scale-10 border-gray-scale-10 gap-0 max-w-[90vw] sm:max-w-[550px] " +
-          className
-        }
-        showCloseButton={showCloseButton}
-      >
-        <div className="flex flex-col gap-5 border border-gray-200 rounded-xl p-5 bg-white overflow-y-auto max-h-[84vh] scrollbar-custom">
-          <div className="flex flex-col gap-5">
-            <div className="flex items-start justify-between">
-              <div className="w-12 h-12 bg-white border border-slate-200 rounded-lg flex items-center justify-center">
-                <IconComponent className="w-5 h-5" />
-              </div>
-              <button
-                onClick={onClose}
-                className="w-6 h-6 flex items-center justify-center text-slate-500 hover:text-slate-700 transition-colors"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-1">
-              <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-              <p className="text-font-h2-5 text-sm font-medium">
-                {description}{" "}
-                <span className="font-bold max-w-[500px] break-words">
-                  {itemName}
-                </span>
-                ?
-              </p>
-            </div>
-
-            <div className="flex items-center gap-2 bg-warning-5 rounded-lg py-1.5 px-2.5 border border-warning-10">
-              <div>
-                <Info className="w-5 h-5 text-warning-60" />
-              </div>
-              <p className="text-warning-60 text-sm font-semibold">
-                {warningText}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-2.5 items-center justify-center sm:justify-end p-5">
+    <CommonModal
+      open={open}
+      onClose={onClose}
+      title={title}
+      subtitle={description}
+      subtitle2={`${itemName} ?`}
+      icon={<IconComponent className="w-5 h-5" />}
+      size="md"
+      className={className}
+      showCloseButton={showCloseButton}
+      isBorderShow={false}
+      footer={
+        <>
           <Button
             type="button"
             variant="outline"
@@ -80,14 +48,21 @@ const DeleteDialog = ({
             type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="px-6 py-2 bg-primary-50 hover:bg-primary-60 text-white rounded-full font-medium disabled:opacity-50"
+            className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
           >
             <Trash2 className="w-5 h-5" />
             {loading ? "Deleting..." : confirmText}
           </Button>
+        </>
+      }
+    >
+      <div className="flex items-center gap-2 bg-yellow-50 rounded-lg py-1.5 px-2.5 border border-yellow-100">
+        <div>
+          <Info className="w-5 h-5 text-yellow-600" />
         </div>
-      </DialogContent>
-    </Dialog>
+        <p className="text-yellow-600 text-sm font-semibold">{warningText}</p>
+      </div>
+    </CommonModal>
   );
 };
 

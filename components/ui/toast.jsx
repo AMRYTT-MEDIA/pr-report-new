@@ -22,8 +22,7 @@ const toastVariants = cva(
     variants: {
       variant: {
         default: "border bg-background text-foreground",
-        destructive:
-          "destructive group border-destructive bg-destructive text-destructive-foreground",
+        destructive: "destructive group border-destructive bg-destructive text-destructive-foreground",
       },
     },
     defaultVariants: {
@@ -32,19 +31,11 @@ const toastVariants = cva(
   }
 );
 
-const Toast = React.forwardRef(
-  ({ className, variant, children, ...props }, ref) => {
-    return (
-      <div
-        ref={ref}
-        className={cn(toastVariants({ variant }), className)}
-        {...props}
-      >
-        {children}
-      </div>
-    );
-  }
-);
+const Toast = React.forwardRef(({ className, variant, children, ...props }, ref) => (
+  <div ref={ref} className={cn(toastVariants({ variant }), className)} {...props}>
+    {children}
+  </div>
+));
 
 const ToastAction = React.forwardRef(({ className, ...props }, ref) => (
   <button
@@ -71,11 +62,7 @@ const ToastClose = React.forwardRef(({ className, ...props }, ref) => (
 ));
 
 const ToastTitle = React.forwardRef(({ className, ...props }, ref) => (
-  <div
-    ref={ref}
-    className={cn("text-sm font-semibold", className)}
-    {...props}
-  />
+  <div ref={ref} className={cn("text-sm font-semibold", className)} {...props} />
 ));
 
 const ToastDescription = React.forwardRef(({ className, ...props }, ref) => (
@@ -90,12 +77,4 @@ ToastClose.displayName = "ToastClose";
 ToastTitle.displayName = "ToastTitle";
 ToastDescription.displayName = "ToastDescription";
 
-export {
-  ToastProvider,
-  ToastViewport,
-  Toast,
-  ToastTitle,
-  ToastDescription,
-  ToastClose,
-  ToastAction,
-};
+export { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose, ToastAction };

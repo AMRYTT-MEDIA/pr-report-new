@@ -21,21 +21,17 @@ const CTASection = () => {
             <CardContent className="p-12 text-center">
               <div className="mb-8">
                 <h2 className="text-4xl lg:text-5xl font-bold text-foreground mb-6">
-                  Ready to Get <span className="text-primary">Featured</span> in
-                  Major News?
+                  Ready to Get <span className="text-primary">Featured</span> in Major News?
                 </h2>
                 <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-                  Join 1000+ businesses who've amplified their brand reach with
-                  our professional press release distribution service
+                  Join 1000+ businesses who've amplified their brand reach with our professional press release
+                  distribution service
                 </p>
               </div>
 
               <div className="grid md:grid-cols-2 gap-6 mb-10">
                 {features.map((feature, index) => (
-                  <div
-                    key={index}
-                    className="flex items-center gap-3 text-left"
-                  >
+                  <div key={index} className="flex items-center gap-3 text-left">
                     <CheckCircle className="h-5 w-5 text-pr-green flex-shrink-0" />
                     <span className="text-muted-foreground">{feature}</span>
                   </div>
@@ -57,8 +53,7 @@ const CTASection = () => {
               </div>
 
               <p className="text-sm text-muted-foreground mt-6">
-                🚀 <strong>Special Offer:</strong> 20% off your first press
-                release campaign. Limited time only!
+                🚀 <strong>Special Offer:</strong> 20% off your first press release campaign. Limited time only!
               </p>
             </CardContent>
           </Card>

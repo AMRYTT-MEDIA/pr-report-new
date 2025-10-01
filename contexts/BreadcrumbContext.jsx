@@ -1,13 +1,6 @@
 "use client";
 
-import {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useLayoutEffect,
-  useRef,
-} from "react";
+import { createContext, useContext, useState, useCallback, useLayoutEffect, useRef } from "react";
 
 const BreadcrumbContext = createContext();
 
@@ -30,11 +23,7 @@ export const BreadcrumbProvider = ({ children }) => {
     setBreadcrumbItems(items);
   }, []);
 
-  return (
-    <BreadcrumbContext.Provider value={{ breadcrumbItems, setBreadcrumb }}>
-      {children}
-    </BreadcrumbContext.Provider>
-  );
+  return <BreadcrumbContext.Provider value={{ breadcrumbItems, setBreadcrumb }}>{children}</BreadcrumbContext.Provider>;
 };
 
 // Custom hook for setting breadcrumb with useLayoutEffect
