@@ -2,6 +2,7 @@ import React from "react";
 import { Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommonModal from "@/components/common/CommonModal";
+import Loading from "@/components/ui/loading";
 
 const BlockUrlDeleteDialog = ({
   open,
@@ -70,8 +71,17 @@ const BlockUrlDeleteDialog = ({
         disabled={loading}
         className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
       >
-        <Trash2 className="w-5 h-5" />
-        {loading ? "Deleting..." : "Delete"}
+        {loading ? (
+          <>
+            <Loading size="sm" color="white" className="w-5 h-5" />
+            Delete
+          </>
+        ) : (
+          <>
+            <Trash2 className="w-5 h-5" />
+            Delete
+          </>
+        )}
       </Button>
     </>
   );

@@ -2,8 +2,9 @@ import React from "react";
 import CommonModal from "@/components/common/CommonModal";
 import { Button } from "@/components/ui/button";
 import { X, Trash2, Info } from "lucide-react";
+import Loading from "@/components/ui/loading";
 
-const WebsiteDeleteDialog = ({ isOpen, website, confirmDelete, cancelDelete }) => {
+const WebsiteDeleteDialog = ({ isOpen, website, confirmDelete, cancelDelete, loading = false }) => {
   // Footer buttons
   const footerButtons = (
     <>
@@ -11,6 +12,7 @@ const WebsiteDeleteDialog = ({ isOpen, website, confirmDelete, cancelDelete }) =
         type="button"
         variant="outline"
         onClick={cancelDelete}
+        disabled={loading}
         className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
       >
         <X className="w-5 h-5" />
@@ -19,10 +21,20 @@ const WebsiteDeleteDialog = ({ isOpen, website, confirmDelete, cancelDelete }) =
       <Button
         type="button"
         onClick={confirmDelete}
+        disabled={loading}
         className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
       >
-        <Trash2 className="w-5 h-5" />
-        Delete
+        {loading ? (
+          <>
+            <Loading size="sm" color="white" className="w-5 h-5" />
+            Delete
+          </>
+        ) : (
+          <>
+            <Trash2 className="w-5 h-5" />
+            Delete
+          </>
+        )}
       </Button>
     </>
   );

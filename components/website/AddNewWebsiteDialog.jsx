@@ -14,6 +14,7 @@ import { websitesService } from "@/services/websites";
 import { getLogoUrl } from "@/lib/utils";
 import CommonModal from "@/components/common/CommonModal";
 import ErrorMessage from "../ui/error-message";
+import Loading from "@/components/ui/loading";
 
 const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onEditWebsite }) => {
   const [iconPreview, setIconPreview] = useState(null);
@@ -250,6 +251,7 @@ const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onE
               type="button"
               variant="outline"
               onClick={handleClose}
+              disabled={formik?.isSubmitting || isUploadingLogo}
               className="px-6 py-2 border-slate-200 text-slate-600 hover:bg-slate-50 rounded-full font-medium"
             >
               <X className="w-5 h-5" />
@@ -266,8 +268,17 @@ const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onE
               }
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
-              <Save className="w-5 h-5" />
-              {isUploadingLogo ? "Uploading..." : formik.isSubmitting ? WebsiteConstants.saving : WebsiteConstants.save}
+              {formik.isSubmitting || isUploadingLogo ? (
+                <>
+                  <Loading size="sm" color="white" className="w-5 h-5" />
+                  {WebsiteConstants.save}
+                </>
+              ) : (
+                <>
+                  <Save className="w-5 h-5" />
+                  {WebsiteConstants.save}
+                </>
+              )}
             </Button>
           </>
         }

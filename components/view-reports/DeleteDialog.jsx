@@ -2,6 +2,7 @@ import React from "react";
 import { Trash2, X, Info } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import CommonModal from "@/components/common/CommonModal";
+import Loading from "@/components/ui/loading";
 
 const DeleteDialog = ({
   open,
@@ -50,8 +51,17 @@ const DeleteDialog = ({
             disabled={loading}
             className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
           >
-            <Trash2 className="w-5 h-5" />
-            {loading ? "Deleting..." : confirmText}
+            {loading ? (
+              <>
+                <Loading size="sm" color="white" className="w-5 h-5" />
+                {confirmText}
+              </>
+            ) : (
+              <>
+                <Trash2 className="w-5 h-5" />
+                {confirmText}
+              </>
+            )}
           </Button>
         </>
       }

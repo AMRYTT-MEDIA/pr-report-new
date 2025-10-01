@@ -27,7 +27,7 @@ const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => 
   const [editWebsite, setEditWebsite] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [websiteToDelete, setWebsiteToDelete] = useState(null);
-  const [, setIsDeleting] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [reOrderWebsiteDialog, setReOrderWebsiteDialog] = useState(false);
 
   // Direct render - no useEffect needed
@@ -130,7 +130,7 @@ const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => 
 
   // Confirm delete website
   const confirmDelete = async () => {
-    if (!websiteToDelete) return;
+    if (!websiteToDelete || isDeleting) return; // Prevent multiple calls
 
     setIsDeleting(true);
     try {
@@ -327,6 +327,7 @@ const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => 
         website={websiteToDelete}
         confirmDelete={confirmDelete}
         cancelDelete={cancelDelete}
+        loading={isDeleting}
       />
 
       {/* Re Order Website Dialog */}
