@@ -364,8 +364,8 @@ export default function PRReportsListClient() {
         headerInnerClassName="flex items-center justify-between"
         showActions={true}
         actionColumnWidth="15%"
-        renderActions={(report, index) => {
-          const tooltipPosition = reports?.length === index + 1 ? "top" : "bottom";
+        renderActions={(report) => {
+          const tooltipPosition = "top";
           return (
             <div className="whitespace-nowrap gap-5 sm:gap-7 text-sm font-medium flex flex-row items-center ">
               <CustomTooltip content="View" position={tooltipPosition}>
