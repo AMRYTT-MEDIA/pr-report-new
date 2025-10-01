@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -6,17 +6,17 @@
 
 @layer base {
   html {
-    font-family: 'Inter', system-ui, sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
   }
-  
+
   :root {
     /* Sidebar specific variables */
     --border-radius-radius-full: 9999px;
-    --slate-20: #E2E8F0;
-    --slate-10: #F1F5F9;
+    --slate-20: #e2e8f0;
+    --slate-10: #f1f5f9;
     --slate-60: #475569;
-    --sidebar-background: #F8FAFC;
-    
+    --sidebar-background: #f8fafc;
+
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
     --card: 0 0% 100%;
@@ -40,7 +40,9 @@
     --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     --shadow-elegant: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    --shadow-login-card: 0 0 0 8px rgba(255, 255, 255, 0.25), 0 990px 277px 0 rgba(0, 0, 0, 0.00), 0 634px 253px 0 rgba(0, 0, 0, 0.01), 0 356px 214px 0 rgba(0, 0, 0, 0.05), 0 158px 158px 0 rgba(0, 0, 0, 0.09), 0 40px 87px 0 rgba(0, 0, 0, 0.10);
+    --shadow-login-card:
+      0 0 0 8px rgba(255, 255, 255, 0.25), 0 990px 277px 0 rgba(0, 0, 0, 0), 0 634px 253px 0 rgba(0, 0, 0, 0.01),
+      0 356px 214px 0 rgba(0, 0, 0, 0.05), 0 158px 158px 0 rgba(0, 0, 0, 0.09), 0 40px 87px 0 rgba(0, 0, 0, 0.1);
     --pr-green: 142.1 76.2% 36.3%;
     --pr-green-foreground: 355.7 100% 97.3%;
     --sidebar-foreground: 222.2 84% 4.9%;
@@ -134,24 +136,23 @@
   }
 }
 
-
 /* Custom container utilities for large screens */
 @layer utilities {
   .container-responsive {
     @apply container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:px-20;
     max-width: min(100%, 88rem); /* 2xl */
   }
-  
+
   .container-large {
     @apply container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:px-20;
     max-width: min(100%, 96rem); /* 3xl */
   }
-  
+
   .container-xl {
     @apply container mx-auto px-4 sm:px-6 lg:px-8 xl:px-12 2xl:px-16 3xl:px-20;
     max-width: min(100%, 104rem); /* 4xl */
   }
-  
+
   /* Ensure proper spacing on very large screens */
   @media (min-width: 1536px) {
     .container {
@@ -159,14 +160,14 @@
       padding-right: max(1rem, calc((100vw - 88rem) / 2));
     }
   }
-  
+
   @media (min-width: 1920px) {
     .container {
       padding-left: max(1rem, calc((100vw - 96rem) / 2));
       padding-right: max(1rem, calc((100vw - 96rem) / 2));
     }
   }
-  
+
   @media (min-width: 2560px) {
     .container {
       padding-left: max(1rem, calc((100vw - 104rem) / 2));
@@ -182,12 +183,14 @@
 
 /* Custom shadow */
 .shadow-elegant {
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
 }
 
 /* Custom font utilities */
 .font-inter {
-  font-family: 'Inter', system-ui, sans-serif;
+  font-family: "Inter", system-ui, sans-serif;
 }
 
 /* Input field text styling */
@@ -242,9 +245,9 @@
 
 /* Custom input field styling */
 @layer utilities {
-  .text-input-field { 
-    color: #475569 !important; 
-    font-family: 'Inter', system-ui, sans-serif !important;
+  .text-input-field {
+    color: #475569 !important;
+    font-family: "Inter", system-ui, sans-serif !important;
     font-size: 16px !important;
     font-weight: 400 !important;
     line-height: normal !important;
@@ -263,32 +266,32 @@
     width: 0;
     height: 0;
   }
-  
+
   .scrollbar-custom {
     scrollbar-width: thin;
     scrollbar-color: #6366f1 #f1f5f9;
   }
-  
+
   .scrollbar-custom::-webkit-scrollbar {
     width: 4px;
     height: 4px;
   }
-  
+
   .scrollbar-custom::-webkit-scrollbar-track {
     background: #f1f5f9;
     border-radius: 3px;
   }
-  
+
   .scrollbar-custom::-webkit-scrollbar-thumb {
     background: #6366f1;
     border-radius: 3px;
     transition: background-color 0.2s ease;
   }
-  
+
   .scrollbar-custom::-webkit-scrollbar-thumb:hover {
     background: #818cf8;
   }
-  
+
   .scrollbar-custom::-webkit-scrollbar-corner {
     display: none;
   }

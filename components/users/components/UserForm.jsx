@@ -4,15 +4,7 @@ import DropdownV2 from "@/components/ui/dropdown-v2";
 import PasswordField from "./PasswordField";
 import ErrorMessage from "@/components/ui/error-message";
 
-const UserForm = ({
-  formik,
-  isEdit,
-  roles,
-  rolesLoading,
-  showPassword,
-  setShowPassword,
-  open,
-}) => {
+const UserForm = ({ formik, isEdit, roles, rolesLoading, showPassword, setShowPassword, open }) => {
   const [roleTouched, setRoleTouched] = useState(false);
   const [roleDropdownOpen, setRoleDropdownOpen] = useState(false);
 
@@ -44,18 +36,8 @@ const UserForm = ({
   return (
     <form onSubmit={formik.handleSubmit} className="flex flex-col gap-5">
       {/* Hidden fake fields to prevent autofill */}
-      <input
-        type="text"
-        name="fake-username"
-        style={{ display: "none" }}
-        autoComplete="username"
-      />
-      <input
-        type="password"
-        name="fake-password"
-        style={{ display: "none" }}
-        autoComplete="current-password"
-      />
+      <input type="text" name="fake-username" style={{ display: "none" }} autoComplete="username" />
+      <input type="password" name="fake-password" style={{ display: "none" }} autoComplete="current-password" />
       {/* First Row - User Name and Role */}
       <div className="flex flex-col md:flex-row gap-[15px] w-full">
         {/* User Name Field */}
@@ -98,11 +80,7 @@ const UserForm = ({
             />
           </div>
           <ErrorMessage
-            message={
-              roleTouched && formik.errors.role && !roleDropdownOpen
-                ? formik.errors.role
-                : null
-            }
+            message={roleTouched && formik.errors.role && !roleDropdownOpen ? formik.errors.role : null}
             className="mt-1.5"
           />
         </div>

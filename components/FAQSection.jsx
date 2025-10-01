@@ -1,10 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 
 const FAQSection = () => {
@@ -40,8 +35,7 @@ const FAQSection = () => {
         "Yes! We guarantee placement on our network of 300+ media outlets. While we cannot guarantee earned media coverage (journalists writing original stories), we ensure your press release will be published on major news sites, giving you the credibility and SEO benefits of being featured in mainstream media.",
     },
     {
-      question:
-        "What makes your service different from automated PR distribution?",
+      question: "What makes your service different from automated PR distribution?",
       answer:
         "We use 100% manual distribution with human oversight at every step. Unlike automated services, our experienced team reviews each press release, selects the most relevant outlets, and ensures proper formatting and optimization for each platform. This results in better placement quality and higher pickup rates.",
     },
@@ -51,8 +45,7 @@ const FAQSection = () => {
         "Absolutely! We can target specific industries (tech, healthcare, finance, etc.) and geographic regions (local, national, international). Our team selects the most relevant outlets for your announcement to ensure it reaches your target audience effectively.",
     },
     {
-      question:
-        "What if my press release doesn't get published on some outlets?",
+      question: "What if my press release doesn't get published on some outlets?",
       answer:
         "We guarantee publication on our core network of outlets. In the rare case of technical issues preventing publication, we provide alternative placements of equal or higher value. We also offer a satisfaction guarantee - if you're not happy with the results, we'll work to make it right.",
     },
@@ -84,8 +77,7 @@ const FAQSection = () => {
             </h2>
           </div>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            Get answers to common questions about our press release distribution
-            services
+            Get answers to common questions about our press release distribution services
           </p>
         </div>
 
@@ -94,15 +86,9 @@ const FAQSection = () => {
             <CardContent className="p-8">
               <Accordion type="single" collapsible className="space-y-4">
                 {faqs.map((faq, index) => (
-                  <AccordionItem
-                    key={index}
-                    value={`item-${index}`}
-                    className="border rounded-lg px-6"
-                  >
+                  <AccordionItem key={index} value={`item-${index}`} className="border rounded-lg px-6">
                     <AccordionTrigger className="text-left py-4 hover:no-underline">
-                      <span className="font-semibold text-foreground pr-4">
-                        {faq.question}
-                      </span>
+                      <span className="font-semibold text-foreground pr-4">{faq.question}</span>
                     </AccordionTrigger>
                     <AccordionContent className="pb-4 text-muted-foreground leading-relaxed">
                       {faq.answer}

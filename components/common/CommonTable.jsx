@@ -3,14 +3,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Edit, Trash2, Eye, MoreHorizontal } from "lucide-react";
 import Loading from "@/components/ui/loading";
 import CustomTooltip from "../ui/custom-tooltip";
@@ -77,26 +70,18 @@ const CommonTable = ({
   }, [selectedRows]);
 
   // Check if all rows are selected
-  const allSelected =
-    data.length > 0 &&
-    selectedIdSet.size > 0 &&
-    selectedIdSet.size === data.length;
-  const someSelected =
-    selectedIdSet.size > 0 && selectedIdSet.size < data.length;
+  const allSelected = data.length > 0 && selectedIdSet.size > 0 && selectedIdSet.size === data.length;
+  const someSelected = selectedIdSet.size > 0 && selectedIdSet.size < data.length;
 
   // Render loading state
   if (isLoading) {
     return (
-      <div
-        className={`bg-white rounded-[10px] border border-slate-200 overflow-hidden ${className}`}
-      >
+      <div className={`bg-white rounded-[10px] border border-slate-200 overflow-hidden ${className}`}>
         {title && (
           <div className="px-6 py-4 border-b border-slate-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <h2 className="text-xl font-semibold text-slate-800">
-                  {title}
-                </h2>
+                <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
                 {badgeCount !== null && (
                   <Badge className="bg-indigo-50 hover:bg-indigo-50 text-indigo-500 border-indigo-500 rounded-full px-2 py-1">
                     {badgeCount}
@@ -105,9 +90,7 @@ const CommonTable = ({
               </div>
               {headerActions}
             </div>
-            {subtitle && (
-              <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
-            )}
+            {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
           </div>
         )}
         <div className="p-8">
@@ -120,14 +103,10 @@ const CommonTable = ({
   }
 
   return (
-    <div
-      className={`bg-white rounded-[10px] border border-slate-200 overflow-hidden ${className}`}
-    >
+    <div className={`bg-white rounded-[10px] border border-slate-200 overflow-hidden ${className}`}>
       {/* Header Section */}
       {title && (
-        <div
-          className={`px-6 py-4 border-b border-slate-200 ${headerClassName}`}
-        >
+        <div className={`px-6 py-4 border-b border-slate-200 ${headerClassName}`}>
           <div className={headerInnerClassName}>
             <div className="flex items-center gap-2">
               <h2 className="text-xl font-semibold text-slate-800">{title}</h2>
@@ -139,9 +118,7 @@ const CommonTable = ({
             </div>
             {headerActions}
           </div>
-          {subtitle && (
-            <p className="text-sm text-slate-600 mt-1">{subtitle}</p>
-          )}
+          {subtitle && <p className="text-sm text-slate-600 mt-1">{subtitle}</p>}
         </div>
       )}
 
@@ -187,13 +164,7 @@ const CommonTable = ({
                   </TableHead>
                 ))}
                 {showActions &&
-                  (renderActions ||
-                    onEdit ||
-                    onDelete ||
-                    onToggle ||
-                    onView ||
-                    onMore ||
-                    customActions.length > 0) && (
+                  (renderActions || onEdit || onDelete || onToggle || onView || onMore || customActions.length > 0) && (
                     <TableHead
                       sticky={true}
                       className="bg-slate-50 px-6 py-3 text-slate-800 font-semibold text-sm min-h-12 whitespace-nowrap"
@@ -209,11 +180,7 @@ const CommonTable = ({
                 // Loading component in table body
                 <TableRow>
                   <TableCell
-                    colSpan={
-                      columns.length +
-                      (showCheckbox ? 1 : 0) +
-                      (showActions ? 1 : 0)
-                    }
+                    colSpan={columns.length + (showCheckbox ? 1 : 0) + (showActions ? 1 : 0)}
                     className="px-6 py-8 text-center bg-white"
                   >
                     <div className="flex items-center justify-center min-h-[calc(100dvh-340px)]">
@@ -224,19 +191,11 @@ const CommonTable = ({
               ) : data.length === 0 ? (
                 <TableRow className="bg-white hover:bg-white">
                   <TableCell
-                    colSpan={
-                      columns.length +
-                      (showCheckbox ? 1 : 0) +
-                      (showActions ? 1 : 0)
-                    }
+                    colSpan={columns.length + (showCheckbox ? 1 : 0) + (showActions ? 1 : 0)}
                     className="px-6 py-8 text-center"
                   >
                     <div className="flex items-center justify-center h-full min-h-[calc(100dvh-345px)]">
-                      <EmptyState
-                        title={noDataText}
-                        actionText={emptyStateActionText}
-                        onAction={emptyStateAction}
-                      />
+                      <EmptyState title={noDataText} actionText={emptyStateActionText} onAction={emptyStateAction} />
                     </div>
                   </TableCell>
                 </TableRow>
@@ -247,24 +206,18 @@ const CommonTable = ({
                     className={`border-b border-slate-200 hover:bg-slate-50 ${rowClassName}`}
                   >
                     {showCheckbox && (
-                      <TableCell
-                        className="px-6 py-3 min-h-[72px] whitespace-nowrap"
-                        style={{ width: "5%" }}
-                      >
+                      <TableCell className="px-6 py-3 min-h-[72px] whitespace-nowrap" style={{ width: "5%" }}>
                         {renderRowCheckbox ? (
                           renderRowCheckbox({
                             row,
                             checked: selectedIdSet.has(row._id ?? row.id),
-                            onChange: (isSelected) =>
-                              handleRowSelect(row, isSelected),
+                            onChange: (isSelected) => handleRowSelect(row, isSelected),
                           })
                         ) : (
                           <input
                             type="checkbox"
                             checked={selectedIdSet.has(row._id ?? row.id)}
-                            onChange={(e) =>
-                              handleRowSelect(row, e.target.checked)
-                            }
+                            onChange={(e) => handleRowSelect(row, e.target.checked)}
                             className="rounded border-slate-300"
                           />
                         )}
@@ -279,9 +232,7 @@ const CommonTable = ({
                         {column.render ? (
                           column.render(row[column.key], row, index)
                         ) : (
-                          <div className="font-medium text-slate-600 text-sm whitespace-nowrap">
-                            {row[column.key]}
-                          </div>
+                          <div className="font-medium text-slate-600 text-sm whitespace-nowrap">{row[column.key]}</div>
                         )}
                       </TableCell>
                     ))}
@@ -325,16 +276,12 @@ const CommonTable = ({
                                 <button
                                   onClick={() => onToggle(row, !row.isActive)}
                                   className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
-                                    row.isActive
-                                      ? "bg-indigo-500"
-                                      : "bg-slate-600"
+                                    row.isActive ? "bg-indigo-500" : "bg-slate-600"
                                   }`}
                                 >
                                   <span
                                     className={`inline-block h-4 w-4 transform rounded-full bg-white shadow-lg transition-transform ${
-                                      row.isActive
-                                        ? "translate-x-1"
-                                        : "translate-x-4"
+                                      row.isActive ? "translate-x-1" : "translate-x-4"
                                     }`}
                                   />
                                 </button>
@@ -350,10 +297,7 @@ const CommonTable = ({
                                 </Button>
                               )}
                               {customActions?.map((action, actionIndex) => (
-                                <CustomTooltip
-                                  key={actionIndex}
-                                  content={action.tooltipText}
-                                >
+                                <CustomTooltip key={actionIndex} content={action.tooltipText}>
                                   <Button
                                     variant="ghost"
                                     size="icon"
@@ -363,9 +307,7 @@ const CommonTable = ({
                                       "p-0 bg-transparent border-0 hover:bg-transparent text-slate-600 hover:text-slate-800"
                                     }
                                   >
-                                    {action.icon && (
-                                      <action.icon className="w-4 h-4" />
-                                    )}
+                                    {action.icon && <action.icon className="w-4 h-4" />}
                                     {action.label}
                                   </Button>
                                 </CustomTooltip>

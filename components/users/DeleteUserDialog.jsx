@@ -2,7 +2,7 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Trash2, AlertTriangle, CircleXIcon, Info } from "lucide-react";
+import { Trash2, CircleXIcon, Info } from "lucide-react";
 import CommonModal from "@/components/common/CommonModal";
 
 /**
@@ -12,13 +12,7 @@ import CommonModal from "@/components/common/CommonModal";
  * Uses the shared layout but provides specific content and actions for user deletion.
  */
 
-const DeleteUserDialog = ({
-  open = false,
-  onClose,
-  onConfirm,
-  user = null,
-  loading = false,
-}) => {
+const DeleteUserDialog = ({ open = false, onClose, onConfirm, user = null, loading = false }) => {
   if (!user) return null;
 
   const handleConfirm = () => {
@@ -52,7 +46,7 @@ const DeleteUserDialog = ({
     <CommonModal
       open={open}
       onClose={onClose}
-      title={`Delete User Confirmation`}
+      title="Delete User Confirmation"
       icon={<Trash2 className="w-[25px] h-[25px]" />}
       footer={footer}
       size="sm"

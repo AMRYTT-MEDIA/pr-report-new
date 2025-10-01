@@ -2,19 +2,13 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Ban, Info, X, CircleCheckBig, CircleXIcon } from "lucide-react";
+import { Ban, Info, CircleCheckBig, CircleXIcon } from "lucide-react";
 import CommonModal from "@/components/common/CommonModal";
 
-const DeactivateUserDialog = ({
-  open = false,
-  onClose,
-  onConfirm,
-  user = null,
-  loading = false,
-}) => {
+const DeactivateUserDialog = ({ open = false, onClose, onConfirm, user = null, loading = false }) => {
   if (!user) return null;
 
-  const isActive = user.isActive;
+  const { isActive } = user;
 
   const handleConfirm = () => {
     onConfirm?.(user);
@@ -52,9 +46,7 @@ const DeactivateUserDialog = ({
       footer={footer}
       size="sm"
       preventClose={loading}
-      subtitle={`Are you sure you want to ${
-        isActive ? "deactivate" : "activate"
-      } this`}
+      subtitle={`Are you sure you want to ${isActive ? "deactivate" : "activate"} this`}
       subtitle2={`${user.fullName} ?`}
     >
       {/* Main Content */}
@@ -65,9 +57,7 @@ const DeactivateUserDialog = ({
         <div className="flex items-center gap-2 py-[6px] px-[10px] rounded-md border border-yellow-200 bg-yellow-50">
           <Info className="w-5 h-5 text-yellow-600" />
           <p className="text-sm font-medium text-yellow-600 capitalize">
-            {isActive
-              ? "The user will not be able to log in until reactive"
-              : "The user will now able to log in"}
+            {isActive ? "The user will not be able to log in until reactive" : "The user will now able to log in"}
           </p>
         </div>
       </div>

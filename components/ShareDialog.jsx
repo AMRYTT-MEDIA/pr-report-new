@@ -10,8 +10,6 @@ import CommonModal from "@/components/common/CommonModal";
 import {
   Share2,
   Copy,
-  Lock,
-  X,
   LockKeyhole,
   ChevronDown,
   Link2,
@@ -28,15 +26,13 @@ const createEmailValidationSchema = (existingEmails) =>
   Yup.object().shape({
     newEmail: Yup.string()
       .email("Please enter a valid email address")
-      .test("required-when-no-emails", "Email is required", function (value) {
+      .test("required-when-no-emails", "Email is required", (value) => {
         if (existingEmails.length === 0 && (!value || value.trim() === "")) {
           return false;
         }
         return true;
       })
-      .test("unique-email", "This email is already added", function (value) {
-        return !existingEmails.includes(value);
-      }),
+      .test("unique-email", "This email is already added", (value) => !existingEmails.includes(value)),
   });
 
 export default function ShareDialog({ isOpen, onClose, report, onShare }) {
@@ -49,9 +45,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
   // Generate share URL when component mounts
   useEffect(() => {
     if (report) {
-      const url = `${window.location.origin}/report/${
-        report.grid_id || report._id || report.id
-      }`;
+      const url = `${window.location.origin}/report/${report.grid_id || report._id || report.id}`;
       setShareUrl(url);
     }
   }, [report]);
@@ -66,6 +60,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       setEmails([]);
       setIsPrivate(false);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [report?.grid_id || report?._id || report?.id]); // Only re-initialize when report ID changes
 
   // Close dropdown when clicking outside
@@ -93,7 +88,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
     setEmails(newEmails);
   };
 
-  const addEmailFromFormik = (values, { setFieldValue, resetForm }) => {
+  const addEmailFromFormik = (values, { resetForm }) => {
     const emailToAdd = values.newEmail.trim();
     if (emailToAdd !== "") {
       setEmails([...emails, emailToAdd]);
@@ -145,10 +140,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
       // The API call will update the report data, so we keep the current emails
 
       onClose();
-      window.open(
-        `/report/${report.grid_id || report._id || report.id}`,
-        "_blank"
-      );
+      window.open(`/report/${report.grid_id || report._id || report.id}`, "_blank");
     } catch (error) {
       console.error("Error sharing report:", error);
       toast.error("Failed to share report");
@@ -207,14 +199,8 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
               className="flex items-center gap-1 text-sm text-slate-600 font-semibold cursor-pointer hover:opacity-80"
               onClick={() => setIsDropdownOpen(!isDropdownOpen)}
             >
-              <span>
-                {isPrivate ? "Restricted" : "Anyone with the link can view"}
-              </span>
-              <ChevronDown
-                className={`h-4 w-4 transition-transform ${
-                  isDropdownOpen ? "rotate-180" : ""
-                }`}
-              />
+              <span>{isPrivate ? "Restricted" : "Anyone with the link can view"}</span>
+              <ChevronDown className={`h-4 w-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`} />
             </div>
 
             {isDropdownOpen && (
@@ -244,16 +230,12 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
           {isPrivate ? (
             <>
               <LockKeyhole className="h-5 w-4 text-slate-600" />
-              <p className="text-xs font-medium text-slate-600 mt-0.5">
-                Private
-              </p>
+              <p className="text-xs font-medium text-slate-600 mt-0.5">Private</p>
             </>
           ) : (
             <>
               <LockKeyholeOpen className="h-5 w-4 text-slate-600" />
-              <p className="text-xs font-medium text-slate-600 mt-0.5">
-                Public
-              </p>
+              <p className="text-xs font-medium text-slate-600 mt-0.5">Public</p>
             </>
           )}
         </div>
@@ -261,22 +243,15 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
 
       {/* People With Access Section - Only show for private */}
       <div className="flex flex-col gap-1 pt-5">
-        <Label className="text-base text-slate-600 font-semibold">
-          Authorized Email Addresses
-        </Label>
-        <p className="text-sm text-slate-600 opacity-50 font-medium">
-          Only emails from approved domains are allowed.
-        </p>
-        {report?.sharedEmails &&
-          report.sharedEmails?.length > 0 &&
-          isPrivate && (
-            <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md ">
-              <p className="text-xs text-blue-700">
-                📧 {report.sharedEmails?.length} email(s) already shared with
-                this report
-              </p>
-            </div>
-          )}
+        <Label className="text-base text-slate-600 font-semibold">Authorized Email Addresses</Label>
+        <p className="text-sm text-slate-600 opacity-50 font-medium">Only emails from approved domains are allowed.</p>
+        {report?.sharedEmails && report.sharedEmails?.length > 0 && isPrivate && (
+          <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md ">
+            <p className="text-xs text-blue-700">
+              📧 {report.sharedEmails?.length} email(s) already shared with this report
+            </p>
+          </div>
+        )}
       </div>
 
       <Formik
@@ -284,15 +259,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
         validationSchema={createEmailValidationSchema(emails)}
         onSubmit={addEmailFromFormik}
       >
-        {({
-          values,
-          errors,
-          touched,
-          handleChange,
-          handleBlur,
-          handleSubmit,
-          resetForm,
-        }) => {
+        {({ errors, touched, handleSubmit, resetForm }) => {
           // Store resetForm function in ref
           resetFormRef.current = resetForm;
 
@@ -321,9 +288,7 @@ export default function ShareDialog({ isOpen, onClose, report, onShare }) {
                       />
                       <div
                         className={`text-xs text-slate-800 absolute bottom-0 right-0 mb-2 mr-2 whitespace-nowrap bg-slate-200 rounded-sm px-2 py-1 font-medium cursor-pointer border border-slate-200 ${
-                          isPrivate
-                            ? "opacity-100"
-                            : "opacity-0 cursor-not-allowed pointer-events-none"
+                          isPrivate ? "opacity-100" : "opacity-0 cursor-not-allowed pointer-events-none"
                         }`}
                         onClick={handleSubmit}
                       >

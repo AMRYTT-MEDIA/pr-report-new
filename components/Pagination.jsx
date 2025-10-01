@@ -69,7 +69,7 @@ const Pagination = ({
   };
 
   const handleRowsPerPageChange = (newRowsPerPage) => {
-    const newRowsPerPageNum = parseInt(newRowsPerPage);
+    const newRowsPerPageNum = parseInt(newRowsPerPage, 10);
     setLocalRowsPerPage(newRowsPerPageNum);
     setLocalCurrentPage(1);
     setIsDropdownOpen(false);
@@ -77,7 +77,7 @@ const Pagination = ({
   };
 
   const handleGoToPage = () => {
-    const pageNum = parseInt(goToPage);
+    const pageNum = parseInt(goToPage, 10);
     if (pageNum >= 1 && pageNum <= totalPages) {
       handlePageChange(pageNum);
       setGoToPage("");
@@ -166,12 +166,9 @@ const Pagination = ({
                 className={`flex items-center gap-2 cursor-pointer select-none ${
                   localCurrentPage === 1 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  localCurrentPage > 1 && handlePageChange(localCurrentPage - 1)
-                }
+                onClick={() => localCurrentPage > 1 && handlePageChange(localCurrentPage - 1)}
               >
-                <LeftArrow />{" "}
-                <span className="hidden sm:block">{previousLabel}</span>
+                <LeftArrow /> <span className="hidden sm:block">{previousLabel}</span>
               </div>
             )}
 
@@ -183,8 +180,8 @@ const Pagination = ({
                     page === localCurrentPage
                       ? "text-primary font-medium text-sm border border-primary rounded-full py-1"
                       : page !== "..."
-                      ? "hover:text-primary hover:outline hover:outline-primary hover:outline-1 rounded-full py-1"
-                      : ""
+                        ? "hover:text-primary hover:outline hover:outline-primary hover:outline-1 rounded-full py-1"
+                        : ""
                   }`}
                   onClick={() => page !== "..." && handlePageChange(page)}
                 >
@@ -196,17 +193,11 @@ const Pagination = ({
             {showPreviousNext && (
               <div
                 className={`flex items-center gap-2 cursor-pointer select-none ${
-                  localCurrentPage === totalPages
-                    ? "opacity-50 cursor-not-allowed"
-                    : ""
+                  localCurrentPage === totalPages ? "opacity-50 cursor-not-allowed" : ""
                 }`}
-                onClick={() =>
-                  localCurrentPage < totalPages &&
-                  handlePageChange(localCurrentPage + 1)
-                }
+                onClick={() => localCurrentPage < totalPages && handlePageChange(localCurrentPage + 1)}
               >
-                <span className="hidden sm:block">{nextLabel}</span>{" "}
-                <RightArrow />
+                <span className="hidden sm:block">{nextLabel}</span> <RightArrow />
               </div>
             )}
           </div>
@@ -240,12 +231,7 @@ const Pagination = ({
                   stroke="currentColor"
                   viewBox="0 0 24 24"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
 
@@ -258,9 +244,7 @@ const Pagination = ({
                       type="button"
                       onClick={() => handleRowsPerPageChange(option)}
                       className={`w-full px-3 py-2 text-sm text-left hover:bg-slate-50 transition-colors duration-200 first:rounded-t-lg last:rounded-b-lg ${
-                        option === localRowsPerPage
-                          ? "bg-blue-50 text-blue-700 font-medium"
-                          : "text-slate-700"
+                        option === localRowsPerPage ? "bg-blue-50 text-blue-700 font-medium" : "text-slate-700"
                       }`}
                     >
                       {option}

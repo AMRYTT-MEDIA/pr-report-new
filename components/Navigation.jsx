@@ -28,9 +28,7 @@ export default function Navigation() {
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="flex items-center">
                 <BarChart3 className="w-8 h-8 text-blue-600 mr-2" />
-                <span className="text-xl font-bold text-slate-900">
-                  PR Boost
-                </span>
+                <span className="text-xl font-bold text-slate-900">PR Boost</span>
               </Link>
             </div>
 

@@ -1,37 +1,25 @@
 "use client";
 
-import { useState, useEffect, Suspense } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { getDefaultLandingPage } from "@/lib/rbac";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import Image from "next/image";
 import Loading from "@/components/ui/loading";
 import ErrorMessage from "@/components/ui/error-message";
 import ReCAPTCHA from "react-google-recaptcha";
 import Link from "next/link";
-import {
-  EmailIcon,
-  LockIcon,
-  EyeCloseIcon,
-  ArrowRightIcon,
-} from "@/components/icon";
+import { EmailIcon, LockIcon, ArrowRightIcon } from "@/components/icon";
 import { useFormik } from "formik";
 import { isEmail } from "validator";
 import * as Yup from "yup";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { globalConstants } from "@/lib/constants/globalConstants";
-import { getuserdatabyfirebaseid } from "@/services/user";
 import { Eye, EyeClosed } from "lucide-react";
 
 const LoginForm = ({ searchParams }) => {
@@ -40,13 +28,7 @@ const LoginForm = ({ searchParams }) => {
   const [isVerified, setIsVerified] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isRedirecting, setIsRedirecting] = useState(false);
-  const {
-    user,
-    setUser,
-    logout,
-    loading: authLoading,
-    initialized,
-  } = useAuth();
+  const { user, loading: authLoading, initialized } = useAuth();
   const router = useRouter();
 
   // Handle redirect for already logged in users
@@ -84,22 +66,22 @@ const LoginForm = ({ searchParams }) => {
     }
   };
 
-  // Backend API error mapping
-  const getApiErrorMessage = (error) => {
-    if (error.response?.status === 401) {
-      return "User not found. Please check your email and try again.";
-    } else if (error.response?.status === 404) {
-      return "Please try again.";
-    } else if (error.response?.status === 403) {
-      return "Access denied. Please contact support.";
-    } else if (error.response?.status >= 500) {
-      return "Server error. Please try again later.";
-    } else if (error.response?.data?.message) {
-      return error.response.data.message;
-    } else {
-      return error.message || globalConstants?.SomethingWentWrong;
-    }
-  };
+  // Backend API error mapping (kept for future use)
+  // const getApiErrorMessage = (error) => {
+  //   if (error.response?.status === 401) {
+  //     return "User not found. Please check your email and try again.";
+  //   } else if (error.response?.status === 404) {
+  //     return "Please try again.";
+  //   } else if (error.response?.status === 403) {
+  //     return "Access denied. Please contact support.";
+  //   } else if (error.response?.status >= 500) {
+  //     return "Server error. Please try again later.";
+  //   } else if (error.response?.data?.message) {
+  //     return error.response.data.message;
+  //   } else {
+  //     return error.message || globalConstants?.SomethingWentWrong;
+  //   }
+  // };
 
   // Formik configuration
   const formik = useFormik({
@@ -109,18 +91,12 @@ const LoginForm = ({ searchParams }) => {
     },
     validationSchema: Yup.object().shape({
       email: Yup.string()
-        .test(
-          "is-valid-email",
-          "Please enter a valid email address. (e.g., username@example.com)",
-          function (value) {
-            if (!value) return false;
-            return isEmail(value.trim());
-          }
-        )
+        .test("is-valid-email", "Please enter a valid email address. (e.g., username@example.com)", (value) => {
+          if (!value) return false;
+          return isEmail(value.trim());
+        })
         .required("Email is required"),
-      password: Yup.string()
-        .required("Password is required")
-        .min(8, "Password should be a minimum of 8 characters"),
+      password: Yup.string().required("Password is required").min(8, "Password should be a minimum of 8 characters"),
     }),
     onSubmit: async (values) => {
       if (!isVerified) return;
@@ -128,11 +104,7 @@ const LoginForm = ({ searchParams }) => {
 
       try {
         // Step 1: Firebase sign-in
-        const result = await signInWithEmailAndPassword(
-          auth,
-          values.email,
-          values.password
-        );
+        const result = await signInWithEmailAndPassword(auth, values.email, values.password);
         if (result.user) {
           toast.success("Sign in successful!");
 
@@ -209,13 +181,7 @@ const LoginForm = ({ searchParams }) => {
       <Card className="w-full max-w-[607px] rounded-3xl border border-slate-200 bg-white/99 shadow-login-card p-[45px]">
         <CardHeader className="text-center p-0">
           <div className="flex justify-center items-center">
-            <Image
-              src="/guestpost-link.webp"
-              alt="PR Reports"
-              width={223}
-              height={45}
-              priority={true}
-            />
+            <Image src="/guestpost-link.webp" alt="PR Reports" width={223} height={45} priority={true} />
           </div>
           <CardTitle className="text-center text-[#1E293B] font-inter text-2xl font-semibold leading-[24.2px] pt-10 card-title">
             Welcome Back
@@ -225,11 +191,7 @@ const LoginForm = ({ searchParams }) => {
           </CardDescription>
         </CardHeader>
         <CardContent className="p-0 pt-10">
-          <form
-            onSubmit={formik.handleSubmit}
-            className="space-y-4"
-            autoComplete="off"
-          >
+          <form onSubmit={formik.handleSubmit} className="space-y-4" autoComplete="off">
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -250,15 +212,11 @@ const LoginForm = ({ searchParams }) => {
                   disabled={loading}
                   autoComplete="off"
                   className={`pl-10 text-input-field ${
-                    formik.touched.email && formik.errors.email
-                      ? "border-red-500"
-                      : ""
+                    formik.touched.email && formik.errors.email ? "border-red-500" : ""
                   }`}
                 />
               </div>
-              {formik.touched.email && formik.errors.email && (
-                <ErrorMessage message={formik.errors.email} />
-              )}
+              {formik.touched.email && formik.errors.email && <ErrorMessage message={formik.errors.email} />}
             </div>
             <div className="space-y-2">
               <label htmlFor="password" className="text-sm font-medium">
@@ -280,9 +238,7 @@ const LoginForm = ({ searchParams }) => {
                   disabled={loading}
                   autoComplete="off"
                   className={`pl-10 pr-10 text-input-field ${
-                    formik.touched.password && formik.errors.password
-                      ? "border-red-500"
-                      : ""
+                    formik.touched.password && formik.errors.password ? "border-red-500" : ""
                   }`}
                 />
                 <button
@@ -297,14 +253,9 @@ const LoginForm = ({ searchParams }) => {
                   )}
                 </button>
               </div>
-              {formik.touched.password && formik.errors.password && (
-                <ErrorMessage message={formik.errors.password} />
-              )}
+              {formik.touched.password && formik.errors.password && <ErrorMessage message={formik.errors.password} />}
               <div className="flex justify-end">
-                <Link
-                  href="/forgot-password"
-                  className="text-sm font-medium text-indigo-500"
-                >
+                <Link href="/forgot-password" className="text-sm font-medium text-indigo-500">
                   Forgot Password?
                 </Link>
               </div>
@@ -329,19 +280,11 @@ const LoginForm = ({ searchParams }) => {
             <Button
               type="submit"
               className="w-full rounded-[1234px] bg-indigo-600 hover:bg-indigo-700 text-white transition-colors border border-indigo-400 flex items-center justify-center gap-2 py-3 disabled:opacity-50 disabled:cursor-not-allowed"
-              disabled={
-                loading || !isVerified || !formik.isValid || !formik.dirty
-              }
+              disabled={loading || !isVerified || !formik.isValid || !formik.dirty}
             >
               {loading ? (
                 <div className="flex items-center justify-center gap-2">
-                  <Loading
-                    size="sm"
-                    color="white"
-                    showText={true}
-                    text="Signing in..."
-                    textPosition="start"
-                  />
+                  <Loading size="sm" color="white" showText={true} text="Signing in..." textPosition="start" />
                 </div>
               ) : (
                 <>

@@ -25,8 +25,8 @@ const Loading = ({
   };
 
   // Special case for purple to match the original design
-  const getBorderStyle = (color) => {
-    if (color === "purple") {
+  const getBorderStyle = (loadingColor) => {
+    if (loadingColor === "purple") {
       return "border-b-2 border-purple-600";
     }
     if (color === "white") {
@@ -52,31 +52,13 @@ const Loading = ({
   const renderContent = () => {
     if (textPosition === "top" || textPosition === "bottom") {
       return (
-        <div
-          className={`flex flex-col items-center justify-center gap-2 ${className}`}
-        >
+        <div className={`flex flex-col items-center justify-center gap-2 ${className}`}>
           {showText && text && textPosition === "top" && (
-            <p
-              className={`text-sm font-medium ${
-                textColorClasses[textColor] || textColorClasses.gray
-              }`}
-            >
-              {text}
-            </p>
+            <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
           )}
-          <div
-            className={`animate-spin rounded-full ${
-              sizeClasses[size]
-            } ${getBorderStyle(color)}`}
-          />
+          <div className={`animate-spin rounded-full ${sizeClasses[size]} ${getBorderStyle(color)}`} />
           {showText && text && textPosition === "bottom" && (
-            <p
-              className={`text-sm font-medium ${
-                textColorClasses[textColor] || textColorClasses.gray
-              }`}
-            >
-              {text}
-            </p>
+            <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
           )}
         </div>
       );
@@ -86,27 +68,11 @@ const Loading = ({
     return (
       <div className={`flex items-center justify-center gap-2 ${className}`}>
         {showText && text && textPosition === "start" && (
-          <p
-            className={`text-sm font-medium ${
-              textColorClasses[textColor] || textColorClasses.gray
-            }`}
-          >
-            {text}
-          </p>
+          <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
         )}
-        <div
-          className={`animate-spin rounded-full ${
-            sizeClasses[size]
-          } ${getBorderStyle(color)}`}
-        />
+        <div className={`animate-spin rounded-full ${sizeClasses[size]} ${getBorderStyle(color)}`} />
         {showText && text && textPosition === "end" && (
-          <p
-            className={`text-sm font-medium ${
-              textColorClasses[textColor] || textColorClasses.gray
-            }`}
-          >
-            {text}
-          </p>
+          <p className={`text-sm font-medium ${textColorClasses[textColor] || textColorClasses.gray}`}>{text}</p>
         )}
       </div>
     );

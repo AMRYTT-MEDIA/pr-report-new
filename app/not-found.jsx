@@ -21,8 +21,7 @@ export default function NotFound() {
     <div
       className="min-h-dvh flex items-center justify-center relative"
       style={{
-        background:
-          "radial-gradient(40.82% 42.04% at 78.69% 74.73%, #EBECFF 0%, #F8FAFC 100%)",
+        background: "radial-gradient(40.82% 42.04% at 78.69% 74.73%, #EBECFF 0%, #F8FAFC 100%)",
       }}
     >
       {/* Main Content Container */}
@@ -39,17 +38,14 @@ export default function NotFound() {
 
                 {/* Main Heading - Responsive text sizes */}
                 <div className="font-extrabold text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-slate-800 tracking-[-0.72px] md:tracking-[-1.44px] w-full">
-                  <p className="leading-normal md:leading-[80px]">
-                    Oops! We Can't Find That Page.
-                  </p>
+                  <p className="leading-normal md:leading-[80px]">Oops! We Can't Find That Page.</p>
                 </div>
               </div>
 
               {/* Description */}
               <div className="font-medium text-lg sm:text-xl text-slate-600 w-full">
                 <p className="leading-normal">
-                  Unfortunately, the page you're looking for is gone or has been
-                  moved :(.
+                  Unfortunately, the page you're looking for is gone or has been moved :(.
                 </p>
               </div>
             </div>
@@ -77,15 +73,8 @@ export default function NotFound() {
                 onClick={handleTakeMeHome}
                 className="flex gap-3 items-center justify-center px-6 py-4 rounded-full bg-indigo-500 hover:bg-indigo-500-60 transition-colors duration-200 group w-full md:w-auto"
               >
-                <span className="font-semibold text-lg text-white whitespace-nowrap">
-                  Take Me Home
-                </span>
-                <HomeIcon
-                  width={24}
-                  height={24}
-                  fill="currentColor"
-                  className="text-white"
-                />
+                <span className="font-semibold text-lg text-white whitespace-nowrap">Take Me Home</span>
+                <HomeIcon width={24} height={24} fill="currentColor" className="text-white" />
               </button>
             </div>
           </div>

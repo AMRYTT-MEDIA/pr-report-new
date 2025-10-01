@@ -3,12 +3,7 @@ import CommonModal from "@/components/common/CommonModal";
 import { Button } from "@/components/ui/button";
 import { X, Trash2, Info } from "lucide-react";
 
-const WebsiteDeleteDialog = ({
-  isOpen,
-  website,
-  confirmDelete,
-  cancelDelete,
-}) => {
+const WebsiteDeleteDialog = ({ isOpen, website, confirmDelete, cancelDelete }) => {
   // Footer buttons
   const footerButtons = (
     <>

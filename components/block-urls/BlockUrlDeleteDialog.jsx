@@ -34,22 +34,20 @@ const BlockUrlDeleteDialog = ({
       // return `Are you sure you want to delete ${selectedCount} URL(s)? This action cannot be undone.`;
       return (
         <>
-          Are you sure you want to delete{" "}
-          <span className="font-bold">{selectedCount} URL(s)</span> ? This
-          action cannot be undone.
+          Are you sure you want to delete <span className="font-bold">{selectedCount} URL(s)</span> ? This action cannot
+          be undone.
         </>
       );
     }
 
     return (
       <div className="text-slate-400 text-sm">
-        Are you sure you want to delete{" "}
-        <span className="font-bold">{urlData.domain} </span>URL(s)?
+        Are you sure you want to delete <span className="font-bold">{urlData.domain} </span>URL(s)?
       </div>
     );
   };
 
-  const getSubtitle2 = () => {
+  const _getSubtitle2 = () => {
     if (isBulkDelete || message) return "";
     return "This action cannot be undone.";
   };

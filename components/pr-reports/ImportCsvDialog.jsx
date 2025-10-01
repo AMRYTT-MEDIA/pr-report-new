@@ -1,19 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
-import { useRouter } from "next/navigation";
-import {
-  Upload,
-  FileText,
-  X,
-  Share2,
-  CloudDownload,
-  Download,
-  CloudUpload,
-  CircleX,
-  CircleXIcon,
-  CircleCheckBig,
-} from "lucide-react";
+import { FileText, X, Download, CloudUpload, CircleCheckBig } from "lucide-react";
 import { prReportsService } from "@/services/prReports";
 import { toast } from "sonner";
 import { Button } from "../ui/button";
@@ -24,7 +12,6 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
   const [reportTitle, setReportTitle] = useState("");
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
-  const router = useRouter();
 
   const handleDragOver = useCallback((e) => {
     e.preventDefault();
@@ -53,18 +40,15 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       e.stopPropagation();
       setIsDragOver(false);
 
-      const files = e.dataTransfer.files;
+      const { files } = e.dataTransfer;
       if (files && files.length > 0) {
-        const file = files[0];
-        if (
-          file.type === "text/csv" ||
-          file.type === "application/vnd.ms-excel" ||
-          file.name.endsWith(".csv")
-        ) {
+        const [file] = files;
+        if (file.type === "text/csv" || file.type === "application/vnd.ms-excel" || file.name.endsWith(".csv")) {
           setSelectedFile(file);
           // Auto-generate title from filename if not provided
           if (!reportTitle) {
-            setReportTitle(file.name.replace(".csv", ""));
+            const fileName = file.name;
+            setReportTitle(fileName.replace(".csv", ""));
           }
         } else {
           toast.error("Please select a valid CSV file");
@@ -76,11 +60,8 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
   );
 
   const handleFileSelect = (event) => {
-    const file = event.target.files[0];
-    if (
-      file &&
-      (file.type === "text/csv" || file.type === "application/vnd.ms-excel")
-    ) {
+    const [file] = event.target.files;
+    if (file && (file.type === "text/csv" || file.type === "application/vnd.ms-excel")) {
       setSelectedFile(file);
       // Auto-generate title from filename if not provided
       if (!reportTitle) {
@@ -98,10 +79,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
     setIsUploading(true);
 
     try {
-      const response = await prReportsService.uploadCSV(
-        selectedFile,
-        reportTitle
-      );
+      const response = await prReportsService.uploadCSV(selectedFile, reportTitle);
       toast.success("CSV uploaded successfully!");
 
       // Reset form
@@ -122,8 +100,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       }
     } catch (error) {
       console.error("Upload error:", error);
-      const errorMessage =
-        error.response?.data?.message || "Upload failed. Please try again.";
+      const errorMessage = error.response?.data?.message || "Upload failed. Please try again.";
       toast.error(errorMessage);
     } finally {
       setIsUploading(false);
@@ -200,9 +177,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
       {/* File Upload Area */}
       <div
         className={`flex flex-col items-center justify-center py-10 px-4 md:px-6 border-2 border-dashed rounded-lg transition-colors duration-300 ${
-          isDragOver
-            ? "border-blue-500 bg-blue-50"
-            : "border-Gray-30 hover:border-primary-50"
+          isDragOver ? "border-blue-500 bg-blue-50" : "border-Gray-30 hover:border-primary-50"
         }`}
         onDragOver={handleDragOver}
         onDragEnter={handleDragEnter}
@@ -212,12 +187,8 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
         <div className="flex items-center justify-center mb-6 text-slate-600">
           <CloudUpload className="w-10 h-10" />
         </div>
-        <p className="text-slate-600 font-semibold mb-2.5">
-          Choose a file or drag & drop it here
-        </p>
-        <p className="text-sm text-slate-400 font-bold mb-3.5">
-          CSV formats, up to 50MB
-        </p>
+        <p className="text-slate-600 font-semibold mb-2.5">Choose a file or drag & drop it here</p>
+        <p className="text-sm text-slate-400 font-bold mb-3.5">CSV formats, up to 50MB</p>
         <label
           htmlFor="file-upload"
           className="px-6 py-2.5 border border-border-gray rounded-lg cursor-pointer hover:bg-gray-200 text-[#54575C] font-semibold transition-colors"
@@ -236,9 +207,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
 
       {/* PR Report Name Input */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3.5 pt-5">
-        <label className="block text-md text-slate-700 font-bold whitespace-nowrap">
-          PR Report Name :
-        </label>
+        <label className="block text-md text-slate-700 font-bold whitespace-nowrap">PR Report Name :</label>
         <input
           type="text"
           value={reportTitle}
@@ -256,9 +225,7 @@ const ImportCsvDialog = ({ open, onOpenChange, onUploadSuccess }) => {
             <span className="text-sm font-medium text-blue-900 break-all whitespace-nowrap overflow-hidden text-ellipsis max-w-[204px] sm:max-w-[392px] block">
               {selectedFile.name}
             </span>
-            <span className="ml-auto text-sm text-blue-600">
-              {(selectedFile.size / 1024).toFixed(1)} KB
-            </span>
+            <span className="ml-auto text-sm text-blue-600">{(selectedFile.size / 1024).toFixed(1)} KB</span>
           </div>
         </div>
       )}

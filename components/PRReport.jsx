@@ -1,13 +1,7 @@
 import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Upload, FileText } from "lucide-react";
 import PRReportViewer from "@/components/PRReportViewer";
 import { useToast } from "@/hooks/use-toast";
@@ -104,26 +98,24 @@ const PRReport = () => {
         let processedReport;
 
         if (file.name.toLowerCase().endsWith(".csv")) {
+          // eslint-disable-next-line no-use-before-define
           processedReport = processCSVReport(fileContent, file.name);
         } else if (file.name.toLowerCase().endsWith(".json")) {
           const jsonData = JSON.parse(fileContent);
+          // eslint-disable-next-line no-use-before-define
           processedReport = processJSONReport(jsonData, file.name);
         } else {
-          throw new Error(
-            "Unsupported file format. Please upload a CSV or JSON file."
-          );
+          throw new Error("Unsupported file format. Please upload a CSV or JSON file.");
         }
 
         setReport(processedReport);
       } catch (error) {
         console.error("Error parsing file:", error);
-        alert(
-          `Error parsing file: ${
-            error instanceof Error
-              ? error.message
-              : "Please check the file format."
-          }`
-        );
+        toast({
+          title: "Error parsing file",
+          description: error instanceof Error ? error.message : "Please check the file format.",
+          variant: "destructive",
+        });
       } finally {
         setLoading(false);
       }
@@ -166,9 +158,7 @@ const PRReport = () => {
         h.toLowerCase().includes("publication")
     );
 
-    const urlIndex = headers.findIndex(
-      (h) => h.toLowerCase().includes("url") || h.toLowerCase().includes("link")
-    );
+    const urlIndex = headers.findIndex((h) => h.toLowerCase().includes("url") || h.toLowerCase().includes("link"));
 
     const reachIndex = headers.findIndex(
       (h) =>
@@ -184,9 +174,7 @@ const PRReport = () => {
         const columns = parseCSVLine(line).map((col) => col.replace(/"/g, ""));
 
         const website_name =
-          recipientIndex >= 0
-            ? columns[recipientIndex] || `Outlet ${index + 1}`
-            : `Outlet ${index + 1}`;
+          recipientIndex >= 0 ? columns[recipientIndex] || `Outlet ${index + 1}` : `Outlet ${index + 1}`;
         const published_url = urlIndex >= 0 ? columns[urlIndex] || "#" : "#";
 
         // Better number parsing for comma-separated values like "8,80,00,000"
@@ -210,10 +198,7 @@ const PRReport = () => {
 
     // Calculate totals
     const totalOutlets = outlets.length;
-    const totalReach = outlets.reduce(
-      (sum, outlet) => sum + outlet.potential_reach,
-      0
-    );
+    const totalReach = outlets.reduce((sum, outlet) => sum + outlet.potential_reach, 0);
 
     return {
       id: `uploaded-csv-${Date.now()}`,
@@ -221,7 +206,7 @@ const PRReport = () => {
       date_created: new Date().toISOString(),
       total_outlets: totalOutlets,
       total_reach: totalReach,
-      outlets: outlets,
+      outlets,
       status: "completed",
     };
   };
@@ -229,17 +214,14 @@ const PRReport = () => {
   // Function to process and normalize JSON data
   const processJSONReport = (rawData, fileName) => {
     // Extract title from filename or data
-    const title =
-      rawData.title ||
-      fileName.replace(".json", "") ||
-      "PR Distribution Report";
+    const title = rawData.title || fileName.replace(".json", "") || "PR Distribution Report";
 
     // Handle different possible JSON structures
     let outlets = [];
 
     // Try different possible outlet array locations
     if (Array.isArray(rawData.outlets)) {
-      outlets = rawData.outlets;
+      ({ outlets } = rawData);
     } else if (Array.isArray(rawData.data)) {
       outlets = rawData.data;
     } else if (Array.isArray(rawData.results)) {
@@ -256,9 +238,7 @@ const PRReport = () => {
       outlets = rawData;
     } else {
       // Try to find any array properties
-      const arrayProperties = Object.keys(rawData).filter((key) =>
-        Array.isArray(rawData[key])
-      );
+      const arrayProperties = Object.keys(rawData).filter((key) => Array.isArray(rawData[key]));
 
       if (arrayProperties.length > 0) {
         outlets = rawData[arrayProperties[0]];
@@ -267,24 +247,9 @@ const PRReport = () => {
 
     // Process each outlet
     const processedOutlets = outlets.map((outlet) => ({
-      website_name:
-        outlet.website_name ||
-        outlet.name ||
-        outlet.outlet ||
-        outlet.publication ||
-        "Unknown Outlet",
-      published_url:
-        outlet.published_url ||
-        outlet.url ||
-        outlet.link ||
-        outlet.article_url ||
-        "#",
-      potential_reach:
-        outlet.potential_reach ||
-        outlet.reach ||
-        outlet.audience ||
-        outlet.views ||
-        0,
+      website_name: outlet.website_name || outlet.name || outlet.outlet || outlet.publication || "Unknown Outlet",
+      published_url: outlet.published_url || outlet.url || outlet.link || outlet.article_url || "#",
+      potential_reach: outlet.potential_reach || outlet.reach || outlet.audience || outlet.views || 0,
     }));
 
     // Calculate totals
@@ -296,9 +261,8 @@ const PRReport = () => {
 
     return {
       id: `uploaded-${Date.now()}`,
-      title: title,
-      date_created:
-        rawData.date_created || rawData.created_at || new Date().toISOString(),
+      title,
+      date_created: rawData.date_created || rawData.created_at || new Date().toISOString(),
       total_outlets: rawData.total_outlets || totalOutlets,
       total_reach: rawData.total_reach || totalReach,
       outlets: processedOutlets,
@@ -315,13 +279,11 @@ const PRReport = () => {
     }, 1000);
   };
 
-  const handleShare = (reportId) => {
+  const handleShare = (sharedReportId) => {
     if (report) {
       // Store the report in localStorage for sharing
-      const storedReports = JSON.parse(
-        localStorage.getItem("sharedReports") || "{}"
-      );
-      storedReports[reportId] = report;
+      const storedReports = JSON.parse(localStorage.getItem("sharedReports") || "{}");
+      storedReports[sharedReportId] = report;
       localStorage.setItem("sharedReports", JSON.stringify(storedReports));
 
       toast({
@@ -345,9 +307,7 @@ const PRReport = () => {
             </Link>
             <div>
               <h1 className="text-2xl font-bold">PR Distribution Report</h1>
-              {reportId && (
-                <p className="text-muted-foreground">Report ID: {reportId}</p>
-              )}
+              {reportId && <p className="text-muted-foreground">Report ID: {reportId}</p>}
             </div>
           </div>
         </div>
@@ -362,20 +322,16 @@ const PRReport = () => {
                 <FileText className="h-12 w-12 text-primary mx-auto mb-4" />
                 <CardTitle>Upload Your PR Report</CardTitle>
                 <CardDescription>
-                  Upload the CSV or JSON report file you received after your PR
-                  distribution to view detailed analytics and publication data
+                  Upload the CSV or JSON report file you received after your PR distribution to view detailed analytics
+                  and publication data
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center">
                   <Upload className="h-8 w-8 text-muted-foreground mx-auto mb-4" />
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground">
-                      Click to upload or drag and drop
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      CSV or JSON files only (MAX. 10MB)
-                    </p>
+                    <p className="text-sm text-muted-foreground">Click to upload or drag and drop</p>
+                    <p className="text-xs text-muted-foreground">CSV or JSON files only (MAX. 10MB)</p>
                   </div>
                   <input
                     type="file"
@@ -386,9 +342,7 @@ const PRReport = () => {
                 </div>
 
                 <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Or try our sample report to see how it works
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">Or try our sample report to see how it works</p>
                   <Button variant="outline" onClick={loadSampleReport}>
                     Load Sample Report
                   </Button>
@@ -398,11 +352,7 @@ const PRReport = () => {
           </div>
         )}
 
-        <PRReportViewer
-          report={report || undefined}
-          loading={loading}
-          onShare={handleShare}
-        />
+        <PRReportViewer report={report || undefined} loading={loading} onShare={handleShare} />
       </main>
     </div>
   );

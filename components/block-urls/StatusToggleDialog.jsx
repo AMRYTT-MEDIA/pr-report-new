@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Ban, CheckCircle, CircleCheck, CircleX, X } from "lucide-react";
+import { CheckCircle, CircleCheck, CircleX, X } from "lucide-react";
 import { toast } from "sonner";
 import CommonModal from "@/components/common/CommonModal";
 import { blockUrlsService } from "@/services/blockUrls";
@@ -46,10 +46,7 @@ export default function StatusToggleDialog({
       const response = await blockUrlsService.updateBlock(urlData._id, {
         isActive: newStatus,
       });
-      toast.success(
-        response.message ||
-          `URL ${isActivating ? "enabled" : "disabled"} successfully!`
-      );
+      toast.success(response.message || `URL ${isActivating ? "enabled" : "disabled"} successfully!`);
 
       onClose();
 
@@ -84,13 +81,11 @@ export default function StatusToggleDialog({
       subtitle={
         isBulkOperation ? (
           <>
-            Are you sure you want {actionText.toLowerCase()}{" "}
-            <span className="font-bold">{selectedCount} URL(s)</span> ?
+            Are you sure you want {actionText.toLowerCase()} <span className="font-bold">{selectedCount} URL(s)</span> ?
           </>
         ) : (
           <>
-            Are you sure you want {actionText.toLowerCase()}{" "}
-            <span className="font-bold">{urlData?.domain}</span> ?
+            Are you sure you want {actionText.toLowerCase()} <span className="font-bold">{urlData?.domain}</span> ?
           </>
         )
       }
@@ -121,19 +116,10 @@ export default function StatusToggleDialog({
             className="px-4 py-2.5 rounded-full flex items-center gap-2 text-sm font-semibold transition-colors disabled:opacity-50 bg-indigo-500 text-white hover:bg-indigo-600"
           >
             {loading ? (
-              <Loading
-                size="sm"
-                color="white"
-                showText={true}
-                text={actionText}
-              />
+              <Loading size="sm" color="white" showText={true} text={actionText} />
             ) : (
               <>
-                {isActivating ? (
-                  <CheckCircle className="w-5 h-5" />
-                ) : (
-                  <CircleX className="w-5 h-5" />
-                )}
+                {isActivating ? <CheckCircle className="w-5 h-5" /> : <CircleX className="w-5 h-5" />}
                 {actionText}
               </>
             )}

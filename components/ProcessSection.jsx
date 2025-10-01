@@ -69,8 +69,8 @@ const ProcessSection = () => {
             How Our <span className="text-primary">PR Distribution</span> Works
           </h2>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-            From content creation to comprehensive reporting, our streamlined
-            4-step process ensures maximum impact for your press releases
+            From content creation to comprehensive reporting, our streamlined 4-step process ensures maximum impact for
+            your press releases
           </p>
         </div>
 
@@ -92,20 +92,14 @@ const ProcessSection = () => {
                   </div>
 
                   <div className="flex-1">
-                    <h3 className="text-2xl font-bold text-foreground mb-4">
-                      {step.title}
-                    </h3>
-                    <p className="text-muted-foreground mb-6 leading-relaxed">
-                      {step.description}
-                    </p>
+                    <h3 className="text-2xl font-bold text-foreground mb-4">{step.title}</h3>
+                    <p className="text-muted-foreground mb-6 leading-relaxed">{step.description}</p>
 
                     <ul className="space-y-3">
                       {step.details.map((detail, idx) => (
                         <li key={idx} className="flex items-center gap-3">
                           <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
-                          <span className="text-sm text-muted-foreground">
-                            {detail}
-                          </span>
+                          <span className="text-sm text-muted-foreground">{detail}</span>
                         </li>
                       ))}
                     </ul>
@@ -118,13 +112,10 @@ const ProcessSection = () => {
 
         <div className="text-center mt-16">
           <div className="bg-gradient-to-r from-primary/10 to-pr-green/10 rounded-2xl p-8 max-w-4xl mx-auto">
-            <h3 className="text-2xl font-bold text-foreground mb-4">
-              Ready to Get Started?
-            </h3>
+            <h3 className="text-2xl font-bold text-foreground mb-4">Ready to Get Started?</h3>
             <p className="text-muted-foreground mb-6">
-              Our streamlined process ensures your press release gets maximum
-              exposure and impact. Get started today and see the difference
-              professional PR distribution makes.
+              Our streamlined process ensures your press release gets maximum exposure and impact. Get started today and
+              see the difference professional PR distribution makes.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Badge variant="default" className="text-lg px-6 py-3">

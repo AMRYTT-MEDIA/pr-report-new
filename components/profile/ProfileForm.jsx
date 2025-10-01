@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { useFormik, FormikProvider } from "formik";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { FormField, PasswordField, FileUploadField } from "@/components/forms";
+import { FormField, PasswordField } from "@/components/forms";
 import { PencilLine, Save, X } from "lucide-react";
 import {
   profileValidationSchema,
@@ -41,10 +41,7 @@ export const ProfileForm = ({ className = "" }) => {
 
       try {
         // Check if password fields are being changed
-        const isPasswordChange =
-          values.newPassword &&
-          values.currentPassword &&
-          values.confirmPassword;
+        const isPasswordChange = values.newPassword && values.currentPassword && values.confirmPassword;
 
         const response = await userService.updateProfile(values);
 
@@ -59,6 +56,7 @@ export const ProfileForm = ({ className = "" }) => {
           } else {
             // If only username/avatar was changed, update user context with latest data
             if (values.fullName || values.avatar) {
+              // eslint-disable-next-line no-use-before-define
               formik.resetForm();
               setUser(response.user);
             }
@@ -89,6 +87,7 @@ export const ProfileForm = ({ className = "" }) => {
         setIsLoading(false);
       }
     },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [user, router, logout, setUser]
   );
 
@@ -147,17 +146,14 @@ export const ProfileForm = ({ className = "" }) => {
         confirmPassword: false,
       });
     }
-  }, [
-    formik.values.currentPassword,
-    formik.values.newPassword,
-    formik.values.confirmPassword,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formik.values.currentPassword, formik.values.newPassword, formik.values.confirmPassword]);
 
   // Memoized cancel handler
   const handleCancel = useCallback(() => {
     // formik.resetForm();
     router.back(); // Navigate to the previous page
-  }, [formik, router]);
+  }, [router]);
 
   // Avatar selection handler
   const handleAvatarSelect = useCallback(
@@ -172,19 +168,13 @@ export const ProfileForm = ({ className = "" }) => {
     try {
       const current = formik.values?.avatar || user?.avatar;
       // Derive filename if URL/path provided
-      const filename =
-        typeof current === "string" && current.includes("/")
-          ? current.split("/").pop()
-          : current;
+      const filename = typeof current === "string" && current.includes("/") ? current.split("/").pop() : current;
 
       if (filename) {
         // Delete from server folder
-        await fetch(
-          `/api/profile/delete-avatar?filename=${encodeURIComponent(filename)}`,
-          {
-            method: "DELETE",
-          }
-        );
+        await fetch(`/api/profile/delete-avatar?filename=${encodeURIComponent(filename)}`, {
+          method: "DELETE",
+        });
       }
 
       // Update backend user to clear avatar
@@ -205,12 +195,7 @@ export const ProfileForm = ({ className = "" }) => {
   return (
     <div className={cn("p-[10px] sm:p-[15px]", className)}>
       <FormikProvider value={formik}>
-        <form
-          onSubmit={formik.handleSubmit}
-          autoComplete="off"
-          noValidate
-          data-lpignore="true"
-        >
+        <form onSubmit={formik.handleSubmit} autoComplete="off" noValidate data-lpignore="true">
           {/* Main Container */}
           <div className="flex gap-4  mx-auto flex-col md:flex-row">
             {/* Left Avatar Panel */}
@@ -222,13 +207,9 @@ export const ProfileForm = ({ className = "" }) => {
                     <div className="flex flex-col items-center space-y-5">
                       <div className="relative">
                         <div className="w-[110px] h-[110px] rounded-full overflow-hidden bg-slate-100">
-                          {user?.avatar &&
-                          user?.avatar !== "" &&
-                          getAvatarUrl(user.avatar) ? (
+                          {user?.avatar && user?.avatar !== "" && getAvatarUrl(user.avatar) ? (
                             <Image
-                              src={
-                                getAvatarUrl(user.avatar) || "/placeholder.svg"
-                              }
+                              src={getAvatarUrl(user.avatar) || "/placeholder.svg"}
                               alt="Profile"
                               className="w-full h-full object-cover"
                               width={110}
@@ -237,9 +218,7 @@ export const ProfileForm = ({ className = "" }) => {
                             />
                           ) : (
                             <div className="w-full h-full flex items-center justify-center bg-indigo-100 text-indigo-600 text-2xl font-semibold">
-                              {(formik.values?.fullName || user?.fullName)
-                                ?.charAt(0)
-                                ?.toUpperCase() || "U"}
+                              {(formik.values?.fullName || user?.fullName)?.charAt(0)?.toUpperCase() || "U"}
                             </div>
                           )}
                         </div>
@@ -269,30 +248,18 @@ export const ProfileForm = ({ className = "" }) => {
                     {/* User Info Display */}
                     <div className="w-full space-y-5">
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-slate-800">
-                          User Name
-                        </p>
-                        <p className="text-base text-slate-500">
-                          {formik.values?.fullName || user?.fullName || "N/A"}
-                        </p>
+                        <p className="text-sm font-medium text-slate-800">User Name</p>
+                        <p className="text-base text-slate-500">{formik.values?.fullName || user?.fullName || "N/A"}</p>
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-slate-800">
-                          Email Address
-                        </p>
-                        <p className="text-base text-slate-500">
-                          {formik.values?.email || user?.email || "N/A"}
-                        </p>
+                        <p className="text-sm font-medium text-slate-800">Email Address</p>
+                        <p className="text-base text-slate-500">{formik.values?.email || user?.email || "N/A"}</p>
                       </div>
 
                       <div className="space-y-1">
-                        <p className="text-sm font-medium text-slate-800">
-                          User Role
-                        </p>
-                        <p className="text-base text-slate-500">
-                          {formik.values?.role || user?.role || "N/A"}
-                        </p>
+                        <p className="text-sm font-medium text-slate-800">User Role</p>
+                        <p className="text-base text-slate-500">{formik.values?.role || user?.role || "N/A"}</p>
                       </div>
                     </div>
                   </div>
@@ -307,9 +274,7 @@ export const ProfileForm = ({ className = "" }) => {
                   <div className="space-y-6">
                     {/* Form Header */}
                     <div>
-                      <h2 className="text-xl font-semibold text-slate-800">
-                        Edit Profile
-                      </h2>
+                      <h2 className="text-xl font-semibold text-slate-800">Edit Profile</h2>
                       <div className="w-full h-px bg-slate-200 mt-6"></div>
                     </div>
 
@@ -324,12 +289,7 @@ export const ProfileForm = ({ className = "" }) => {
                     <div className="space-y-6">
                       {/* User Name Field */}
                       <div className="space-y-2">
-                        <FormField
-                          name="fullName"
-                          label="User Name"
-                          placeholder="Enter your full name"
-                          required
-                        />
+                        <FormField name="fullName" label="User Name" placeholder="Enter your full name" required />
                       </div>
 
                       {/* Password Fields */}
@@ -380,19 +340,12 @@ export const ProfileForm = ({ className = "" }) => {
                         <Button
                           type="submit"
                           disabled={
-                            formik.isSubmitting ||
-                            isLoading ||
-                            !formik.dirty ||
-                            Object.keys(formik.errors).length > 0
+                            formik.isSubmitting || isLoading || !formik.dirty || Object.keys(formik.errors).length > 0
                           }
                           className="rounded-full px-4 py-2 h-10 bg-indigo-500 hover:bg-indigo-600 text-white disabled:opacity-50"
                         >
                           {formik.isSubmitting || isLoading ? (
-                            <Loading
-                              size="sm"
-                              color="white"
-                              className="w-4 h-4 animate-spin"
-                            />
+                            <Loading size="sm" color="white" className="w-4 h-4 animate-spin" />
                           ) : (
                             <Save className="w-4 h-4" />
                           )}

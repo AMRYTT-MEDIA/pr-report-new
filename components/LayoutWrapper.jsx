@@ -1,6 +1,6 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import Sidebar from "./Sidebar";
 import NavBar from "./NavBar";
 import { useBreadcrumb } from "@/contexts/BreadcrumbContext";

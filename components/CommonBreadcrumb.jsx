@@ -19,10 +19,7 @@ const CommonBreadcrumb = ({ items = [] }) => {
         {items
           .filter((item) => item && typeof item === "object" && item.name)
           .map((item, index) => (
-            <li
-              key={item.href || item.name || index}
-              className="flex items-center"
-            >
+            <li key={item.href || item.name || index} className="flex items-center">
               <ChevronRight className="h-4 w-4 mx-2 text-slate-400" />
 
               {item.current ? (
@@ -41,9 +38,7 @@ const CommonBreadcrumb = ({ items = [] }) => {
                   {item.name}
                 </Link>
               ) : (
-                <span className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter']">
-                  {item.name}
-                </span>
+                <span className="text-slate-700 font-medium text-sm leading-[1.45] font-['Inter']">{item.name}</span>
               )}
             </li>
           ))}

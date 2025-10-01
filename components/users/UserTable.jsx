@@ -35,8 +35,11 @@ const UserTable = ({ loading = false }) => {
 
   // Fetch users and roles on component mount
   useEffect(() => {
+    // eslint-disable-next-line no-use-before-define
     fetchUsers(currentPage, itemsPerPage);
+    // eslint-disable-next-line no-use-before-define
     fetchRoles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchUsers = async (page = currentPage, limit = itemsPerPage) => {
@@ -47,8 +50,7 @@ const UserTable = ({ loading = false }) => {
       // Handle the API response structure
       // Assuming the API returns: { data: users[], totalCount: number, currentPage: number, totalPages: number }
       const usersData = response?.data || response?.users || response || [];
-      const totalCount =
-        response?.totalCount || response?.total || usersData.length;
+      const totalCount = response?.totalCount || response?.total || usersData.length;
 
       setUsers(usersData);
       setTotalItems(totalCount);
@@ -92,15 +94,9 @@ const UserTable = ({ loading = false }) => {
       await userService.toggleUserStatus(user._id, newStatus);
 
       // Update local state
-      setUsers((prev) =>
-        prev.map((u) =>
-          u._id === user._id ? { ...u, isActive: newStatus } : u
-        )
-      );
+      setUsers((prev) => prev.map((u) => (u._id === user._id ? { ...u, isActive: newStatus } : u)));
 
-      toast.success(
-        `User ${!newStatus ? "deactivated" : "activated"} successfully`
-      );
+      toast.success(`User ${!newStatus ? "deactivated" : "activated"} successfully`);
 
       setShowDeactivateModal(false);
       setSelectedUser(null);
@@ -258,9 +254,7 @@ const UserTable = ({ loading = false }) => {
       width: "250px",
       minWidth: "200px",
       render: (value, user) => (
-        <div className="font-medium text-slate-600 text-sm whitespace-nowrap overflow-hidden">
-          {user.email}
-        </div>
+        <div className="font-medium text-slate-600 text-sm whitespace-nowrap overflow-hidden">{user.email}</div>
       ),
     },
     {
@@ -313,11 +307,7 @@ const UserTable = ({ loading = false }) => {
       width: "100px",
       minWidth: "80px",
       render: (value, user) => (
-        <CustomSwitch
-          checked={user.isActive}
-          onChange={() => handleToggleActive(user)}
-          size="default"
-        />
+        <CustomSwitch checked={user.isActive} onChange={() => handleToggleActive(user)} size="default" />
       ),
     },
   ];
@@ -364,8 +354,7 @@ const UserTable = ({ loading = false }) => {
           {
             label: "",
             onClick: handleEdit,
-            className:
-              "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
+            className: "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
             icon: PencilLine,
             showTooltip: true,
             tooltipText: "Edit",
@@ -373,8 +362,7 @@ const UserTable = ({ loading = false }) => {
           {
             label: "",
             onClick: handleChangePassword,
-            className:
-              "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ",
+            className: "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent ",
             icon: KeyRound,
             showTooltip: true,
             tooltipText: "Change Password",

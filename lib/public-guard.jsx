@@ -5,7 +5,7 @@ import { useAuth } from "./auth";
 import Loading from "@/components/ui/loading";
 
 export function PublicGuard({ children }) {
-  const { user, loading, initialized } = useAuth();
+  const { user, initialized } = useAuth();
   const router = useRouter();
   const path = usePathname();
   const hasRedirected = useRef(false);
@@ -35,13 +35,7 @@ export function PublicGuard({ children }) {
   if (!initialized) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loading
-          size="lg"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <Loading size="lg" showText={true} text="Loading..." textColor="black" textPosition="bottom" />
       </div>
     );
   }

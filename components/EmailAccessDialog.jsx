@@ -15,7 +15,7 @@ export default function EmailAccessDialog({
   const [otp, setOtp] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
+  const [, setSuccess] = useState(false);
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
@@ -29,10 +29,7 @@ export default function EmailAccessDialog({
       setStep(2);
       setSuccess(true);
     } catch (error) {
-      setError(
-        error.response?.data?.message ||
-          "Failed to send access request. Please try again."
-      );
+      setError(error.response?.data?.message || "Failed to send access request. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -49,9 +46,7 @@ export default function EmailAccessDialog({
       await onVerifyOTP(email, otp);
       onClose();
     } catch (error) {
-      setError(
-        error.response?.data?.message || "Invalid OTP. Please try again."
-      );
+      setError(error.response?.data?.message || "Invalid OTP. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -78,16 +73,11 @@ export default function EmailAccessDialog({
               <Lock className="w-5 h-5 text-blue-600" />
             </div>
             <div>
-              <h2 className="text-lg font-semibold text-slate-900">
-                Private Report
-              </h2>
+              <h2 className="text-lg font-semibold text-slate-900">Private Report</h2>
               <p className="text-sm text-slate-600">{reportTitle}</p>
             </div>
           </div>
-          <button
-            onClick={handleClose}
-            className="text-slate-400 hover:text-slate-600 transition-colors"
-          >
+          <button onClick={handleClose} className="text-slate-400 hover:text-slate-600 transition-colors">
             <X className="w-5 h-5" />
           </button>
         </div>
@@ -101,19 +91,14 @@ export default function EmailAccessDialog({
                 <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <Mail className="w-8 h-8 text-blue-600" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-900 text-center mb-2">
-                  Request Access
-                </h3>
+                <h3 className="text-lg font-medium text-slate-900 text-center mb-2">Request Access</h3>
                 <p className="text-sm text-slate-600 text-center">
                   This report is private. Enter your email to request access.
                 </p>
               </div>
 
               <div className="mb-4">
-                <label
-                  htmlFor="email"
-                  className="block text-sm font-medium text-slate-700 mb-2"
-                >
+                <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
                   Email Address
                 </label>
                 <input
@@ -155,19 +140,14 @@ export default function EmailAccessDialog({
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-green-600" />
                 </div>
-                <h3 className="text-lg font-medium text-slate-900 text-center mb-2">
-                  Check Your Email
-                </h3>
+                <h3 className="text-lg font-medium text-slate-900 text-center mb-2">Check Your Email</h3>
                 <p className="text-sm text-slate-600 text-center">
                   We've sent a verification code to <strong>{email}</strong>
                 </p>
               </div>
 
               <div className="mb-4">
-                <label
-                  htmlFor="otp"
-                  className="block text-sm font-medium text-slate-700 mb-2"
-                >
+                <label htmlFor="otp" className="block text-sm font-medium text-slate-700 mb-2">
                   Verification Code
                 </label>
                 <input
@@ -217,9 +197,7 @@ export default function EmailAccessDialog({
 
         {/* Footer */}
         <div className="px-6 py-4 bg-slate-500 rounded-b-lg">
-          <p className="text-xs text-slate-500 text-center">
-            Need help? Contact support for assistance.
-          </p>
+          <p className="text-xs text-slate-500 text-center">Need help? Contact support for assistance.</p>
         </div>
       </div>
     </div>

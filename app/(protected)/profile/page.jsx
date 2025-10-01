@@ -2,8 +2,7 @@ import ProfileForm from "@/components/profile/ProfileForm";
 
 export const metadata = {
   title: "Profile",
-  description:
-    "Manage your profile settings and account information. Update your personal details and preferences.",
+  description: "Manage your profile settings and account information. Update your personal details and preferences.",
 };
 
 export default function ProfilePage() {

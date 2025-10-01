@@ -2,13 +2,7 @@ import React from "react";
 import { cn } from "@/lib/utils";
 import { Check, X } from "lucide-react";
 
-const CustomSwitch = ({
-  checked = false,
-  onChange,
-  disabled = false,
-  className,
-  size = "default",
-}) => {
+const CustomSwitch = ({ checked = false, onChange, disabled = false, className, size = "default" }) => {
   const handleClick = () => {
     if (!disabled && onChange) {
       onChange(!checked);

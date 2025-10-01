@@ -1,18 +1,9 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  Users,
-  Globe,
-  FileText,
-  Menu,
-  X,
-  LayoutList,
-  FileSpreadsheet,
-  Ban,
-} from "lucide-react";
+import { Users, Globe, FileSpreadsheet, Ban, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import { filterNavigationByPermissions } from "@/lib/rbac";
@@ -21,7 +12,6 @@ import { prReportsService } from "@/services/prReports";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const router = useRouter();
   const { user } = useAuth();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [prReportsCount, setPrReportsCount] = useState(0);
@@ -75,10 +65,7 @@ const Sidebar = () => {
   ];
 
   // Filter navigation items based on user permissions
-  const navigationItems = filterNavigationByPermissions(
-    allNavigationItems,
-    user
-  );
+  const navigationItems = filterNavigationByPermissions(allNavigationItems, user);
 
   // Navigation filtering is handled by filterNavigationByPermissions
 
@@ -89,27 +76,20 @@ const Sidebar = () => {
 
       // Special handling for PR Reports
       if (normalizedHref === "/pr-reports-list") {
-        return (
-          normalizedPathname === "/pr-reports-list" ||
-          normalizedPathname.startsWith("/view-pr")
-        );
+        return normalizedPathname === "/pr-reports-list" || normalizedPathname.startsWith("/view-pr");
       }
 
       return normalizedHref === normalizedPathname;
     },
-    [pathname, router]
+    [pathname]
   );
-
-  const handleNavigation = (href) => {
-    router.push(href);
-    setIsSidebarOpen(false);
-  };
 
   // Fetch PR reports count when user is available
   useEffect(() => {
     if (user) {
       fetchPRReportsCount();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   // Sync with global toggle events
@@ -120,8 +100,7 @@ const Sidebar = () => {
       }
     };
     window.addEventListener("app-sidebar-toggle", handleSidebarToggle);
-    return () =>
-      window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
+    return () => window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
   }, []);
 
   // Restore persisted state
@@ -129,7 +108,9 @@ const Sidebar = () => {
     try {
       const saved = sessionStorage.getItem("app-sidebar-open");
       if (saved !== null) setIsSidebarOpen(saved === "true");
-    } catch {}
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
   }, []);
 
   useEffect(() => {
@@ -142,9 +123,7 @@ const Sidebar = () => {
     const handleKeyDown = (event) => {
       if (event.key === "Escape") {
         setIsSidebarOpen(false);
-        window.dispatchEvent(
-          new CustomEvent("app-sidebar-toggle", { detail: { open: false } })
-        );
+        window.dispatchEvent(new CustomEvent("app-sidebar-toggle", { detail: { open: false } }));
       }
     };
 
@@ -153,10 +132,10 @@ const Sidebar = () => {
     // Broadcast and persist state so NavBar button reflects it
     try {
       sessionStorage.setItem("app-sidebar-open", String(isSidebarOpen));
-    } catch {}
-    window.dispatchEvent(
-      new CustomEvent("app-sidebar-toggle", { detail: { open: isSidebarOpen } })
-    );
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
+    window.dispatchEvent(new CustomEvent("app-sidebar-toggle", { detail: { open: isSidebarOpen } }));
 
     return () => {
       document.body.style.overflow = "";
@@ -220,17 +199,11 @@ const Sidebar = () => {
                     <div className="flex-1 flex justify-start items-center gap-2">
                       {/* Icon Container */}
                       <div className="w-5 h-5 relative flex items-center justify-center">
-                        <Icon
-                          className={
-                            active ? "text-slate-800" : "text-slate-500"
-                          }
-                        />
+                        <Icon className={active ? "text-slate-800" : "text-slate-500"} />
                       </div>
 
                       {/* Text */}
-                      <div className="flex-1 justify-start text-slate-800 text-sm font-medium">
-                        {item.name}
-                      </div>
+                      <div className="flex-1 justify-start text-slate-800 text-sm font-medium">{item.name}</div>
                     </div>
 
                     {/* Badge */}
@@ -261,10 +234,10 @@ const Sidebar = () => {
             setIsSidebarOpen(false);
             try {
               sessionStorage.setItem("app-sidebar-open", "false");
-            } catch {}
-            window.dispatchEvent(
-              new CustomEvent("app-sidebar-toggle", { detail: { open: false } })
-            );
+            } catch {
+              // Silently fail if sessionStorage is not available
+            }
+            window.dispatchEvent(new CustomEvent("app-sidebar-toggle", { detail: { open: false } }));
           }}
         >
           <X className="h-5 w-5 text-slate-700" />

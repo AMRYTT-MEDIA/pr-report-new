@@ -9,15 +9,10 @@ export async function DELETE(request) {
     const avatarFilename = searchParams.get("filename");
 
     if (!avatarFilename) {
-      return NextResponse.json(
-        { error: "No avatar filename provided." },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "No avatar filename provided." }, { status: 400 });
     }
 
-    const filename = avatarFilename.includes("/")
-      ? avatarFilename.split("/").pop()
-      : avatarFilename;
+    const filename = avatarFilename.includes("/") ? avatarFilename.split("/").pop() : avatarFilename;
 
     const avatarDir = path.join(process.cwd(), "public/uploads/profile");
     const filePath = path.join(avatarDir, filename);
@@ -41,9 +36,6 @@ export async function DELETE(request) {
     });
   } catch (error) {
     console.error("Error deleting avatar:", error);
-    return NextResponse.json(
-      { error: "Failed to delete avatar file", details: error.message },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Failed to delete avatar file", details: error.message }, { status: 500 });
   }
 }

@@ -12,9 +12,7 @@ export const publicPrReportsService = {
 
   // Get PR report group by grid ID (public)
   getReportGroup: async (gridId) => {
-    return await publicApiGet(
-      `/pr-distributions/getPRReportGroupByGridId/${gridId}`
-    );
+    return await publicApiGet(`/pr-distributions/getPRReportGroupByGridId/${gridId}`);
   },
 
   // Get PR report data (public)

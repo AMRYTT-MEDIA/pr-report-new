@@ -1,13 +1,7 @@
 "use client";
 
 import React from "react";
-import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { X } from "lucide-react";
 
 /**
@@ -38,7 +32,6 @@ const CommonModal = ({
   showCloseButton = true,
   size = "md", // sm, md, lg, xl, 2xl
   className = "",
-  headerClassName = "",
   contentClassName = "",
   footerClassName = "bg-slate-100",
   closeOnOverlayClick = true,
@@ -83,6 +76,7 @@ const CommonModal = ({
       document.removeEventListener("keydown", handleEscape);
       document.body.style.overflow = "unset";
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, closeOnEscape]);
 
   // Size classes
@@ -95,8 +89,7 @@ const CommonModal = ({
   };
 
   // Check if custom className overrides default sizing
-  const hasCustomSizing =
-    className.includes("max-w-") || className.includes("w-");
+  const hasCustomSizing = className.includes("max-w-") || className.includes("w-");
   const defaultSizing = hasCustomSizing ? "" : "max-w-[90vw] sm:max-w-[550px]";
 
   return (
@@ -124,15 +117,9 @@ const CommonModal = ({
         >
           {/* Header Section */}
           <div className="flex items-center justify-between">
-            <div className="flex items-center border border-purple-70 rounded-lg p-2.5">
-              {icon}
-            </div>
+            <div className="flex items-center border border-purple-70 rounded-lg p-2.5">{icon}</div>
             {showCloseButton && (
-              <button
-                onClick={handleClose}
-                className="p-1 hover:bg-gray-100 rounded"
-                disabled={preventClose}
-              >
+              <button onClick={handleClose} className="p-1 hover:bg-gray-100 rounded" disabled={preventClose}>
                 <X className="w-5 h-5 text-gray-500" />
               </button>
             )}
@@ -143,41 +130,26 @@ const CommonModal = ({
             <div className="flex sm:items-center justify-between flex-col sm:flex-row gap-3">
               <div>
                 <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
-                <p className="text-sm text-font-h2 opacity-50 font-semibold mt-1">
-                  {subtitle}
-                </p>
+                <p className="text-sm text-font-h2 opacity-50 font-semibold mt-1">{subtitle}</p>
               </div>
-              {headerActions && (
-                <div className="flex items-center gap-2 justify-end">
-                  {headerActions}
-                </div>
-              )}
+              {headerActions && <div className="flex items-center gap-2 justify-end">{headerActions}</div>}
             </div>
           ) : (
             <div className="flex flex-col gap-1">
               <h2 className="text-lg font-semibold text-font-h2">{title}</h2>
               <p className="text-slate-500 text-sm">
-                {subtitle}{" "}
-                {subtitle2 && (
-                  <span className="text-slate-500 font-semibold text-sm ">
-                    {subtitle2}
-                  </span>
-                )}
+                {subtitle} {subtitle2 && <span className="text-slate-500 font-semibold text-sm ">{subtitle2}</span>}
               </p>
             </div>
           )}
-          {isBorderShow && (
-            <div className="border-b-2 border-dashed border-slate-200" />
-          )}
+          {isBorderShow && <div className="border-b-2 border-dashed border-slate-200" />}
           {/* Dynamic Content */}
           <div className={`${contentClassName}`}>{children}</div>
         </div>
 
         {/* Footer Section */}
         {footer && (
-          <div
-            className={`flex gap-2.5 items-center justify-center sm:justify-end p-5 ${footerClassName}`}
-          >
+          <div className={`flex gap-2.5 items-center justify-center sm:justify-end p-5 ${footerClassName}`}>
             {footer}
           </div>
         )}

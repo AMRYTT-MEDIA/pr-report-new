@@ -7,12 +7,7 @@ import { Button } from "@/components/ui/button";
 import { ListRestart, Plus, Search, Trash2, X, PencilLine } from "lucide-react";
 import Pagination from "@/components/Pagination";
 import { CommonTable } from "@/components/common";
-import Loading from "@/components/ui/loading";
-import {
-  AddNewWebsiteDialog,
-  WebsiteDeleteDialog,
-  WebsiteReOrderDialog,
-} from "@/components/website";
+import { AddNewWebsiteDialog, WebsiteDeleteDialog, WebsiteReOrderDialog } from "@/components/website";
 import { toast } from "sonner";
 import { websitesService } from "@/services/websites";
 import { useAuth } from "@/lib/auth";
@@ -21,10 +16,7 @@ import { canManageWebsite } from "@/lib/rbac";
 import WebsiteConstants from "@/components/website/constans";
 import WebsiteIcon from "../ui/WebsiteIcon";
 
-const WebsiteTableClient = ({
-  initialWebsites = [],
-  initialTotalCount = 0,
-}) => {
+const WebsiteTableClient = ({ initialWebsites = [], initialTotalCount = 0 }) => {
   const { user } = useAuth();
   const [websites, setWebsites] = useState(initialWebsites);
   const [loading, setLoading] = useState(true);
@@ -36,7 +28,7 @@ const WebsiteTableClient = ({
   const [editWebsite, setEditWebsite] = useState(null);
   const [deleteDialog, setDeleteDialog] = useState(false);
   const [websiteToDelete, setWebsiteToDelete] = useState(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const [reOrderWebsiteDialog, setReOrderWebsiteDialog] = useState(false);
 
   // Direct render - no useEffect needed
@@ -46,25 +38,15 @@ const WebsiteTableClient = ({
   const useWebsitesData = () => {
     const [refreshTrigger, setRefreshTrigger] = useState(0);
 
-    const loadWebsites = async (
-      page = currentPage,
-      size = pageSize,
-      search = null
-    ) => {
+    const loadWebsites = async (page = currentPage, size = pageSize, search = null) => {
       setLoading(true);
       try {
-        const response = await websitesService.getWebsitesPaginated(
-          page,
-          size,
-          search
-        );
+        const response = await websitesService.getWebsitesPaginated(page, size, search);
         setWebsites(response.data || response.websites || []);
         setTotalCount(response.totalCount || response.total || 0);
       } catch (error) {
         console.error("Error loading websites:", error);
-        toast.error(
-          error.message || "Failed to load websites. Please try again."
-        );
+        toast.error(error.message || "Failed to load websites. Please try again.");
         setWebsites([]);
         setTotalCount(0);
       } finally {
@@ -88,8 +70,9 @@ const WebsiteTableClient = ({
         },
         searchQuery ? 500 : 0
       ); // Immediate load for page changes, debounced for search
-
+      // eslint-disable-next-line no-use-before-define
       return () => clearTimeout(timeoutId);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, pageSize, searchQuery, refreshTrigger]);
 
     return { refreshData };
@@ -118,7 +101,7 @@ const WebsiteTableClient = ({
   };
 
   // Handle add new website
-  const handleAddWebsite = (newWebsite) => {
+  const handleAddWebsite = () => {
     refreshData();
     setEditWebsite(null);
   };
@@ -130,7 +113,7 @@ const WebsiteTableClient = ({
   };
 
   // Handle update website after edit
-  const handleUpdateWebsite = (updatedWebsite) => {
+  const handleUpdateWebsite = () => {
     refreshData();
     setEditWebsite(null);
   };
@@ -161,9 +144,7 @@ const WebsiteTableClient = ({
       toast.success("Website deleted successfully!");
     } catch (error) {
       console.error("Error deleting website:", error);
-      toast.error(
-        error.message || "Failed to delete website. Please try again."
-      );
+      toast.error(error.message || "Failed to delete website. Please try again.");
     } finally {
       setIsDeleting(false);
       setDeleteDialog(false);
@@ -201,7 +182,7 @@ const WebsiteTableClient = ({
     setEditWebsite(null);
   };
 
-  const formatTitle = (title, type) => {
+  const _formatTitle = (title, type) => {
     let maxLength = 50;
     if (type === "name") {
       maxLength = 20;
@@ -210,11 +191,11 @@ const WebsiteTableClient = ({
     }
     if (!title) return "-";
     if (title.length <= maxLength) return title;
-    return title.substring(0, maxLength) + "...";
+    return `${title.substring(0, maxLength)}...`;
   };
 
   // Check if title needs truncation
-  const needsTruncation = (title, type) => {
+  const _needsTruncation = (title, type) => {
     let maxLength = 50;
     if (type === "name") {
       maxLength = 20;
@@ -230,40 +211,27 @@ const WebsiteTableClient = ({
       key: "no",
       label: WebsiteConstants.no,
       width: "4%",
-      render: (value, row, index) => (
-        <p className="text-sm font-medium text-slate-600">{index + 1}</p>
-      ),
+      render: (value, row, index) => <p className="text-sm font-medium text-slate-600">{index + 1}</p>,
     },
     {
       key: "websiteIcon",
       label: WebsiteConstants.websiteIcon,
       width: "15%",
       render: (value, row) => (
-        <WebsiteIcon
-          logoFilename={row.logo}
-          websiteName={row.name}
-          size="default"
-          alt={row.name}
-        />
+        <WebsiteIcon logoFilename={row.logo} websiteName={row.name} size="default" alt={row.name} />
       ),
     },
     {
       key: "name",
       label: WebsiteConstants.websiteName,
       width: "25%",
-      render: (value, row) => (
-        <p className="text-sm font-medium text-slate-600">{row.name || "-"}</p>
-      ),
+      render: (value, row) => <p className="text-sm font-medium text-slate-600">{row.name || "-"}</p>,
     },
     {
-      key: "domain",
+      key: "url",
       label: WebsiteConstants.websiteUrl,
       width: "40%",
-      render: (value, row) => (
-        <p className="text-sm font-medium text-slate-600">
-          {row.domain || "-"}
-        </p>
-      ),
+      render: (value, row) => <p className="text-sm font-medium text-slate-600">{row?.url || "-"}</p>,
     },
   ];
 
@@ -279,11 +247,7 @@ const WebsiteTableClient = ({
           className="w-full pl-9 pr-8 py-2.5 rounded-[41px] border-slate-200 text-slate-600 placeholder:text-slate-600 font-semibold focus:border-indigo-500 placeholder:opacity-50"
         />
         {searchQuery && (
-          <button
-            type="button"
-            onClick={handleClearSearch}
-            className="absolute right-2 top-1/2 -translate-y-1/2"
-          >
+          <button type="button" onClick={handleClearSearch} className="absolute right-2 top-1/2 -translate-y-1/2">
             <X className="h-6 w-6 text-muted-foreground bg-slate-200 rounded-xl p-1" />
           </button>
         )}
@@ -338,8 +302,7 @@ const WebsiteTableClient = ({
                 {
                   label: "",
                   onClick: handleEdit,
-                  className:
-                    "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
+                  className: "text-slate-600 border-0 bg-transparent hover:bg-transparent p-0 hover:!bg-transparent",
                   icon: PencilLine,
                   showTooltip: true,
                   tooltipText: "Edit",
@@ -356,16 +319,8 @@ const WebsiteTableClient = ({
               ]
             : []
         }
-        noDataText={
-          searchQuery
-            ? WebsiteConstants.noWebsiteFound
-            : WebsiteConstants.noWebsiteYetTitle
-        }
-        emptyStateAction={
-          !searchQuery && canManageWebsite(user)
-            ? handleAddFirstWebsite
-            : undefined
-        }
+        noDataText={searchQuery ? WebsiteConstants.noWebsiteFound : WebsiteConstants.noWebsiteYetTitle}
+        emptyStateAction={!searchQuery && canManageWebsite(user) ? handleAddFirstWebsite : undefined}
         emptyStateActionText={WebsiteConstants.addFirstWebsite}
         className="rounded-[10px]"
         headerInnerClassName="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"

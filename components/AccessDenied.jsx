@@ -51,19 +51,14 @@ const AccessDenied = ({
         {/* User role info */}
         {userRole && (
           <p className="text-sm text-slate-500 mb-8">
-            Current role:{" "}
-            <span className="font-medium capitalize">{userRole}</span>
+            Current role: <span className="font-medium capitalize">{userRole}</span>
           </p>
         )}
 
         {/* Action buttons */}
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           {showBackButton && (
-            <Button
-              variant="outline"
-              onClick={handleGoBack}
-              className="flex items-center gap-2"
-            >
+            <Button variant="outline" onClick={handleGoBack} className="flex items-center gap-2">
               <ArrowLeft className="w-4 h-4" />
               Go Back
             </Button>

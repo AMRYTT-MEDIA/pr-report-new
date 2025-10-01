@@ -2,21 +2,12 @@ import React, { useState, useCallback } from "react";
 import Image from "next/image";
 import { Skeleton } from "./skeleton";
 
-const WebsiteAvatar = ({
-  logoUrl,
-  websiteName,
-  size = "default",
-  className = "",
-  onImageLoad,
-  onImageError,
-}) => {
-  const [imageLoaded, setImageLoaded] = useState(false);
+const WebsiteAvatar = ({ logoUrl, websiteName, size = "default", className = "", onImageLoad, onImageError }) => {
   const [imageError, setImageError] = useState(false);
   const [isLoading, setIsLoading] = useState(!!logoUrl);
 
   const handleImageLoad = useCallback(() => {
     setIsLoading(false);
-    setImageLoaded(true);
     onImageLoad && onImageLoad();
   }, [onImageLoad]);
 
@@ -53,9 +44,7 @@ const WebsiteAvatar = ({
           src={logoUrl}
           alt={websiteName || "Website logo"}
           fill
-          className={`object-contain ${
-            isLoading ? "opacity-0" : "opacity-100"
-          } transition-opacity duration-200`}
+          className={`object-contain ${isLoading ? "opacity-0" : "opacity-100"} transition-opacity duration-200`}
           onLoad={handleImageLoad}
           onError={handleImageError}
           loading="lazy"
@@ -86,9 +75,7 @@ const WebsiteAvatar = ({
   ];
 
   // Use website name to generate consistent color
-  const colorIndex =
-    websiteName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) %
-    colorClasses.length;
+  const colorIndex = websiteName.split("").reduce((acc, char) => acc + char.charCodeAt(0), 0) % colorClasses.length;
   const colorClass = colorClasses[colorIndex];
 
   return (

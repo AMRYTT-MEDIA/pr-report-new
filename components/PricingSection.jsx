@@ -1,11 +1,5 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Star, Zap, Crown } from "lucide-react";
 
@@ -84,9 +78,8 @@ const PricingSection = () => {
             Simple, Transparent <span className="text-primary">Pricing</span>
           </h2>
           <p className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-muted-foreground max-w-4xl mx-auto">
-            Choose the perfect package for your press release distribution
-            needs. All plans include guaranteed placements and detailed
-            reporting.
+            Choose the perfect package for your press release distribution needs. All plans include guaranteed
+            placements and detailed reporting.
           </p>
           <div className="mt-8">
             <Badge
@@ -114,8 +107,8 @@ const PricingSection = () => {
                     plan.badge === "Most Popular"
                       ? "bg-primary text-white"
                       : plan.badge === "Best Value"
-                      ? "bg-pr-green text-white"
-                      : "bg-accent text-white"
+                        ? "bg-pr-green text-white"
+                        : "bg-accent text-white"
                   }`}
                 >
                   {plan.badge}
@@ -124,9 +117,7 @@ const PricingSection = () => {
 
               <CardHeader className="text-center pb-4">
                 <div className="flex justify-center mb-4">
-                  <div className="p-3 bg-primary/10 rounded-full">
-                    {plan.icon}
-                  </div>
+                  <div className="p-3 bg-primary/10 rounded-full">{plan.icon}</div>
                 </div>
                 <CardTitle className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-foreground">
                   {plan.name}
@@ -152,14 +143,9 @@ const PricingSection = () => {
 
                 <div className="space-y-3">
                   {plan.features.map((feature, featureIndex) => (
-                    <div
-                      key={featureIndex}
-                      className="flex items-start space-x-3"
-                    >
+                    <div key={featureIndex} className="flex items-start space-x-3">
                       <CheckCircle className="h-5 w-5 text-pr-green flex-shrink-0 mt-0.5" />
-                      <span className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-foreground">
-                        {feature}
-                      </span>
+                      <span className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-foreground">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -170,9 +156,7 @@ const PricingSection = () => {
                       ? "bg-primary hover:bg-primary/90"
                       : "bg-foreground hover:bg-foreground/90"
                   }`}
-                  variant={
-                    plan.badge === "Most Popular" ? "default" : "outline"
-                  }
+                  variant={plan.badge === "Most Popular" ? "default" : "outline"}
                 >
                   {plan.cta}
                 </Button>

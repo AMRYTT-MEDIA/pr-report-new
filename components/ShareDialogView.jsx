@@ -2,21 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
-import { Share2, Link, Copy, Check, Lock, Users, X } from "lucide-react";
+import { Share2, Copy, Check, Lock, Users, X } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
-  const router = useRouter();
+  const _router = useRouter();
   const [isPrivate, setIsPrivate] = useState(true);
   const [emails, setEmails] = useState([""]);
   const [shareUrl, setShareUrl] = useState("");
@@ -24,9 +18,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
   // Generate share URL when component mounts
   useEffect(() => {
     if (report) {
-      const url = `${window.location.origin}/report/${
-        report.grid_id || report._id || report.id
-      }`;
+      const url = `${window.location.origin}/report/${report.grid_id || report._id || report.id}`;
       setShareUrl(url);
     }
   }, [report]);
@@ -78,9 +70,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
 
         // Validate email format
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        const invalidEmails = validEmails.filter(
-          (email) => !emailRegex.test(email)
-        );
+        const invalidEmails = validEmails.filter((email) => !emailRegex.test(email));
         if (invalidEmails.length > 0) {
           toast.error("Please enter valid email addresses");
           return;
@@ -105,10 +95,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
       }
 
       onClose();
-      window.open(
-        `/report/${report.grid_id || report._id || report.id}`,
-        "_blank"
-      );
+      window.open(`/report/${report.grid_id || report._id || report.id}`, "_blank");
       toast.success("Report shared successfully!");
     } catch (error) {
       console.error("Error sharing report:", error);
@@ -149,13 +136,9 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
             <div className="flex items-center gap-3">
               <Share2 className="h-5 w-5 text-purple-600" />
               <div>
-                <DialogTitle className="text-lg font-semibold">
-                  Share your PR Report
-                </DialogTitle>
+                <DialogTitle className="text-lg font-semibold">Share your PR Report</DialogTitle>
                 {report?.sharedEmails && report.sharedEmails.length > 0 && (
-                  <p className="text-xs text-blue-600 mt-1">
-                    Editing existing shared emails
-                  </p>
+                  <p className="text-xs text-blue-600 mt-1">Editing existing shared emails</p>
                 )}
               </div>
             </div>
@@ -175,15 +158,8 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
           <div className="space-y-3">
             <div className="space-y-2">
               <div className="flex items-center gap-2">
-                <span className="text-sm text-slate-700">
-                  Anyone with the Email can view
-                </span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setIsPrivate(!isPrivate)}
-                  className="h-6 px-2 text-xs"
-                >
+                <span className="text-sm text-slate-700">Anyone with the Email can view</span>
+                <Button variant="ghost" size="sm" onClick={() => setIsPrivate(!isPrivate)} className="h-6 px-2 text-xs">
                   {isPrivate ? "Private" : "Public"}
                   <Lock className="h-3 w-3 ml-1" />
                 </Button>
@@ -218,17 +194,12 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
           {isPrivate && (
             <div className="space-y-3">
               <div>
-                <Label className="text-sm font-medium">
-                  People With Access
-                </Label>
-                <p className="text-xs text-slate-500">
-                  Email addresses at these domains are allowed.
-                </p>
+                <Label className="text-sm font-medium">People With Access</Label>
+                <p className="text-xs text-slate-500">Email addresses at these domains are allowed.</p>
                 {report?.sharedEmails && report.sharedEmails.length > 0 && (
                   <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-md">
                     <p className="text-xs text-blue-700">
-                      📧 {report.sharedEmails.length} email(s) already shared
-                      with this report
+                      📧 {report.sharedEmails.length} email(s) already shared with this report
                     </p>
                   </div>
                 )}
@@ -256,12 +227,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
                     )}
                   </div>
                 ))}
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={addEmailField}
-                  className="w-full"
-                >
+                <Button variant="outline" size="sm" onClick={addEmailField} className="w-full">
                   + Add another email
                 </Button>
                 <Button
@@ -283,10 +249,7 @@ export default function ShareDialogView({ isOpen, onClose, report, onShare }) {
             <Copy className="h-4 w-4 mr-2" />
             Copy Link
           </Button>
-          <Button
-            onClick={handleShare}
-            className="flex-1 bg-orange-600 hover:bg-orange-700"
-          >
+          <Button onClick={handleShare} className="flex-1 bg-orange-600 hover:bg-orange-700">
             <Check className="h-4 w-4 mr-2" />
             Done
           </Button>

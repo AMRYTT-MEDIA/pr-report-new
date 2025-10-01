@@ -1,28 +1,14 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import {
-  Newspaper,
-  Megaphone,
-  TrendingUp,
-  Award,
-  Zap,
-  Globe,
-} from "lucide-react";
+import { Newspaper, Zap, Globe } from "lucide-react";
 
 const ServicesSection = () => {
   const services = [
     {
       icon: <Newspaper className="h-12 w-12 text-pr-green" />,
       title: "Complete PR Distribution Package",
-      description:
-        "Professional press release writing and distribution to 300+ major news outlets worldwide",
+      description: "Professional press release writing and distribution to 300+ major news outlets worldwide",
       features: [
         "Professional press release writing by expert journalists",
         "Distribution to 300+ premium media outlets",
@@ -41,8 +27,7 @@ const ServicesSection = () => {
     {
       icon: <Globe className="h-12 w-12 text-primary" />,
       title: "Premium Newswire Distribution",
-      description:
-        "Access to major newswire networks and premium financial media outlets",
+      description: "Access to major newswire networks and premium financial media outlets",
       features: [
         "AP News network distribution",
         "Yahoo Finance guaranteed placement",
@@ -61,8 +46,7 @@ const ServicesSection = () => {
     {
       icon: <Zap className="h-12 w-12 text-accent" />,
       title: "Rush Distribution Service",
-      description:
-        "Get your press release distributed within 24 hours for time-sensitive announcements",
+      description: "Get your press release distributed within 24 hours for time-sensitive announcements",
       features: [
         "24-hour guaranteed distribution",
         "Priority outlet placement",
@@ -88,8 +72,8 @@ const ServicesSection = () => {
             Our <span className="text-primary">Press Release Services</span>
           </h2>
           <p className="text-xl lg:text-2xl xl:text-3xl 2xl:text-4xl text-muted-foreground max-w-4xl mx-auto">
-            Comprehensive PR solutions to amplify your brand's voice and reach
-            your target audience through strategic media coverage
+            Comprehensive PR solutions to amplify your brand's voice and reach your target audience through strategic
+            media coverage
           </p>
         </div>
 
@@ -105,8 +89,8 @@ const ServicesSection = () => {
                     service.badge === "Most Popular"
                       ? "bg-pr-green text-white"
                       : service.badge === "Enterprise"
-                      ? "bg-primary text-white"
-                      : "bg-accent text-white"
+                        ? "bg-primary text-white"
+                        : "bg-accent text-white"
                   }`}
                 >
                   {service.badge}
@@ -126,14 +110,9 @@ const ServicesSection = () => {
               <CardContent className="space-y-6">
                 <div className="space-y-3">
                   {service.features.map((feature, featureIndex) => (
-                    <div
-                      key={featureIndex}
-                      className="flex items-start space-x-3"
-                    >
+                    <div key={featureIndex} className="flex items-start space-x-3">
                       <div className="flex-shrink-0 w-2 h-2 bg-pr-green rounded-full mt-2"></div>
-                      <span className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-foreground">
-                        {feature}
-                      </span>
+                      <span className="text-sm lg:text-base xl:text-lg 2xl:text-xl text-foreground">{feature}</span>
                     </div>
                   ))}
                 </div>
@@ -154,9 +133,7 @@ const ServicesSection = () => {
 
                   <Button
                     className="w-full text-base lg:text-lg xl:text-xl 2xl:text-2xl py-3 lg:py-4 xl:py-5 2xl:py-6"
-                    variant={
-                      service.badge === "Most Popular" ? "default" : "outline"
-                    }
+                    variant={service.badge === "Most Popular" ? "default" : "outline"}
                   >
                     {service.cta}
                   </Button>

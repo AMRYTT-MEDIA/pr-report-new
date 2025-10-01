@@ -5,19 +5,11 @@ import { useRouter } from "next/navigation";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "@/lib/firebase";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { toast } from "sonner";
 import Image from "next/image";
 import Loading from "@/components/ui/loading";
 import Link from "next/link";
-import { EmailIcon, ArrowRightIcon, LeftArrow } from "@/components/icon";
+import { EmailIcon, ArrowRightIcon } from "@/components/icon";
 import { useFormik } from "formik";
 import { isEmail } from "validator";
 import * as Yup from "yup";
@@ -35,14 +27,10 @@ const ForgotPasswordForm = () => {
     },
     validationSchema: Yup.object().shape({
       email: Yup.string()
-        .test(
-          "is-valid-email",
-          "Please enter valid email address. (e.g.,username@example.com)",
-          function (value) {
-            if (!value) return false;
-            return isEmail(value.trim());
-          }
-        )
+        .test("is-valid-email", "Please enter valid email address. (e.g.,username@example.com)", (value) => {
+          if (!value) return false;
+          return isEmail(value.trim());
+        })
         .required("Email is required"),
     }),
     onSubmit: async (values) => {
@@ -57,8 +45,7 @@ const ForgotPasswordForm = () => {
 
         switch (error.code) {
           case "auth/user-not-found":
-            errorMessage =
-              "No account found with this email address. Please check your email or create a new account.";
+            errorMessage = "No account found with this email address. Please check your email or create a new account.";
             break;
           case "auth/invalid-email":
             errorMessage = "Please enter a valid email address";
@@ -67,8 +54,7 @@ const ForgotPasswordForm = () => {
             errorMessage = "Too many requests. Please try again later";
             break;
           case "auth/network-request-failed":
-            errorMessage =
-              "Network error. Please check your connection and try again";
+            errorMessage = "Network error. Please check your connection and try again";
             break;
           default:
             errorMessage = "An error occurred. Please try again later";
@@ -121,22 +107,16 @@ const ForgotPasswordForm = () => {
                 <div className="flex flex-col gap-[25px] items-center justify-start relative shrink-0 w-full">
                   <div className="flex flex-col gap-2.5 items-center justify-start leading-[0] not-italic relative shrink-0 text-center w-full">
                     <div className="font-inter font-semibold relative shrink-0 text-[24px] text-slate-800 w-full">
-                      <p className="leading-[24.2px]">
-                        Verify Your Email Address
-                      </p>
+                      <p className="leading-[24.2px]">Verify Your Email Address</p>
                     </div>
                     <div className="font-inter font-medium relative shrink-0 text-sm md:text-[16px] text-slate-600 w-full">
                       {/* Mobile Layout */}
                       <div className="md:hidden text-center space-y-1 px-2">
-                        <div className="leading-relaxed">
-                          We've sent mail to
-                        </div>
+                        <div className="leading-relaxed">We've sent mail to</div>
                         <div className="font-inter font-medium text-indigo-500 break-all leading-relaxed">
                           {formik.values.email || "your email"}
                         </div>
-                        <div className="leading-relaxed">
-                          with a link to activate your account.
-                        </div>
+                        <div className="leading-relaxed">with a link to activate your account.</div>
                       </div>
 
                       {/* Desktop Layout */}
@@ -157,31 +137,17 @@ const ForgotPasswordForm = () => {
                 <div className="flex flex-col gap-8 items-start justify-start relative shrink-0 w-full">
                   <div className="flex flex-col md:flex-row gap-5 items-start justify-start relative shrink-0 w-full">
                     {EMAIL_PROVIDERS.map((provider) => (
-                      <div
-                        key={provider.name}
-                        className="w-full md:flex-1 h-[38px] relative shrink-0"
-                      >
-                        <Link
-                          href={provider.url}
-                          target="_blank"
-                          className="block h-full"
-                        >
+                      <div key={provider.name} className="w-full md:flex-1 h-[38px] relative shrink-0">
+                        <Link href={provider.url} target="_blank" className="block h-full">
                           <div className="absolute bg-white bottom-0 left-0 right-0 rounded-[6px] top-0 border border-[#dbe2ed] hover:border-indigo-300 transition-colors">
                             <div className="overflow-clip relative size-full">
                               <div className="absolute content-stretch flex gap-[7px] items-center justify-center top-1/2 translate-x-[-50%] translate-y-[-50%] left-1/2">
                                 <div className="overflow-clip relative shrink-0 size-6">
-                                  <Image
-                                    src={provider.icon}
-                                    alt={provider.alt}
-                                    width={24}
-                                    height={24}
-                                  />
+                                  <Image src={provider.icon} alt={provider.alt} width={24} height={24} />
                                 </div>
                                 <div className="flex flex-col font-inter font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[14px] text-indigo-500 text-nowrap">
                                   <p className="leading-[16.9px] whitespace-pre">
-                                    {provider.name === "Gmail"
-                                      ? "Open Gmail"
-                                      : provider.name}
+                                    {provider.name === "Gmail" ? "Open Gmail" : provider.name}
                                   </p>
                                 </div>
                               </div>
@@ -201,9 +167,7 @@ const ForgotPasswordForm = () => {
 
                   {/* Spam Folder Message */}
                   <div className="font-inter font-medium leading-[0] not-italic relative shrink-0 text-[#263145] text-sm w-full">
-                    <p className="leading-[normal]">
-                      Didn't Receive an Email? Check Your Spam Folder!
-                    </p>
+                    <p className="leading-[normal]">Didn't Receive an Email? Check Your Spam Folder!</p>
                   </div>
 
                   {/* Resend Buttons */}
@@ -215,11 +179,7 @@ const ForgotPasswordForm = () => {
                         handleBackToLogin();
                       }}
                     >
-                      <MoveLeft
-                        width={20}
-                        height={20}
-                        className="text-indigo-500"
-                      />
+                      <MoveLeft width={20} height={20} className="text-indigo-500" />
                       Back to Login
                     </Button>
                     <Button
@@ -264,13 +224,7 @@ const ForgotPasswordForm = () => {
             <div className="basis-0 content-stretch flex flex-col gap-10 grow items-center justify-start min-h-px min-w-px relative shrink-0">
               {/* Logo */}
               <div className="flex justify-center items-center">
-                <Image
-                  src="/guestpost-link.webp"
-                  alt="PR Reports"
-                  width={223}
-                  height={45}
-                  priority={true}
-                />
+                <Image src="/guestpost-link.webp" alt="PR Reports" width={223} height={45} priority={true} />
               </div>
 
               {/* Title and Description */}
@@ -281,12 +235,8 @@ const ForgotPasswordForm = () => {
                   </div>
                   <div className="font-inter font-medium relative shrink-0 text-sm md:text-[16px] text-slate-600 w-full px-4 md:px-0">
                     <p className="leading-relaxed text-center break-words">
-                      <span className="block md:inline">
-                        You can always reset it.
-                      </span>
-                      <span className="block md:inline md:ml-1">
-                        Enter your email address below
-                      </span>
+                      <span className="block md:inline">You can always reset it.</span>
+                      <span className="block md:inline md:ml-1">Enter your email address below</span>
                     </p>
                   </div>
                 </div>
@@ -294,11 +244,7 @@ const ForgotPasswordForm = () => {
 
               {/* Form */}
               <div className="content-stretch flex flex-col gap-8 items-start justify-start relative shrink-0 w-full">
-                <form
-                  onSubmit={formik.handleSubmit}
-                  className="w-full"
-                  autoComplete="off"
-                >
+                <form onSubmit={formik.handleSubmit} className="w-full" autoComplete="off">
                   <div className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0 w-full">
                     <div className="content-stretch flex flex-col gap-2 items-start justify-start relative shrink-0 w-full">
                       <div className="font-semibold leading-[0] min-w-full not-italic relative shrink-0 text-[14px] text-slate-80">
@@ -333,36 +279,24 @@ const ForgotPasswordForm = () => {
                           </div>
                         </div>
                       </div>
-                      {formik.touched.email && formik.errors.email && (
-                        <ErrorMessage message={formik.errors.email} />
-                      )}
+                      {formik.touched.email && formik.errors.email && <ErrorMessage message={formik.errors.email} />}
                     </div>
                   </div>
 
                   <div className="content-stretch flex flex-col gap-3 items-start justify-start relative shrink-0 w-full mt-8">
                     <button
                       type="submit"
-                      disabled={
-                        formik.isSubmitting || !formik.isValid || !formik.dirty
-                      }
+                      disabled={formik.isSubmitting || !formik.isValid || !formik.dirty}
                       className="bg-indigo-600 box-border content-stretch flex gap-2.5 items-center justify-center min-h-12 overflow-clip px-5 py-3 relative rounded-[1234px] shrink-0 w-full disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       {formik.isSubmitting ? (
                         <div className="flex items-center justify-center gap-2">
-                          <Loading
-                            size="sm"
-                            color="white"
-                            showText={true}
-                            text="Sending..."
-                            textPosition="start"
-                          />
+                          <Loading size="sm" color="white" showText={true} text="Sending..." textPosition="start" />
                         </div>
                       ) : (
                         <>
                           <div className=" font-semibold leading-[0] not-italic relative shrink-0 text-[#ffffff] text-[16px] text-nowrap">
-                            <p className="leading-[normal] whitespace-pre">
-                              Send Email
-                            </p>
+                            <p className="leading-[normal] whitespace-pre">Send Email</p>
                           </div>
                           <div className="relative shrink-0 size-5">
                             <ArrowRightIcon className="h-5 w-5 text-white" />

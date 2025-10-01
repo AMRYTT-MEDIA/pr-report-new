@@ -187,8 +187,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
 
   const formatNumber = (num) => {
     if (num === undefined || num === null || num === "") return "0";
-    const n =
-      typeof num === "string" ? parseFloat(num.replace(/,/g, "")) : Number(num);
+    const n = typeof num === "string" ? parseFloat(num.replace(/,/g, "")) : Number(num);
     if (Number.isNaN(n)) return "0";
     if (n >= 10_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
     if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(2)}M`;
@@ -215,6 +214,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
     <View
       idx={idx}
       wrap={false}
+      // eslint-disable-next-line no-use-before-define
       style={[styles.tr, style, idx === outlets.length - 1 && styles.trLast]}
     >
       {children}
@@ -222,14 +222,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
   );
 
   const outlets = formatData || report.outlets || [];
-  const colorPalette = [
-    "#1d4ed8",
-    "#047857",
-    "#7c3aed",
-    "#d97706",
-    "#dc2626",
-    "#4338ca",
-  ];
+  const colorPalette = ["#1d4ed8", "#047857", "#7c3aed", "#d97706", "#dc2626", "#4338ca"];
 
   return (
     <Document>
@@ -247,9 +240,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
               <View style={styles.statCardContent}>
                 <Text style={styles.statTitle}>Total Publications</Text>
                 <View style={styles.statValueContainer}>
-                  <Text style={styles.statValue}>
-                    {report.total_outlets || 0}
-                  </Text>
+                  <Text style={styles.statValue}>{report.total_outlets || 0}</Text>
                   <Text style={styles.statDescription}>/ Media outlets</Text>
                 </View>
               </View>
@@ -263,12 +254,8 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
               <View style={styles.statCardContent}>
                 <Text style={styles.statTitle}>Total Reach</Text>
                 <View style={styles.statValueContainer}>
-                  <Text style={styles.statValue}>
-                    {formatNumber(report?.total_semrush_traffic)}
-                  </Text>
-                  <Text style={styles.statDescription}>
-                    / Potential audience
-                  </Text>
+                  <Text style={styles.statValue}>{formatNumber(report?.total_semrush_traffic)}</Text>
+                  <Text style={styles.statDescription}>/ Potential audience</Text>
                 </View>
               </View>
               <ReachIcon PDFComponents={PDFComponents} />
@@ -281,21 +268,11 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
               <View style={styles.statCardContent}>
                 <Text style={styles.statTitle}>Report Status</Text>
                 <View style={styles.statValueContainer}>
-                  <View
-                    style={
-                      report.status === "completed"
-                        ? styles.badge
-                        : styles.badgeSecondary
-                    }
-                  >
-                    <Text style={styles.badgeText}>
-                      {report.status || "unknown"}
-                    </Text>
+                  <View style={report.status === "completed" ? styles.badge : styles.badgeSecondary}>
+                    <Text style={styles.badgeText}>{report.status || "unknown"}</Text>
                   </View>
                   <Text style={styles.statDescription}>
-                    {report?.date_created
-                      ? `Created ${formatDate(report.date_created)}`
-                      : "/ Distribution complete"}
+                    {report?.date_created ? `Created ${formatDate(report.date_created)}` : "/ Distribution complete"}
                   </Text>
                 </View>
               </View>
@@ -305,18 +282,14 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
         </View>
 
         {/* Table */}
-        <Text style={styles.sectionTitle}>
-          PR Report : Media Outlets ({outlets.length})
-        </Text>
+        <Text style={styles.sectionTitle}>PR Report : Media Outlets ({outlets.length})</Text>
 
         <View style={styles.tableOuter}>
           {/* Table Header (only first page, not repeated) */}
           <View style={styles.tableHeaderRow}>
             <Text style={[styles.th, { flex: 1 }]}>Outlet</Text>
             <Text style={[styles.th, { flex: 2 }]}>Website</Text>
-            <Text style={[styles.th, { flex: 1, textAlign: "right" }]}>
-              Potential Reach
-            </Text>
+            <Text style={[styles.th, { flex: 1, textAlign: "right" }]}>Potential Reach</Text>
           </View>
 
           {/* Table Body */}
@@ -324,9 +297,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
             // Check for base64Logo first (from PDF generation), then API logo
             const logoUrl = outlet.base64Logo || getLogoUrl(outlet.logo);
 
-            const firstChar = (outlet.website_name || "?")
-              .charAt(0)
-              .toUpperCase();
+            const firstChar = (outlet.website_name || "?").charAt(0).toUpperCase();
             const fallbackColor = colorPalette[idx % colorPalette.length];
 
             return (
@@ -334,18 +305,11 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
                 {/* Outlet */}
                 <View style={[styles.td, styles.outletCell, { flex: 1 }]}>
                   <View style={styles.logoContainer}>
-                    {logoUrl &&
-                    logoUrl.trim() !== "" &&
-                    (logoUrl.startsWith("data:") ||
-                      logoUrl.startsWith("http")) ? (
+                    {logoUrl && logoUrl.trim() !== "" && (logoUrl.startsWith("data:") || logoUrl.startsWith("http")) ? (
+                      // eslint-disable-next-line jsx-a11y/alt-text
                       <Image src={logoUrl} style={styles.logoImage} />
                     ) : (
-                      <View
-                        style={[
-                          styles.logoFallback,
-                          { backgroundColor: fallbackColor },
-                        ]}
-                      >
+                      <View style={[styles.logoFallback, { backgroundColor: fallbackColor }]}>
                         <Text style={styles.logoFallbackText}>{firstChar}</Text>
                       </View>
                     )}
@@ -353,9 +317,7 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
                 </View>
 
                 {/* Website */}
-                <View
-                  style={{ flex: 2, paddingVertical: 8, paddingHorizontal: 8 }}
-                >
+                <View style={{ flex: 2, paddingVertical: 8, paddingHorizontal: 8 }}>
                   <Text style={styles.websiteName}>{outlet.website_name}</Text>
                   <Text style={styles.websiteUrl} maxLines={1}>
                     {outlet.published_url || ""}
@@ -363,12 +325,8 @@ const PRReportPDF = ({ report, formatData, PDFComponents }) => {
                 </View>
 
                 {/* Reach */}
-                <View
-                  style={{ flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}
-                >
-                  <Text style={[styles.td, styles.reachCell]}>
-                    {formatNumber(outlet?.semrush_traffic ?? 0)}
-                  </Text>
+                <View style={{ flex: 1, paddingVertical: 8, paddingHorizontal: 8 }}>
+                  <Text style={[styles.td, styles.reachCell]}>{formatNumber(outlet?.semrush_traffic ?? 0)}</Text>
                 </View>
               </Row>
             );

@@ -27,6 +27,11 @@ export default function ProfileOverlay({
   const [isVisible, setIsVisible] = useState(false);
   const overlayRef = useRef(null);
 
+  const closeOverlay = () => {
+    setIsOpen(false);
+    setTimeout(() => setIsVisible(false), 150);
+  };
+
   // Close overlay when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -41,11 +46,6 @@ export default function ProfileOverlay({
 
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, [isOpen]);
-
-  const closeOverlay = () => {
-    setIsOpen(false);
-    setTimeout(() => setIsVisible(false), 150);
-  };
 
   const openOverlay = () => {
     setIsVisible(true);
@@ -103,9 +103,7 @@ export default function ProfileOverlay({
           <Avatar className="w-8 h-8">
             <AvatarImage src={user?.avatar} />
             <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 font-semibold text-sm">
-              {user?.fullName?.charAt(0)?.toUpperCase() || (
-                <User className="w-4 h-4" />
-              )}
+              {user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-4 h-4" />}
             </AvatarFallback>
           </Avatar>
           {/* Online Status Indicator */}
@@ -116,22 +114,15 @@ export default function ProfileOverlay({
         {showUserInfo && (
           <div className="hidden lg:block text-left">
             <div className="text-sm font-semibold text-slate-900">
-              {user?.fullName
-                ? `${user.fullName.substring(0, 10)}...`
-                : "Publish rt..."}
+              {user?.fullName ? `${user.fullName.substring(0, 10)}...` : "Publish rt..."}
             </div>
-            <div className="text-xs text-slate-500">
-              {user?.role?.name || "Admin"}
-            </div>
+            <div className="text-xs text-slate-500">{user?.role?.name || "Admin"}</div>
           </div>
         )}
 
         {/* Dropdown Chevron */}
         <ChevronDown
-          className={cn(
-            "h-4 w-4 text-slate-500 transition-transform duration-200",
-            isOpen && "rotate-180"
-          )}
+          className={cn("h-4 w-4 text-slate-500 transition-transform duration-200", isOpen && "rotate-180")}
         />
       </Button>
 
@@ -154,21 +145,13 @@ export default function ProfileOverlay({
               <Avatar className="w-10 h-10">
                 <AvatarImage src={user?.avatar} />
                 <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 font-semibold text-lg">
-                  {user?.fullName?.charAt(0)?.toUpperCase() || (
-                    <User className="w-5 h-5" />
-                  )}
+                  {user?.fullName?.charAt(0)?.toUpperCase() || <User className="w-5 h-5" />}
                 </AvatarFallback>
               </Avatar>
               <div className="flex-1 min-w-0">
-                <div className="text-sm font-semibold text-slate-900 truncate">
-                  {user?.fullName || "Main User"}
-                </div>
-                <div className="text-xs text-slate-500 truncate">
-                  {user?.email || "user@example.com"}
-                </div>
-                <div className="text-xs text-indigo-600 font-medium">
-                  {user?.role?.name || "Admin"}
-                </div>
+                <div className="text-sm font-semibold text-slate-900 truncate">{user?.fullName || "Main User"}</div>
+                <div className="text-xs text-slate-500 truncate">{user?.email || "user@example.com"}</div>
+                <div className="text-xs text-indigo-600 font-medium">{user?.role?.name || "Admin"}</div>
               </div>
               <div className="w-2 h-2 bg-green-500 rounded-full"></div>
             </div>

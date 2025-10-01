@@ -23,66 +23,51 @@ export const prReportsService = {
   },
 
   // Get total count of PR reports
-  getPRReportTotalCount: async () => {
-    return await apiGet("/pr-distributions/getPRReportTotalCount");
-  },
+  getPRReportTotalCount: () => apiGet("/pr-distributions/getPRReportTotalCount"),
 
   // Get PR report by ID
-  getReportById: async (reportId) => {
-    return await apiGet(`/pr-distributions/getPRReportByBatchId/${reportId}`);
-  },
+  getReportById: async (reportId) => await apiGet(`/pr-distributions/getPRReportByBatchId/${reportId}`),
 
   // Get PR report group by grid ID
-  getReportGroup: async (gridId) => {
-    return await apiGet(`/pr-distributions/getPRReportGroupByGridId/${gridId}`);
-  },
+  getReportGroup: async (gridId) => await apiGet(`/pr-distributions/getPRReportGroupByGridId/${gridId}`),
 
   // Verify PR report URL access
-  verifyUrlAccess: async (gridId, email = null) => {
-    return await apiGet("/pr-distributions/verifyPRReportUrl", {
+  verifyUrlAccess: async (gridId, email = null) =>
+    await apiGet("/pr-distributions/verifyPRReportUrl", {
       grid_id: gridId,
       email,
-    });
-  },
+    }),
 
   // Get PR report data
-  getReportData: async (gridId, email = null) => {
-    return await apiPost("/pr-distributions/getPRReportData", {
+  getReportData: async (gridId, email = null) =>
+    await apiPost("/pr-distributions/getPRReportData", {
       grid_id: gridId,
       email,
-    });
-  },
+    }),
 
   // Request access to private report
-  requestAccess: async (reportId, email) => {
-    return await apiPost(`/pr-distributions/${reportId}/request-access`, {
+  requestAccess: async (reportId, email) =>
+    await apiPost(`/pr-distributions/${reportId}/request-access`, {
       email,
-    });
-  },
+    }),
 
   // Verify OTP for access
-  verifyOTP: async (reportId, email, otp) => {
-    return await apiPost(`/pr-distributions/${reportId}/verify-otp`, {
+  verifyOTP: async (reportId, email, otp) =>
+    await apiPost(`/pr-distributions/${reportId}/verify-otp`, {
       email,
       otp,
-    });
-  },
+    }),
 
   // Export PR report as CSV
-  exportCSV: async (gridId) => {
-    return await apiGet(`/pr-distributions/exportPRReportCsv/${gridId}`);
-  },
+  exportCSV: async (gridId) => await apiGet(`/pr-distributions/exportPRReportCsv/${gridId}`),
 
   // Delete PR report
-  deleteReport: async (gridId) => {
-    return await apiDelete(`/pr-distributions/deletePRReport/${gridId}`);
-  },
+  deleteReport: async (gridId) => await apiDelete(`/pr-distributions/deletePRReport/${gridId}`),
 
   // Share PR report
-  shareReport: async (gridId, isPrivate, sharedEmails = []) => {
-    return await apiPut(`/pr-distributions/sharePRReport/${gridId}`, {
+  shareReport: async (gridId, isPrivate, sharedEmails = []) =>
+    await apiPut(`/pr-distributions/sharePRReport/${gridId}`, {
       is_private: isPrivate,
       sharedEmails,
-    });
-  },
+    }),
 };

@@ -15,13 +15,7 @@ import { getLogoUrl } from "@/lib/utils";
 import CommonModal from "@/components/common/CommonModal";
 import ErrorMessage from "../ui/error-message";
 
-const AddNewWebsiteDialog = ({
-  onWebsiteAdded,
-  isOpen,
-  onClose,
-  editWebsite,
-  onEditWebsite,
-}) => {
+const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onEditWebsite }) => {
   const [iconPreview, setIconPreview] = useState(null);
   const [websiteIcon, setWebsiteIcon] = useState(null);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
@@ -50,16 +44,13 @@ const AddNewWebsiteDialog = ({
         .required(WebsiteConstants.websiteNameRequired),
       websiteUrl: Yup.string()
         .trim()
-        .test("is-valid-url", WebsiteConstants.invalidUrl, function (value) {
+        .test("is-valid-url", WebsiteConstants.invalidUrl, (value) => {
           if (!value) return false;
 
           const urlValue = value.trim();
 
           // Require protocol - don't auto-add, just validate
-          if (
-            !urlValue.startsWith("http://") &&
-            !urlValue.startsWith("https://")
-          ) {
+          if (!urlValue.startsWith("http://") && !urlValue.startsWith("https://")) {
             return false; // Must include protocol
           }
 
@@ -90,7 +81,7 @@ const AddNewWebsiteDialog = ({
 
           // Check domain format (remove protocol first and extract just the domain part)
           const cleanUrl = urlValue.replace(/^https?:\/\//, "");
-          const domainPart = cleanUrl.split("/")[0]; // Get only domain part, ignore path
+          const [domainPart] = cleanUrl.split("/"); // Get only domain part, ignore path
 
           // Validate domain using FQDN (Fully Qualified Domain Name)
           if (
@@ -117,7 +108,7 @@ const AddNewWebsiteDialog = ({
       try {
         setIsUploadingLogo(true);
         // Use URL as entered by user
-        const websiteUrl = values.websiteUrl;
+        const { websiteUrl } = values;
 
         const websiteData = {
           name: values.websiteName.trim(),
@@ -132,10 +123,7 @@ const AddNewWebsiteDialog = ({
             websiteData.existingLogo = editWebsite.logo;
           }
 
-          const response = await websitesService.updateWebsite(
-            editWebsite._id || editWebsite.id,
-            websiteData
-          );
+          const response = await websitesService.updateWebsite(editWebsite._id || editWebsite.id, websiteData);
 
           const updatedWebsite = {
             ...editWebsite,
@@ -155,11 +143,10 @@ const AddNewWebsiteDialog = ({
           toast.success(WebsiteConstants.websiteAddedSuccess);
         }
 
+        // eslint-disable-next-line no-use-before-define
         handleClose();
       } catch (error) {
-        let errorMessage = editWebsite
-          ? WebsiteConstants.updateWebsiteError
-          : WebsiteConstants.addWebsiteError;
+        let errorMessage = editWebsite ? WebsiteConstants.updateWebsiteError : WebsiteConstants.addWebsiteError;
 
         if (error?.response?.data?.message) {
           errorMessage = error.response.data.message;
@@ -193,16 +180,10 @@ const AddNewWebsiteDialog = ({
 
   // Handle file upload
   const handleFileUpload = (event) => {
-    const file = event.target.files[0];
+    const [file] = event.target.files;
     if (file) {
       // Validate file type
-      const allowedTypes = [
-        "image/jpeg",
-        "image/png",
-        "image/svg+xml",
-        "image/webp",
-        "image/gif",
-      ];
+      const allowedTypes = ["image/jpeg", "image/png", "image/svg+xml", "image/webp", "image/gif"];
       if (!allowedTypes.includes(file.type)) {
         toast.error(WebsiteConstants.invalidFileType);
         return;
@@ -224,7 +205,7 @@ const AddNewWebsiteDialog = ({
   };
 
   // Remove uploaded file
-  const removeFile = () => {
+  const _removeFile = () => {
     setWebsiteIcon(null);
     // Reset to original icon when removing uploaded file
     if (editWebsite) {
@@ -257,22 +238,10 @@ const AddNewWebsiteDialog = ({
       <CommonModal
         open={isOpen}
         onClose={handleClose}
-        title={
-          editWebsite
-            ? WebsiteConstants.editWebsite
-            : WebsiteConstants.addNewWebsite
-        }
-        subtitle={
-          editWebsite
-            ? WebsiteConstants.updateWebsiteDescription
-            : WebsiteConstants.addWebsiteDescription
-        }
+        title={editWebsite ? WebsiteConstants.editWebsite : WebsiteConstants.addNewWebsite}
+        subtitle={editWebsite ? WebsiteConstants.updateWebsiteDescription : WebsiteConstants.addWebsiteDescription}
         icon={
-          editWebsite ? (
-            <PencilLine className="w-7 h-7 text-slate-700" />
-          ) : (
-            <Plus className="w-7 h-7 text-slate-700" />
-          )
+          editWebsite ? <PencilLine className="w-7 h-7 text-slate-700" /> : <Plus className="w-7 h-7 text-slate-700" />
         }
         size="lg"
         footer={
@@ -298,11 +267,7 @@ const AddNewWebsiteDialog = ({
               className="px-6 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full font-medium disabled:opacity-50"
             >
               <Save className="w-5 h-5" />
-              {isUploadingLogo
-                ? "Uploading..."
-                : formik.isSubmitting
-                ? WebsiteConstants.saving
-                : WebsiteConstants.save}
+              {isUploadingLogo ? "Uploading..." : formik.isSubmitting ? WebsiteConstants.saving : WebsiteConstants.save}
             </Button>
           </>
         }
@@ -312,8 +277,7 @@ const AddNewWebsiteDialog = ({
           {/* Website Name Field */}
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-slate-700">
-              {WebsiteConstants.websiteNameLabel}{" "}
-              <span className="text-red-500">{WebsiteConstants.required}</span>
+              {WebsiteConstants.websiteNameLabel} <span className="text-red-500">{WebsiteConstants.required}</span>
             </Label>
             <Input
               type="text"
@@ -323,16 +287,11 @@ const AddNewWebsiteDialog = ({
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               className={`h-10 rounded-lg border-slate-200 text-slate-700 placeholder:text-slate-400 ${
-                formik.errors.websiteName && formik.touched.websiteName
-                  ? "border-red-500 focus:border-red-600"
-                  : ""
+                formik.errors.websiteName && formik.touched.websiteName ? "border-red-500 focus:border-red-600" : ""
               }`}
             />
             {formik.errors.websiteName && formik.touched.websiteName && (
-              <ErrorMessage
-                message={formik.errors.websiteName}
-                className="mt-1"
-              />
+              <ErrorMessage message={formik.errors.websiteName} className="mt-1" />
             )}
           </div>
 
@@ -340,11 +299,7 @@ const AddNewWebsiteDialog = ({
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-slate-700">
               {WebsiteConstants.websiteUrlLabel}{" "}
-              {!editWebsite && (
-                <span className="text-red-500">
-                  {WebsiteConstants.required}
-                </span>
-              )}
+              {!editWebsite && <span className="text-red-500">{WebsiteConstants.required}</span>}
             </Label>
             <div className="relative">
               <Input
@@ -358,35 +313,26 @@ const AddNewWebsiteDialog = ({
                 }}
                 onBlur={formik.handleBlur}
                 className={`flex-1 rounded-lg border-slate-200 text-slate-600 placeholder:text-slate-400
+                          ${editWebsite ? "bg-slate-50 pointer-events-none cursor-not-allowed" : "bg-white"}
                           ${
-                            editWebsite
-                              ? "bg-slate-50 pointer-events-none cursor-not-allowed"
-                              : "bg-white"
-                          }
-                          ${
-                            formik.errors.websiteUrl &&
-                            formik.touched.websiteUrl
+                            formik.errors.websiteUrl && formik.touched.websiteUrl
                               ? "border-red-500 focus:border-red-600"
                               : ""
                           }`}
               />
             </div>
             {formik.errors.websiteUrl && formik.touched.websiteUrl && (
-              <ErrorMessage
-                message={formik.errors.websiteUrl}
-                className="mt-1"
-              />
+              <ErrorMessage message={formik.errors.websiteUrl} className="mt-1" />
             )}
           </div>
 
           {/* Website Icon Field */}
           <div className="space-y-2">
-            <Label className="text-sm font-semibold text-slate-700">
-              {WebsiteConstants.websiteIconLabel}
-            </Label>
+            <Label className="text-sm font-semibold text-slate-700">{WebsiteConstants.websiteIconLabel}</Label>
             <div className="relative">
               <div className="bg-white border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-between p-3.5 hover:border-slate-400 transition-colors gap-2.5">
                 {iconPreview && (
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={iconPreview}
                     alt="Preview"

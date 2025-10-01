@@ -11,13 +11,8 @@ import { useAuth } from "@/lib/auth";
 import { canDeleteReports } from "@/lib/rbac";
 import { useBreadcrumbDirect } from "@/contexts/BreadcrumbContext";
 import ShareDialog from "@/components/ShareDialog";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { ImportIcon, NoDataFound, PrivateShare } from "@/components/icon";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { ImportIcon, PrivateShare } from "@/components/icon";
 import Pagination from "@/components/Pagination";
 import { CommonTable } from "@/components/common";
 import ImportCsvDialog from "@/components/pr-reports/ImportCsvDialog";
@@ -28,7 +23,7 @@ export default function PRReportsListClient() {
   const { user, loading: authLoading } = useAuth();
   const [reports, setReports] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [selectedReport, setSelectedReport] = useState(null);
@@ -47,16 +42,16 @@ export default function PRReportsListClient() {
 
   // URL state
   const q = searchParams.get("q") || "";
-  const page = parseInt(searchParams.get("page")) || 1;
-  const limit = parseInt(searchParams.get("limit")) || 25;
+  const page = parseInt(searchParams.get("page"), 10) || 1;
+  const limit = parseInt(searchParams.get("limit"), 10) || 25;
   const sort = searchParams.get("sort") || "createdAt:asc";
 
   // Local state
-  const [searchQuery, setSearchQuery] = useState(q);
+  const [searchQuery] = useState(q);
   const [currentPage, setCurrentPage] = useState(page);
   const [pageSize, setPageSize] = useState(limit);
-  const [sortField, setSortField] = useState(sort.split(":")[0]);
-  const [sortOrder, setSortOrder] = useState(sort.split(":")[1]);
+  const [sortField] = useState(sort.split(":")[0]);
+  const [sortOrder] = useState(sort.split(":")[1]);
 
   // Fetch reports
   const fetchReports = async () => {
@@ -77,7 +72,7 @@ export default function PRReportsListClient() {
     try {
       const params = {
         page: currentPage,
-        pageSize: pageSize,
+        pageSize,
         // sort: `${sortField}:${sortOrder}`,
       };
 
@@ -96,8 +91,7 @@ export default function PRReportsListClient() {
       if (searchQuery) newSearchParams.set("q", searchQuery);
       if (currentPage > 1) newSearchParams.set("page", currentPage);
       if (pageSize !== 25) newSearchParams.set("limit", pageSize);
-      if (sort !== "createdAt:desc")
-        newSearchParams.set("sort", `${sortField}:${sortOrder}`);
+      if (sort !== "createdAt:desc") newSearchParams.set("sort", `${sortField}:${sortOrder}`);
 
       const newUrl = `/pr-reports-list`;
       router.replace(newUrl, { scroll: false });
@@ -110,11 +104,11 @@ export default function PRReportsListClient() {
     }
   };
 
-  // Handle search
-  const handleSearch = () => {
-    setCurrentPage(1);
-    fetchReports();
-  };
+  // Handle search (for future use)
+  // const handleSearch = () => {
+  //   setCurrentPage(1);
+  //   fetchReports();
+  // };
 
   // Handle pagination
   const handlePageChange = (newPage) => {
@@ -131,11 +125,7 @@ export default function PRReportsListClient() {
   const handleShareReport = async (payload) => {
     try {
       const reportId = selectedReport.grid_id || selectedReport._id;
-      await prReportsService.shareReport(
-        reportId,
-        payload.is_private,
-        payload.sharedEmails || []
-      );
+      await prReportsService.shareReport(reportId, payload.is_private, payload.sharedEmails || []);
 
       // Refresh the reports list
       await fetchReports();
@@ -207,18 +197,14 @@ export default function PRReportsListClient() {
   const formatTitle = (title, maxLength = 50) => {
     if (!title) return "Untitled Report";
     if (title.length <= maxLength) return title;
-    return title.substring(0, maxLength) + "...";
+    return `${title.substring(0, maxLength)}...`;
   };
 
   // Check if title needs truncation
-  const needsTruncation = (title, maxLength = 50) => {
-    return title && title.length > maxLength;
-  };
+  const needsTruncation = (title, maxLength = 50) => title && title.length > maxLength;
 
   // Direct render - no useEffect needed
-  useBreadcrumbDirect([
-    { name: "All Reports", href: "/pr-reports-list", current: true },
-  ]);
+  useBreadcrumbDirect([{ name: "All Reports", href: "/pr-reports-list", current: true }]);
 
   // Fetch reports on mount and when dependencies change
   useEffect(() => {
@@ -226,6 +212,7 @@ export default function PRReportsListClient() {
       hasInitialFetch.current = true;
       fetchReports();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [authLoading, user]); // Only run when auth state changes
 
   // Separate effect for pagination/sorting changes
@@ -233,15 +220,17 @@ export default function PRReportsListClient() {
     if (!authLoading && user && hasInitialFetch.current) {
       fetchReports();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, pageSize, sortField, sortOrder]); // Only run when these specific values change
 
   // Cleanup function to reset refs when component unmounts
-  useEffect(() => {
-    return () => {
+  useEffect(
+    () => () => {
       isFetching.current = false;
       hasInitialFetch.current = false;
-    };
-  }, []);
+    },
+    []
+  );
 
   // Update search when searchQuery changes
   useEffect(() => {
@@ -253,19 +242,14 @@ export default function PRReportsListClient() {
     }, 500);
 
     return () => clearTimeout(timeoutId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchQuery, q]); // Added q to dependencies
 
   // Show loading while auth is initializing
   if (authLoading || loading) {
     return (
       <div className="mx-auto flex h-[calc(100dvh-86px)] justify-center">
-        <Loading
-          size="lg"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <Loading size="lg" showText={true} text="Loading..." textColor="black" textPosition="bottom" />
       </div>
     );
   }
@@ -281,68 +265,58 @@ export default function PRReportsListClient() {
       key: "title",
       label: "Full Name",
       width: "60%",
-      render: (value, report, index) => {
-        const tooltipPosition =
-          reports?.length === index + 1 ? "top" : "bottom";
-        return (
-          <div className="flex items-center gap-4">
-            <div className="relative">
-              <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
-                CSV
-              </p>
-              <File className="w-10 h-10 text-slate-200" />
-            </div>
-            <div className="flex-1 min-w-0">
-              {needsTruncation(report.report_title) ? (
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <p className="text-sm font-medium text-slate-600 truncate cursor-help">
-                        {formatTitle(report.report_title)}
+      render: (value, report) => (
+        <div className="flex items-center gap-4">
+          <div className="relative">
+            <p className="text-[10px] font-medium text-white bg-primary rounded px-1 pt-0 absolute top-4 right-4">
+              CSV
+            </p>
+            <File className="w-10 h-10 text-slate-200" />
+          </div>
+          <div className="flex-1 min-w-0">
+            {needsTruncation(report.report_title) ? (
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <p className="text-sm font-medium text-slate-600 truncate cursor-help">
+                      {formatTitle(report.report_title)}
+                    </p>
+                  </TooltipTrigger>
+                  <TooltipContent
+                    className="max-w-sm bg-slate-900 text-white border-slate-700"
+                    side="top"
+                    align="start"
+                  >
+                    <div className="break-words">{report?.report_title}</div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            ) : (
+              <p className="text-sm font-medium text-slate-600">{report?.report_title || "Untitled Report"}</p>
+            )}
+            <div className="flex items-center mt-1 text-sm text-slate-500">
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipContent
+                    className="max-w-sm bg-slate-900 text-white border-slate-700"
+                    side="top"
+                    align="start"
+                  >
+                    <div className="text-center">
+                      <p className="font-medium mb-1">{report.is_private ? "?? Private Report" : "?? Public Report"}</p>
+                      <p className="text-sm text-slate-300">
+                        {report.is_private
+                          ? "Only you and people you specifically share with can view this report."
+                          : "Anyone with the link can view this report."}
                       </p>
-                    </TooltipTrigger>
-                    <TooltipContent
-                      className="max-w-sm bg-slate-900 text-white border-slate-700"
-                      side="top"
-                      align="start"
-                    >
-                      <div className="break-words">{report?.report_title}</div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              ) : (
-                <p className="text-sm font-medium text-slate-600">
-                  {report?.report_title || "Untitled Report"}
-                </p>
-              )}
-              <div className="flex items-center mt-1 text-sm text-slate-500">
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipContent
-                      className="max-w-sm bg-slate-900 text-white border-slate-700"
-                      side="top"
-                      align="start"
-                    >
-                      <div className="text-center">
-                        <p className="font-medium mb-1">
-                          {report.is_private
-                            ? "?? Private Report"
-                            : "?? Public Report"}
-                        </p>
-                        <p className="text-sm text-slate-300">
-                          {report.is_private
-                            ? "Only you and people you specifically share with can view this report."
-                            : "Anyone with the link can view this report."}
-                        </p>
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </div>
+                    </div>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
             </div>
           </div>
-        );
-      },
+        </div>
+      ),
     },
     {
       key: "createdBy",
@@ -350,12 +324,8 @@ export default function PRReportsListClient() {
       width: "20%",
       render: (value, report) => (
         <div>
-          <p className="text-sm text-slate-600 font-semibold mb-1">
-            {report?.uploaded_by?.name || "-"}
-          </p>
-          <p className="text-slate-500 text-nowrap font-medium text-sm">
-            {formatDate(report?.createdAt || "-")}
-          </p>
+          <p className="text-sm text-slate-600 font-semibold mb-1">{report?.uploaded_by?.name || "-"}</p>
+          <p className="text-slate-500 text-nowrap font-medium text-sm">{formatDate(report?.createdAt || "-")}</p>
         </div>
       ),
     },
@@ -395,27 +365,20 @@ export default function PRReportsListClient() {
         showActions={true}
         actionColumnWidth="15%"
         renderActions={(report, index) => {
-          const tooltipPosition =
-            reports?.length === index + 1 ? "top" : "bottom";
+          const tooltipPosition = reports?.length === index + 1 ? "top" : "bottom";
           return (
             <div className="whitespace-nowrap gap-5 sm:gap-7 text-sm font-medium flex flex-row items-center ">
               <CustomTooltip content="View" position={tooltipPosition}>
                 <button
-                  onClick={() =>
-                    router.push(`/view-pr/${report.grid_id || report._id}`)
-                  }
+                  onClick={() => router.push(`/view-pr/${report.grid_id || report._id}`)}
                   className="text-slate-600 hover:text-slate-800"
                 >
                   <Eye className="w-4 h-4" />
                 </button>
               </CustomTooltip>
               <CustomTooltip content="Share" position={tooltipPosition}>
-                <button
-                  onClick={() => openShareDialog(report)}
-                  className="text-slate-600 hover:text-slate-800"
-                >
-                  {report?.is_private &&
-                  (report?.sharedEmails?.length ?? 0) > 0 ? (
+                <button onClick={() => openShareDialog(report)} className="text-slate-600 hover:text-slate-800">
+                  {report?.is_private && (report?.sharedEmails?.length ?? 0) > 0 ? (
                     <PrivateShare width={18} height={18} />
                   ) : (
                     <Share2 className="w-4 h-4" />
@@ -471,7 +434,7 @@ export default function PRReportsListClient() {
       <ImportCsvDialog
         open={importDialogOpen}
         onOpenChange={setImportDialogOpen}
-        onUploadSuccess={(response) => {
+        onUploadSuccess={() => {
           // Refresh the reports list after successful upload
           fetchReports();
         }}

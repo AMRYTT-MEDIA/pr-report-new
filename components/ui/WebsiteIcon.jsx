@@ -56,7 +56,7 @@ const WebsiteIcon = ({
 
   // Determine if SVG for unoptimized flag
   const isSvg = logoFilename?.toLowerCase().includes(".svg") || false;
-  const shouldUnoptimize = unoptimized !== undefined ? unoptimized : isSvg;
+  const _shouldUnoptimize = unoptimized !== undefined ? unoptimized : isSvg;
 
   // If we have a logo, display it
   if (logoUrl) {
@@ -73,9 +73,7 @@ const WebsiteIcon = ({
           sizes="(max-width: 640px) 120px, 137px"
           unoptimized={true}
           className={`${
-            size !== "custom"
-              ? `${currentSize.maxWidth} ${currentSize.maxHeight}`
-              : ""
+            size !== "custom" ? `${currentSize.maxWidth} ${currentSize.maxHeight}` : ""
           } object-contain ${imageClassName}`}
           onLoad={onImageLoad}
           onError={onImageError}
@@ -87,9 +85,7 @@ const WebsiteIcon = ({
 
   // Fallback to WebsiteAvatar if no logo
   return (
-    <div
-      className={`${containerClassName} flex max-w-[137px] items-center justify-center`}
-    >
+    <div className={`${containerClassName} flex max-w-[137px] items-center justify-center`}>
       <WebsiteAvatar
         websiteName={websiteName}
         size={size === "custom" ? "default" : size}

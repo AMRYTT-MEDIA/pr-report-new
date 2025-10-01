@@ -11,7 +11,7 @@ const WebsiteConstants = {
   add: "Add",
   website: "Website",
   newWebsite: "New Website",
-  
+
   // Form validation messages
   websiteNameRequired: "Website name is required",
   websiteNameMinLength: "Website name must be at least 2 characters",
@@ -20,35 +20,35 @@ const WebsiteConstants = {
   invalidUrlFormat: "URL format is invalid. Please enter a valid domain",
   invalidUrlChars: "URL contains invalid characters",
   invalidUrlExtension: "Please enter a valid domain with proper extension",
-  
+
   // File upload messages
   invalidFileType: "Please upload a valid image file (JPEG, PNG, SVG, WebP, or GIF)",
   fileSizeError: "File size must be less than 10MB",
-  
+
   // Toast messages
   websiteAddedSuccess: "Website added successfully!",
   websiteUpdatedSuccess: "Website updated successfully!",
   addWebsiteError: "Failed to add website. Please try again.",
   updateWebsiteError: "Failed to update website. Please try again.",
-  
+
   // Dialog titles and descriptions
   addNewWebsite: "Add New Website",
   editWebsite: "Edit Website",
   addWebsiteDescription: "Enter the details for the new website",
   updateWebsiteDescription: "Update the website information below",
-  
+
   // Form labels and placeholders
   websiteNameLabel: "Website Name",
   websiteUrlLabel: "Website URL",
   websiteIconLabel: "Website Icon",
   enterWebsiteName: "Enter website name",
   urlPlaceholder: "https://example.com/",
-  
+
   // File upload area
   pngJpgSvgWebpUpTo10mb: "PNG, JPG, SVG, WebP up to 10MB",
   currentIcon: "Current icon",
   existingFile: "Existing file",
-  
+
   // Buttons
   updateWebsite: "Update Website",
   addWebsite: "Add Website",
@@ -70,6 +70,6 @@ const WebsiteConstants = {
   addFirstWebsiteDescription: "Get started by adding your new website.",
   delete: "Delete",
   edit: "Edit",
-  };
+};
 
 export default WebsiteConstants;

@@ -86,9 +86,7 @@ function info(message) {
  * @param {string} message - The message to log
  */
 function success(message) {
-  console.log(
-    colors.green + "✓ " + colors.reset + colors.bright + message + colors.reset
-  );
+  console.log(colors.green + "✓ " + colors.reset + colors.bright + message + colors.reset);
 }
 
 /**
@@ -104,9 +102,7 @@ function warning(message) {
  * @param {string} message - The message to log
  */
 function error(message) {
-  console.log(
-    colors.red + "✗ " + colors.reset + colors.bright + message + colors.reset
-  );
+  console.log(colors.red + "✗ " + colors.reset + colors.bright + message + colors.reset);
 }
 
 /**
@@ -125,9 +121,7 @@ function startSpinner(message) {
   spinnerInterval = setInterval(() => {
     const frame = spinnerFrames[(i = ++i % spinnerFrames.length)];
     clearLine();
-    process.stdout.write(
-      colors.cyan + frame + " " + colors.reset + spinnerMessage
-    );
+    process.stdout.write(colors.cyan + frame + " " + colors.reset + spinnerMessage);
   }, 80);
 
   return spinnerInterval;
@@ -176,9 +170,7 @@ function stopSpinner(finalMessage, type = "info") {
  * @param {string} [message] - Optional message to display with the progress bar
  */
 function progressBar(progress, message = "") {
-  const completed = Math.floor(
-    (progressBarWidth * Math.min(100, progress)) / 100
-  );
+  const completed = Math.floor((progressBarWidth * Math.min(100, progress)) / 100);
   const remaining = progressBarWidth - completed;
 
   clearLine();
@@ -214,9 +206,7 @@ function section(title) {
  * @param {string} message - The step message
  */
 function step(stepNumber, message) {
-  console.log(
-    colors.yellow + colors.bright + `  ${stepNumber}. ` + colors.reset + message
-  );
+  console.log(colors.yellow + colors.bright + `  ${stepNumber}. ` + colors.reset + message);
 }
 
 /**
@@ -283,15 +273,7 @@ function countdown(seconds, message) {
     const interval = setInterval(() => {
       clearLine();
       process.stdout.write(
-        colors.yellow +
-          "⏱ " +
-          colors.reset +
-          message +
-          " " +
-          colors.bright +
-          remaining +
-          "s" +
-          colors.reset
+        colors.yellow + "⏱ " + colors.reset + message + " " + colors.bright + remaining + "s" + colors.reset
       );
 
       if (--remaining < 0) {
@@ -316,10 +298,7 @@ function table(data, columns) {
   // Calculate column widths
   const widths = {};
   columns.forEach((col) => {
-    widths[col] = Math.max(
-      col.length,
-      ...data.map((row) => String(row[col] || "").length)
-    );
+    widths[col] = Math.max(col.length, ...data.map((row) => String(row[col] || "").length));
   });
 
   // Create header

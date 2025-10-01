@@ -3,14 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TotalPublicationIcon, TotalReachIcon } from "@/components/icon";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Skeleton } from "@/components/ui/skeleton";
 import WebsiteIcon from "@/components/ui/WebsiteIcon";
 import {
@@ -27,7 +20,6 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 // Dynamic import will be used in handleDownload function
-import React from "react";
 import { prReportsService } from "@/services/prReports";
 import { viewReportsService } from "@/services/viewReports";
 import PRReportPDF from "./PRReportPDF";
@@ -39,12 +31,7 @@ import CustomTooltip from "./ui/custom-tooltip";
 import { DeleteDialog } from "./view-reports";
 import { getLogoUrl } from "@/lib/utils";
 
-const PRReportViewer = ({
-  report,
-  loading = false,
-  isPublic = true,
-  fetchReportData = () => {},
-}) => {
+const PRReportViewer = ({ report, loading = false, isPublic = true, fetchReportData = () => {} }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [imageErrors, setImageErrors] = useState(new Set());
@@ -59,7 +46,7 @@ const PRReportViewer = ({
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(25);
+  const [rowsPerPage] = useState(25);
 
   // Debounce search term to prevent excessive filtering
   useEffect(() => {
@@ -75,7 +62,7 @@ const PRReportViewer = ({
     setCurrentPage(1);
   }, [debouncedSearchTerm]);
 
-  const handleImageError = (outletName) => {
+  const _handleImageError = (outletName) => {
     // Silently handle image errors without console output
     setImageErrors((prev) => new Set(prev).add(outletName));
     setImageLoading((prev) => {
@@ -85,7 +72,7 @@ const PRReportViewer = ({
     });
   };
 
-  const handleImageLoad = (outletName) => {
+  const _handleImageLoad = (outletName) => {
     setImageLoading((prev) => {
       const newSet = new Set(prev);
       newSet.delete(outletName);
@@ -93,63 +80,16 @@ const PRReportViewer = ({
     });
   };
 
-  const handleImageStartLoad = (outletName) => {
+  const _handleImageStartLoad = (outletName) => {
     setImageLoading((prev) => new Set(prev).add(outletName));
   };
 
-  const isImageError = (outletName) => {
-    return imageErrors.has(outletName);
-  };
+  const _isImageError = (outletName) => imageErrors.has(outletName);
 
-  const isImageLoading = (outletName) => {
-    return imageLoading.has(outletName);
-  };
-
-  // Pagination handlers
-  // const handlePageChange = (newPage) => {
-  //   setCurrentPage(newPage);
-  // };
-
-  // const handleRowsPerPageChange = (newRowsPerPage) => {
-  //   setRowsPerPage(newRowsPerPage);
-  //   setCurrentPage(1); // Reset to first page when changing rows per page
-  // };
-
-  // Optimized logo lookup to prevent lag
-  // const getLogoUrl = (outletName) => {
-  //   if (!outletName) return null;
-
-  //   // Helper function to normalize strings for matching
-  //   const normalizeString = (str) => {
-  //     if (!str) return "";
-  //     return str.toLowerCase().trim();
-  //   };
-
-  //   // First try exact match
-  //   let logoPath = logoMapping[outletName];
-  //   if (logoPath) {
-  //     // Only return the path if it's a valid format and likely exists
-  //     if (logoPath.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
-  //       return logoPath;
-  //     }
-  //   }
-
-  //   // Try normalized match
-  //   const normalizedName = normalizeString(outletName);
-  //   for (const [key, value] of Object.entries(logoMapping)) {
-  //     if (normalizeString(key) === normalizedName) {
-  //       if (value && value.match(/\.(png|jpg|jpeg|gif|svg|webp)$/i)) {
-  //         return value;
-  //       }
-  //     }
-  //   }
-
-  //   // Return null for unknown outlets to trigger fallback (no console output)
-  //   return null;
-  // };
+  const _isImageLoading = (outletName) => imageLoading.has(outletName);
 
   // Validate if a logo URL is likely to exist
-  const isValidLogoUrl = (url) => {
+  const _isValidLogoUrl = (url) => {
     if (!url) return false;
 
     // Check if it's a valid image format
@@ -165,11 +105,7 @@ const PRReportViewer = ({
   const handleShareReport = async (payload) => {
     try {
       const reportId = report.grid_id || report._id || report.id;
-      const response = await prReportsService.shareReport(
-        reportId,
-        payload.is_private,
-        payload.sharedEmails || []
-      );
+      const response = await prReportsService.shareReport(reportId, payload.is_private, payload.sharedEmails || []);
       fetchReportData && fetchReportData();
       toast.success(response?.message || "Report shared successfully!");
     } catch (error) {
@@ -184,6 +120,7 @@ const PRReportViewer = ({
 
         // Convert logo images to base64 for PDF generation
         const outletsWithBase64Logos = await Promise.allSettled(
+          // eslint-disable-next-line no-use-before-define
           (formatData || report.outlets || []).map(async (outlet) => {
             if (outlet.logo) {
               try {
@@ -201,16 +138,14 @@ const PRReportViewer = ({
                   logoUrl = getLogoUrl(outlet.logo);
                 }
 
+                // eslint-disable-next-line no-use-before-define
                 const base64Logo = await convertImageToBase64(logoUrl);
                 return {
                   ...outlet,
-                  base64Logo: base64Logo,
+                  base64Logo,
                 };
               } catch (error) {
-                console.error(
-                  `Failed to convert logo for ${outlet.website_name}:`,
-                  error
-                );
+                console.error(`Failed to convert logo for ${outlet.website_name}:`, error);
                 // Return outlet without logo, will use fallback
                 return outlet;
               }
@@ -227,6 +162,7 @@ const PRReportViewer = ({
             return result.value;
           } else {
             // Return the original outlet data if processing failed
+            // eslint-disable-next-line no-use-before-define
             return (formatData || report.outlets || [])[index];
           }
         });
@@ -236,13 +172,10 @@ const PRReportViewer = ({
         const { pdf } = pdfRenderer;
 
         const pdfBlob = await pdf(
-          <PRReportPDF
-            report={report}
-            formatData={processedOutlets}
-            PDFComponents={pdfRenderer}
-          />
+          <PRReportPDF report={report} formatData={processedOutlets} PDFComponents={pdfRenderer} />
         ).toBlob();
         const filename = (report.title || "PR_Report").replace(/\s+/g, "_");
+        // eslint-disable-next-line no-use-before-define
         downloadFile(pdfBlob, `${filename}.pdf`, "application/pdf");
         toast.success("PDF download completed");
       } catch (error) {
@@ -253,16 +186,18 @@ const PRReportViewer = ({
       }
     } else if (format === "csv") {
       // Generate CSV content
+      // eslint-disable-next-line no-use-before-define
       const csvContent = generateCSVContent(report);
       const filename = (report.title || "PR_Report").replace(/\s+/g, "_");
+      // eslint-disable-next-line no-use-before-define
       downloadFile(csvContent, `${filename}.csv`, "text/csv");
       toast.success("CSV download completed");
     }
   };
 
   // Function to convert image to base64 for PDF
-  const convertImageToBase64 = (imagePath) => {
-    return new Promise((resolve, reject) => {
+  const convertImageToBase64 = (imagePath) =>
+    new Promise((resolve, reject) => {
       try {
         // Create a canvas element
         const canvas = document.createElement("canvas");
@@ -318,22 +253,15 @@ const PRReportViewer = ({
         reject(error);
       }
     });
-  };
 
-  const generateCSVContent = (report) => {
+  const generateCSVContent = (_csvReport) => {
     const headers = ["Website", "Published URL", "Potential Reach"];
     // Use formatData for consistent ordering in CSV (same order as displayed in UI)
+    // eslint-disable-next-line no-use-before-define
     const outletsToUse = formatData || report.outlets || [];
-    const rows = outletsToUse.map((outlet) => [
-      outlet.website_name,
-      outlet.published_url,
-      outlet.semrush_traffic || 0,
-    ]);
+    const rows = outletsToUse.map((outlet) => [outlet.website_name, outlet.published_url, outlet.semrush_traffic || 0]);
 
-    const csvContent = [
-      headers.join(","),
-      ...rows.map((row) => row.map((cell) => `"${cell}"`).join(",")),
-    ].join("\n");
+    const csvContent = [headers.join(","), ...rows.map((row) => row.map((cell) => `"${cell}"`).join(","))].join("\n");
 
     return csvContent;
   };
@@ -379,11 +307,10 @@ const PRReportViewer = ({
         outlet.website_name.toLowerCase().includes(searchLower) ||
         outlet.published_url.toLowerCase().includes(searchLower) ||
         // Also search against the original website_name if it exists
-        (outlet.original_website_name &&
-          outlet.original_website_name.toLowerCase().includes(searchLower))
+        (outlet.original_website_name && outlet.original_website_name.toLowerCase().includes(searchLower))
       );
     });
-  }, [formatData, debouncedSearchTerm, showShareDialog]);
+  }, [formatData, debouncedSearchTerm]);
 
   // Paginate the filtered outlets
   // const paginatedOutlets = useMemo(() => {
@@ -456,23 +383,18 @@ const PRReportViewer = ({
     setIsLoading(true);
     try {
       // Check if this is an update operation (when editWebsiteInitialUrls is set)
-      const isUpdateOperation =
-        editWebsiteInitialUrls && editWebsiteInitialUrls.trim() !== "";
+      const isUpdateOperation = editWebsiteInitialUrls && editWebsiteInitialUrls.trim() !== "";
 
       if (isUpdateOperation && outletToEdit) {
+        // eslint-disable-next-line no-console
         console.log(result);
         // This is an update operation - call the update API
         const recordId = outletToEdit._id || outletToEdit.id;
         const updateData = {
-          urls: result.websites
-            ? result.websites.map((w) => w.url)
-            : result.urls || [],
+          urls: result.websites ? result.websites.map((w) => w.url) : result.urls || [],
         };
 
-        const response = await viewReportsService.updatePR(
-          recordId,
-          updateData
-        );
+        const response = await viewReportsService.updatePR(recordId, updateData);
 
         // Only show success message and close modal if API call succeeds
         toast.success(response?.data?.message || "Record updated successfully");
@@ -546,10 +468,7 @@ const PRReportViewer = ({
       setOutletToDelete(null);
     } catch (error) {
       console.error("Error deleting record:", error);
-      toast.error(
-        error.response.data.message ||
-          "Failed to delete record. Please try again."
-      );
+      toast.error(error.response.data.message || "Failed to delete record. Please try again.");
     } finally {
       setDeleteLoading(false);
     }
@@ -593,9 +512,7 @@ const PRReportViewer = ({
       <div className="text-center py-12">
         <Eye className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
         <h3 className="text-lg font-semibold mb-2">No Report Available</h3>
-        <p className="text-muted-foreground">
-          Please select a report to view its details
-        </p>
+        <p className="text-muted-foreground">Please select a report to view its details</p>
       </div>
     );
   }
@@ -607,14 +524,10 @@ const PRReportViewer = ({
         <Card className="bg-indigo-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-scale-700">
-                Total Publications
-              </div>
+              <div className="text-base pb-2 font-medium text-scale-700">Total Publications</div>
               <div className="text-2xl sm:text-4xl font-semibold flex flex-col xl:flex-row items-start xl:items-end gap-2 text-slate-800">
                 {report.total_outlets || 0}
-                <p className="text-sm font-medium text-slate-500 mb-1">
-                  / Media outlets
-                </p>
+                <p className="text-sm font-medium text-slate-500 mb-1">/ Media outlets</p>
               </div>
             </CardTitle>
             <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
@@ -631,14 +544,10 @@ const PRReportViewer = ({
         <Card className="bg-orange-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-slate-700">
-                Total Reach
-              </div>
+              <div className="text-base pb-2 font-medium text-slate-700">Total Reach</div>
               <div className="text-2xl sm:text-3xl font-semibold flex flex-col xl:flex-row  items-start xl:items-end gap-2 text-slate-800">
                 {formatNumber(report.total_semrush_traffic)}
-                <p className="text-sm font-medium text-slate-500 mb-1">
-                  / Potential audience
-                </p>
+                <p className="text-sm font-medium text-slate-500 mb-1">/ Potential audience</p>
               </div>
             </CardTitle>
             <div className="m-0 p-3.5 rounded-lg flex items-center justify-center">
@@ -655,22 +564,16 @@ const PRReportViewer = ({
         <Card className="bg-lime-50">
           <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>
-              <div className="text-base pb-2 font-medium text-slate-700">
-                Report Status
-              </div>
+              <div className="text-base pb-2 font-medium text-slate-700">Report Status</div>
               <div className="flex flex-col xl:flex-row items-start xl:items-end gap-2 text-slate-800">
                 <Badge
                   className="capitalize text-[#65A30D] bg-[#65A30D1A] py-2 px-3 text-sm"
-                  variant={
-                    report.status === "completed" ? "green" : "secondary"
-                  }
+                  variant={report.status === "completed" ? "green" : "secondary"}
                 >
                   {report?.status || "Completed"}
                 </Badge>
                 <p className="text-sm font-medium text-slate-500 mb-1">
-                  {report?.date_created
-                    ? `Created ${formatDate(report.date_created)}`
-                    : "/ Distribution complete"}
+                  {report?.date_created ? `Created ${formatDate(report.date_created)}` : "/ Distribution complete"}
                 </p>
               </div>
             </CardTitle>
@@ -688,12 +591,8 @@ const PRReportViewer = ({
         <CardHeader className="sticky top-0 z-10 border-b">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <CardTitle className="flex items-center gap-2">
-              <p className={`${isPublic && "xl:inline-block"} hidden`}>
-                PR Report :
-              </p>
-              <span className="block text-indigo-500 max-w-[294px] truncate overflow-hidden">
-                {report.title}
-              </span>
+              <p className={`${isPublic && "xl:inline-block"} hidden`}>PR Report :</p>
+              <span className="block text-indigo-500 max-w-[294px] truncate overflow-hidden">{report.title}</span>
             </CardTitle>
             <div className="flex flex-col xl:flex-row items-start xl:items-center gap-3 w-full sm:w-auto">
               <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -743,19 +642,11 @@ const PRReportViewer = ({
                   onClick={() => handleDownload("pdf")}
                   disabled={isGeneratingPDF}
                   className={`px-4 py-2.5 text-sm border font-semibold rounded-3xl flex items-center gap-2 transition-colors bg-indigo-600 hover:bg-indigo-700 text-white ${
-                    isGeneratingPDF
-                      ? "opacity-50 cursor-not-allowed bg-none"
-                      : ""
+                    isGeneratingPDF ? "opacity-50 cursor-not-allowed bg-none" : ""
                   }`}
                 >
                   {isGeneratingPDF ? (
-                    <Loading
-                      size="sm"
-                      color="white"
-                      showText={true}
-                      text="PDF"
-                      textColor="white"
-                    />
+                    <Loading size="sm" color="white" showText={true} text="PDF" textColor="white" />
                   ) : (
                     <>
                       <FileArchive className="h-4 w-4" />
@@ -785,9 +676,7 @@ const PRReportViewer = ({
                     <TableHead className="w-[200px]">Outlet</TableHead>
                     <TableHead className="min-w-[400px]">Website</TableHead>
                     <TableHead className="w-[160px]">Potential Reach</TableHead>
-                    {!isPublic && (
-                      <TableHead className="w-[100px]">Actions</TableHead>
-                    )}
+                    {!isPublic && <TableHead className="w-[100px]">Actions</TableHead>}
                   </TableRow>
                 </TableHeader>
 
@@ -803,8 +692,7 @@ const PRReportViewer = ({
                           (currentPage - 1) * rowsPerPage + index + 1
                         }_${outlet.website_name?.replace(/\s+/g, "_")}`,
                     };
-                    const tooltipPosition =
-                      index === filteredOutlets.length - 1 ? "top" : "top";
+                    const tooltipPosition = index === filteredOutlets.length - 1 ? "top" : "top";
 
                     return (
                       <TableRow key={index}>
@@ -821,10 +709,7 @@ const PRReportViewer = ({
 
                         <TableCell className="text-muted-foreground min-w-[400px]">
                           <div>
-                            <div
-                              className="truncate max-w-[380px]"
-                              title={outlet.website_name}
-                            >
+                            <div className="truncate max-w-[380px]" title={outlet.website_name}>
                               {outlet.website_name}
                             </div>
                             <URLTableCell
@@ -844,10 +729,7 @@ const PRReportViewer = ({
                         {!isPublic && (
                           <TableCell className="font-medium w-[100px]">
                             <div className="pl-2 flex gap-8 items-center">
-                              <CustomTooltip
-                                content="Edit"
-                                position={tooltipPosition}
-                              >
+                              <CustomTooltip content="Edit" position={tooltipPosition}>
                                 <button
                                   onClick={() => handleEdit(outlet)}
                                   className="text-slate-600 flex text-sm font-medium"
@@ -855,10 +737,7 @@ const PRReportViewer = ({
                                   <PencilLine className="w-4 h-4" />
                                 </button>
                               </CustomTooltip>
-                              <CustomTooltip
-                                content="Delete"
-                                position={tooltipPosition}
-                              >
+                              <CustomTooltip content="Delete" position={tooltipPosition}>
                                 <button
                                   onClick={() => handleDelete(outlet)}
                                   className="text-red-600 flex text-sm font-medium"
@@ -888,9 +767,7 @@ const PRReportViewer = ({
 
           {filteredOutlets.length === 0 && searchTerm && (
             <div className="text-center py-6 mx-6">
-              <p className="text-muted-foreground">
-                No outlets found matching "{searchTerm}"
-              </p>
+              <p className="text-muted-foreground">No outlets found matching "{searchTerm}"</p>
             </div>
           )}
 
@@ -936,11 +813,7 @@ const PRReportViewer = ({
           }}
           onConfirm={handleConfirmDelete}
           loading={deleteLoading}
-          itemName={
-            outletToDelete?.website_name ||
-            outletToDelete?.published_url ||
-            "this outlet"
-          }
+          itemName={outletToDelete?.website_name || outletToDelete?.published_url || "this outlet"}
           warningText="If you Delete this outlet, it will be permanently removed."
         />
       )}

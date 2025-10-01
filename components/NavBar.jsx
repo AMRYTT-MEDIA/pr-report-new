@@ -1,23 +1,11 @@
 "use client";
 
-import { usePathname, useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
-import {
-  Home,
-  ChevronRight,
-  ChevronDown,
-  User,
-  LogOut,
-  Menu,
-  X,
-  MenuSquare,
-  Settings,
-  Eye,
-} from "lucide-react";
+import { useRouter } from "next/navigation";
+import { ChevronDown, User, LogOut, Settings } from "lucide-react";
 import { cn, getAvatarUrl } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
 import CommonBreadcrumb from "./CommonBreadcrumb";
-import { useState, useRef, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { MenuIcon } from "./icon";
 import DropdownMenu from "./ui/dropdown-menu";
@@ -25,7 +13,7 @@ import DropdownMenu from "./ui/dropdown-menu";
 const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
   const router = useRouter();
   const { user, logout } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [, setIsDropdownOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   // Sync with sidebar state updates
@@ -36,8 +24,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
       }
     };
     window.addEventListener("app-sidebar-toggle", handleSidebarToggle);
-    return () =>
-      window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
+    return () => window.removeEventListener("app-sidebar-toggle", handleSidebarToggle);
   }, []);
 
   // Restore persisted state
@@ -45,7 +32,9 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
     try {
       const saved = sessionStorage.getItem("app-sidebar-open");
       if (saved !== null) setIsSidebarOpen(saved === "true");
-    } catch {}
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
   }, []);
 
   const toggleSidebar = () => {
@@ -53,10 +42,10 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
     setIsSidebarOpen(next);
     try {
       sessionStorage.setItem("app-sidebar-open", String(next));
-    } catch {}
-    window.dispatchEvent(
-      new CustomEvent("app-sidebar-toggle", { detail: { open: next } })
-    );
+    } catch {
+      // Silently fail if sessionStorage is not available
+    }
+    window.dispatchEvent(new CustomEvent("app-sidebar-toggle", { detail: { open: next } }));
   };
 
   const handleLogout = async () => {
@@ -112,7 +101,9 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
               {
                 label: "Settings",
                 icon: Settings,
-                onClick: () => {},
+                onClick: () => {
+                  // TODO: Implement settings
+                },
               },
               {
                 label: "Sign Out",
@@ -125,9 +116,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                 {/* User Avatar with Online Status */}
                 <div className="relative">
                   <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center overflow-hidden">
-                    {user?.avatar &&
-                    user?.avatar !== "" &&
-                    getAvatarUrl(user.avatar) ? (
+                    {user?.avatar && user?.avatar !== "" && getAvatarUrl(user.avatar) ? (
                       <Image
                         src={getAvatarUrl(user.avatar) || "/placeholder.svg"}
                         alt="User Avatar"
@@ -155,9 +144,7 @@ const NavBar = ({ isViewPRPage = false, breadcrumbItems = [] }) => {
                       ? `${user.fullName.substring(0, 20)}...`
                       : user?.fullName || "Unknown"}
                   </div>
-                  <div className="text-xss text-slate-500">
-                    {user?.role?.name || "Unknown"}
-                  </div>
+                  <div className="text-xss text-slate-500">{user?.role?.name || "Unknown"}</div>
                 </div>
 
                 {/* Dropdown Button */}

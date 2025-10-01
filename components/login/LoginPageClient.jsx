@@ -8,7 +8,7 @@ import { LoginForm } from "@/components/auth";
 import Loading from "@/components/ui/loading";
 
 export default function LoginPageClient({ searchParams }) {
-  const { user, loading, initialized } = useAuth();
+  const { user, initialized } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -30,13 +30,7 @@ export default function LoginPageClient({ searchParams }) {
   if (!initialized) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
-        <Loading
-          size="lg"
-          showText={true}
-          text="Loading..."
-          textColor="black"
-          textPosition="bottom"
-        />
+        <Loading size="lg" showText={true} text="Loading..." textColor="black" textPosition="bottom" />
       </div>
     );
   }

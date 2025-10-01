@@ -1,0 +1,293 @@
+{
+  "extends": ["next/core-web-vitals", "prettier"],
+  "env": {
+    "browser": true,
+    "node": true,
+    "es6": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2021,
+    "sourceType": "module",
+    "ecmaFeatures": {
+      "jsx": true
+    }
+  },
+  "globals": {
+    "React": "readonly",
+    "JSX": "readonly",
+    "globalThis": "readonly"
+  },
+  "rules": {
+    // ============================================================================
+    // VARIABLES - Enterprise Level
+    // ============================================================================
+    "no-unused-vars": [
+      "error",
+      {
+        "vars": "all",
+        "args": "after-used",
+        "ignoreRestSiblings": true,
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-undef": "error",
+    "no-redeclare": "error",
+    "no-var": "error",
+    "prefer-const": [
+      "error",
+      {
+        "destructuring": "any",
+        "ignoreReadBeforeAssign": false
+      }
+    ],
+    "no-use-before-define": [
+      "error",
+      {
+        "functions": false,
+        "classes": true,
+        "variables": true
+      }
+    ],
+    "no-shadow": [
+      "error",
+      {
+        "builtinGlobals": false,
+        "hoist": "functions",
+        "allow": ["resolve", "reject", "done", "next", "err", "error", "req", "res"]
+      }
+    ],
+
+    // ============================================================================
+    // BEST PRACTICES - Critical Rules
+    // ============================================================================
+    "eqeqeq": ["error", "always", { "null": "ignore" }],
+    "no-eval": "error",
+    "no-implied-eval": "error",
+    "no-new-func": "error",
+    "no-script-url": "error",
+    "no-return-await": "error",
+    "require-await": "error",
+    "no-await-in-loop": "warn",
+    "no-promise-executor-return": "error",
+    "no-async-promise-executor": "error",
+    "no-template-curly-in-string": "error",
+    "no-compare-neg-zero": "error",
+    "no-cond-assign": ["error", "always"],
+    "no-constant-condition": "error",
+    "no-control-regex": "error",
+    "use-isnan": "error",
+    "valid-typeof": "error",
+
+    // ============================================================================
+    // SECURITY - Zero Tolerance
+    // ============================================================================
+    "no-alert": "error",
+    "no-caller": "error",
+    "no-delete-var": "error",
+    "no-label-var": "error",
+    "no-extend-native": "error",
+    "no-extra-bind": "error",
+    "no-new": "error",
+    "no-new-wrappers": "error",
+    "no-octal": "error",
+    "no-octal-escape": "error",
+    "no-proto": "error",
+    "no-return-assign": "error",
+    "no-self-assign": "error",
+    "no-self-compare": "error",
+    "no-sequences": "error",
+    "no-unmodified-loop-condition": "error",
+    "no-useless-call": "error",
+    "no-useless-concat": "error",
+    "no-useless-escape": "error",
+    "no-void": "error",
+    "no-with": "error",
+    "radix": "error",
+
+    // ============================================================================
+    // ERROR HANDLING
+    // ============================================================================
+    "no-throw-literal": "error",
+    "prefer-promise-reject-errors": "error",
+    "no-useless-catch": "error",
+
+    // ============================================================================
+    // CODE QUALITY - ES6+ Standards
+    // ============================================================================
+    "prefer-arrow-callback": "error",
+    "no-duplicate-imports": "error",
+    "no-useless-constructor": "error",
+    "no-useless-rename": "error",
+    "object-shorthand": ["error", "always"],
+    "prefer-destructuring": [
+      "error",
+      {
+        "array": true,
+        "object": true
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "prefer-template": "error",
+    "prefer-rest-params": "warn",
+    "prefer-spread": "warn",
+    "arrow-body-style": ["error", "as-needed"],
+    "no-confusing-arrow": "error",
+    "no-useless-computed-key": "error",
+    "symbol-description": "error",
+
+    // ============================================================================
+    // POTENTIAL ERRORS
+    // ============================================================================
+    "no-debugger": "error",
+    "no-dupe-args": "error",
+    "no-dupe-keys": "error",
+    "no-duplicate-case": "error",
+    "no-empty": ["error", { "allowEmptyCatch": false }],
+    "no-empty-character-class": "error",
+    "no-ex-assign": "error",
+    "no-extra-boolean-cast": "error",
+    "no-extra-semi": "error",
+    "no-func-assign": "error",
+    "no-inner-declarations": "error",
+    "no-invalid-regexp": "error",
+    "no-irregular-whitespace": "error",
+    "no-obj-calls": "error",
+    "no-prototype-builtins": "error",
+    "no-regex-spaces": "error",
+    "no-sparse-arrays": "error",
+    "no-unreachable": "error",
+
+    // ============================================================================
+    // CODE STYLE - Consistency
+    // ============================================================================
+    "no-mixed-spaces-and-tabs": "error",
+    "no-trailing-spaces": "error",
+    "semi": ["error", "always"],
+    "quotes": [
+      "error",
+      "double",
+      {
+        "avoidEscape": true,
+        "allowTemplateLiterals": true
+      }
+    ],
+    "comma-dangle": [
+      "error",
+      {
+        "arrays": "always-multiline",
+        "objects": "always-multiline",
+        "imports": "always-multiline",
+        "exports": "always-multiline",
+        "functions": "never"
+      }
+    ],
+
+    // ============================================================================
+    // CONSOLE - Warn in development, Error in production
+    // ============================================================================
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error", "info"]
+      }
+    ],
+
+    // ============================================================================
+    // REACT RULES - Enterprise Level
+    // ============================================================================
+    "react/jsx-key": [
+      "error",
+      {
+        "checkFragmentShorthand": true,
+        "checkKeyMustBeforeSpread": true
+      }
+    ],
+    "react/jsx-no-duplicate-props": "error",
+    "react/jsx-no-undef": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/no-children-prop": "error",
+    "react/no-danger-with-children": "error",
+    "react/no-deprecated": "error",
+    "react/no-direct-mutation-state": "error",
+    "react/no-find-dom-node": "error",
+    "react/no-is-mounted": "error",
+    "react/no-render-return-value": "error",
+    "react/no-string-refs": "error",
+    "react/no-unescaped-entities": "off",
+    "react/no-unknown-property": "error",
+    "react/no-unsafe": "warn",
+    "react/prop-types": "off",
+    "react/react-in-jsx-scope": "off",
+    "react/require-render-return": "error",
+    "react/jsx-no-target-blank": "error",
+    "react/jsx-curly-brace-presence": [
+      "error",
+      {
+        "props": "never",
+        "children": "never"
+      }
+    ],
+
+    // ============================================================================
+    // REACT HOOKS - Strict Enforcement
+    // ============================================================================
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "error",
+
+    // ============================================================================
+    // NEXT.JS - Best Practices
+    // ============================================================================
+    "@next/next/no-img-element": "error",
+    "@next/next/no-html-link-for-pages": "error",
+    "@next/next/no-sync-scripts": "error",
+    "@next/next/no-page-custom-font": "warn",
+    "@next/next/no-document-import-in-page": "error",
+    "@next/next/no-head-import-in-document": "error",
+
+    // ============================================================================
+    // WARNINGS - Should Fix Eventually
+    // ============================================================================
+    "no-fallthrough": "warn",
+    "complexity": ["warn", 300],
+    "max-depth": ["warn", 4],
+    "max-nested-callbacks": ["warn", 3],
+    "max-params": ["warn", 5],
+
+    // ============================================================================
+    // DISABLED - Allow Certain Patterns
+    // ============================================================================
+    "react/display-name": "off",
+    "import/no-anonymous-default-export": "off"
+  },
+
+  // ============================================================================
+  // OVERRIDES - Different Rules for Different File Types
+  // ============================================================================
+  "overrides": [
+    {
+      "files": ["*.config.js", "*.config.ts", "postcss.config.js", "tailwind.config.js", "next.config.js"],
+      "rules": {
+        "no-undef": "off",
+        "@typescript-eslint/no-var-requires": "off",
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["app/api/**/*.js", "app/api/**/*.ts", "pages/api/**/*.js", "pages/api/**/*.ts"],
+      "rules": {
+        "no-console": "off"
+      }
+    },
+    {
+      "files": ["*.test.js", "*.test.jsx", "*.spec.js", "*.spec.jsx"],
+      "rules": {
+        "no-console": "off",
+        "max-nested-callbacks": "off"
+      }
+    }
+  ]
+}

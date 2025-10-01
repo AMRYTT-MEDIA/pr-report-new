@@ -32,37 +32,17 @@ export const FileUploadField = ({
       }
 
       // Check file type
-      const allowedTypes = [
-        "image/jpeg",
-        "image/jpg",
-        "image/png",
-        "image/gif",
-        "image/svg+xml",
-        "image/webp",
-      ];
+      const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/gif", "image/svg+xml", "image/webp"];
       if (!allowedTypes.includes(file.type.toLowerCase())) {
-        setFieldError(
-          name,
-          "Please upload a valid image file (JPG, PNG, GIF, SVG)"
-        );
+        setFieldError(name, "Please upload a valid image file (JPG, PNG, GIF, SVG)");
         return;
       }
 
       // Check file extension
       const fileName = file.name.toLowerCase();
-      const allowedExtensions = [
-        ".jpg",
-        ".jpeg",
-        ".png",
-        ".gif",
-        ".svg",
-        ".webp",
-      ];
+      const allowedExtensions = [".jpg", ".jpeg", ".png", ".gif", ".svg", ".webp"];
       if (!allowedExtensions.some((ext) => fileName.endsWith(ext))) {
-        setFieldError(
-          name,
-          "Invalid file extension. Please use JPG, PNG, GIF, or SVG"
-        );
+        setFieldError(name, "Invalid file extension. Please use JPG, PNG, GIF, or SVG");
         return;
       }
 
@@ -82,7 +62,7 @@ export const FileUploadField = ({
   const handleDrop = useCallback(
     (e, setFieldValue, setFieldError) => {
       e.preventDefault();
-      const file = e.dataTransfer.files[0];
+      const [file] = e.dataTransfer.files;
       handleFileChange(file, setFieldValue, setFieldError);
     },
     [handleFileChange]
@@ -94,77 +74,59 @@ export const FileUploadField = ({
 
   return (
     <Field name={name}>
-      {({ field, form }) => {
-        return (
-          <div className={cn("space-y-4", className)}>
-            {label && (
-              <h3 className="text-sm font-semibold text-slate-800">{label}</h3>
-            )}
+      {({ field, form }) => (
+        <div className={cn("space-y-4", className)}>
+          {label && <h3 className="text-sm font-semibold text-slate-800">{label}</h3>}
 
-            <div className="flex flex-col md:flex-row gap-5 items-start">
-              {/* Avatar Preview */}
-              <Avatar className="w-16 h-16 flex-shrink-0">
-                {field.value || currentImage ? (
-                  <AvatarImage src={field.value || currentImage} alt="Avatar" />
-                ) : null}
-                <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 text-lg font-medium">
-                  {fallbackText || "U"}
-                </AvatarFallback>
-              </Avatar>
+          <div className="flex flex-col md:flex-row gap-5 items-start">
+            {/* Avatar Preview */}
+            <Avatar className="w-16 h-16 flex-shrink-0">
+              {field.value || currentImage ? <AvatarImage src={field.value || currentImage} alt="Avatar" /> : null}
+              <AvatarFallback className="bg-gradient-to-br from-blue-100 to-blue-200 text-blue-600 text-lg font-medium">
+                {fallbackText || "U"}
+              </AvatarFallback>
+            </Avatar>
 
-              {/* Upload Area */}
-              <div className="flex-1 w-full">
-                <div
-                  className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-300 transition-colors cursor-pointer"
-                  onDrop={(e) =>
-                    handleDrop(e, form.setFieldValue, form.setFieldError)
-                  }
-                  onDragOver={handleDragOver}
-                  onClick={() =>
-                    document.getElementById(`${name}-upload`).click()
-                  }
-                >
-                  <input
-                    id={`${name}-upload`}
-                    type="file"
-                    accept={accept}
-                    className="hidden"
-                    onChange={(e) =>
-                      handleFileChange(
-                        e.target.files[0],
-                        form.setFieldValue,
-                        form.setFieldError
-                      )
-                    }
-                  />
+            {/* Upload Area */}
+            <div className="flex-1 w-full">
+              <div
+                className="border-2 border-dashed border-slate-200 rounded-lg p-6 text-center hover:border-slate-300 transition-colors cursor-pointer"
+                onDrop={(e) => handleDrop(e, form.setFieldValue, form.setFieldError)}
+                onDragOver={handleDragOver}
+                onClick={() => document.getElementById(`${name}-upload`).click()}
+              >
+                <input
+                  id={`${name}-upload`}
+                  type="file"
+                  accept={accept}
+                  className="hidden"
+                  onChange={(e) => handleFileChange(e.target.files[0], form.setFieldValue, form.setFieldError)}
+                />
 
-                  <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Upload className="w-5 h-5 text-slate-500" />
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="text-sm">
-                      <button
-                        type="button"
-                        className="text-indigo-500 font-semibold hover:text-indigo-600 focus:outline-none focus:text-indigo-600"
-                      >
-                        Click to upload
-                      </button>
-                      <span className="text-slate-500"> or drag and drop</span>
-                    </div>
-                    <p className="text-xs text-slate-500">{description}</p>
-                  </div>
+                <div className="w-10 h-10 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-3">
+                  <Upload className="w-5 h-5 text-slate-500" />
                 </div>
 
-                {/* Error Display */}
-                {form.errors[name] && form.touched[name] && (
-                  <ErrorMessage message={form.errors[name]} />
-                )}
+                <div className="space-y-1">
+                  <div className="text-sm">
+                    <button
+                      type="button"
+                      className="text-indigo-500 font-semibold hover:text-indigo-600 focus:outline-none focus:text-indigo-600"
+                    >
+                      Click to upload
+                    </button>
+                    <span className="text-slate-500"> or drag and drop</span>
+                  </div>
+                  <p className="text-xs text-slate-500">{description}</p>
+                </div>
               </div>
+
+              {/* Error Display */}
+              {form.errors[name] && form.touched[name] && <ErrorMessage message={form.errors[name]} />}
             </div>
           </div>
-        );
-      }}
+        </div>
+      )}
     </Field>
   );
 };

@@ -23,10 +23,7 @@ const GlobalRouteGuard = ({ children }) => {
     if (!user) return;
 
     // Normalize pathname for checking
-    const normalizedPath =
-      pathname.endsWith("/") && pathname.length > 1
-        ? pathname.slice(0, -1)
-        : pathname;
+    const normalizedPath = pathname.endsWith("/") && pathname.length > 1 ? pathname.slice(0, -1) : pathname;
 
     // Force redirect for Manager role on users page
     if (normalizedPath === "/users" && user?.role?.name === "Manager") {
@@ -35,21 +32,12 @@ const GlobalRouteGuard = ({ children }) => {
     }
 
     // Check if current route needs protection
-    const { isProtected, hasAccess, redirectTo } = checkRouteAccess(
-      pathname,
-      user
-    );
+    const { isProtected, hasAccess, redirectTo } = checkRouteAccess(pathname, user);
 
     if (isProtected && !hasAccess && redirectTo) {
       router.replace(redirectTo);
     }
   }, [user, loading, pathname, router]);
-
-  // Don't render children if we're redirecting or checking protection
-  const normalizedPath =
-    pathname.endsWith("/") && pathname.length > 1
-      ? pathname.slice(0, -1)
-      : pathname;
 
   // Block rendering for protected routes without access
   if (!loading && user) {
@@ -57,13 +45,7 @@ const GlobalRouteGuard = ({ children }) => {
     if (isProtected && !hasAccess) {
       return (
         <div className="min-h-screen bg-background flex items-center justify-center">
-          <Loading
-            size="lg"
-            showText={true}
-            text="Redirecting..."
-            textColor="black"
-            textPosition="bottom"
-          />
+          <Loading size="lg" showText={true} text="Redirecting..." textColor="black" textPosition="bottom" />
         </div>
       );
     }

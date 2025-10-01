@@ -47,11 +47,7 @@ const URLTableCell = ({
           >
             <ExternalLink className={cn(iconColor, iconSize)} />
           </button>
-          <button
-            onClick={handleCopyLink}
-            className="flex-shrink-0 rounded transition-colors mt-1"
-            title="Copy link"
-          >
+          <button onClick={handleCopyLink} className="flex-shrink-0 rounded transition-colors mt-1" title="Copy link">
             <Copy className="h-4 w-4 text-[#1E293B]" />
           </button>
         </div>
