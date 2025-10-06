@@ -309,8 +309,7 @@ const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onE
           {/* Website URL Field */}
           <div className="space-y-2">
             <Label className="text-sm font-semibold text-slate-700">
-              {WebsiteConstants.websiteUrlLabel}{" "}
-              {!editWebsite && <span className="text-red-500">{WebsiteConstants.required}</span>}
+              {WebsiteConstants.websiteUrlLabel} <span className="text-red-500">{WebsiteConstants.required}</span>
             </Label>
             <div className="relative">
               <Input
@@ -324,7 +323,6 @@ const AddNewWebsiteDialog = ({ onWebsiteAdded, isOpen, onClose, editWebsite, onE
                 }}
                 onBlur={formik.handleBlur}
                 className={`flex-1 rounded-lg border-slate-200 text-slate-600 placeholder:text-slate-400
-                          ${editWebsite ? "bg-slate-50 pointer-events-none cursor-not-allowed" : "bg-white"}
                           ${
                             formik.errors.websiteUrl && formik.touched.websiteUrl
                               ? "border-red-500 focus:border-red-600"
